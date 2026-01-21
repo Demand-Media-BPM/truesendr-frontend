@@ -1,0 +1,780 @@
+/* src/Components/PhoneValidator.css */
+
+/* Same tokens as Single Validation */
+:root {
+  --bg: #f7f8fb;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #667085;
+
+  --primary: #ff7a1a;
+  --primary-soft: #ffece0;
+  --border-soft: #ffe0c2;
+  --ring: rgba(255, 122, 26, 0.18);
+
+  --border: #e5e7eb;
+
+  --status-valid: #22c55e;
+  --status-invalid: #ef4444;
+}
+
+/* Base */
+.ph-page {
+  width: 100%;
+  height: 82vh;
+  padding: 0.9375rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ph-headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.ph-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--bulk-text);
+  margin: 0;
+}
+
+/* Tabs (EXACT same as SingleValidator) */
+.single-tabs {
+  display: inline-flex;
+  border-radius: 0.5rem; /* 8px */
+  border: 0.0625rem solid #d0d5dd; /* 1px */
+  background: #f9fafb;
+  padding: 0;
+  overflow: hidden;
+}
+
+.tab-btn {
+  border: none;
+  background: transparent;
+  padding: 0.375rem 1.25rem; /* 6px 20px */
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #111827;
+  min-width: 5.625rem; /* 90px */
+  text-align: center;
+  border-radius: 0;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.tab-btn:first-child {
+  border-right: 0.0625rem solid #d0d5dd;
+}
+
+.tab-btn.active {
+  background: #ffe9d6;
+  color: #111827;
+}
+
+/* left active segment */
+.tab-btn:first-child.active {
+  border-right: 0.0625rem solid #ff7a1a;
+  box-shadow: inset 0 0 0 0.0625rem #ff7a1a;
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+/* right active segment */
+.tab-btn:last-child.active {
+  border-left: 0.0625rem solid #ff7a1a;
+  box-shadow: inset 0 0 0 0.0625rem #ff7a1a;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.ph-mainCard {
+  flex: 1;
+  background: var(--card);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+/* ✅ border ONLY for Validate tab */
+.ph-mainCard.is-validate {
+  border: 0.0625rem solid var(--border);
+  
+}
+
+/* ✅ NO border for History tab */
+.ph-mainCard.is-history {
+  border: 0;
+  border-radius:0.5rem;
+}
+
+
+.ph-split {
+  height: 100%;
+  display: flex;
+}
+
+/* LEFT */
+.ph-left {
+  flex: 0 0 40%;
+  max-width: 40%;
+  min-width: 20rem;
+  background: #ffffff;
+  border-right: 0.0625rem solid var(--border);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.ph-leftTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.ph-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ph-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ph-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.ph-input {
+  width: 100%;
+  background: #ffffff;
+  border: 0.0625rem solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  font-size: 0.9rem;
+  color: var(--text);
+  outline: none;
+}
+
+.ph-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.25rem var(--ring);
+}
+
+.ph-hint {
+  font-size: 0.75rem;
+  color: #98a2b3;
+  min-height: 1rem;
+}
+
+.ph-hint.bad {
+  color: #b42318;
+}
+
+/* Verify button: small width like your screenshot */
+.ph-verifyBtn {
+  width: 6.875rem;
+  border: 0;
+  border-radius: 0.4375rem;
+  padding: 0.5625rem 0.75rem;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0.875rem 1.875rem rgba(255, 122, 26, 0.18);
+}
+
+.ph-verifyBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ph-error {
+  font-size: 0.85rem;
+  color: #b42318;
+  background: rgba(180, 35, 24, 0.08);
+  border: 0.0625rem solid rgba(180, 35, 24, 0.2);
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.875rem;
+}
+
+/* Country dropdown (KEEP AS-IS — no design changes) */
+.ph-countryToggle {
+  width: 100%;
+  border: 0.0625rem solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  background: #ffffff;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.ph-countryToggle:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.25rem var(--ring);
+}
+
+.ph-countryToggleLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  overflow: hidden;
+}
+
+.ph-countryToggleText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.ph-caret {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.ph-countryMenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  background: #ffffff;
+  border: 0.0625rem solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1.25rem 3.125rem rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.ph-searchRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 0.0625rem solid #eef2f7;
+  background: #ffffff;
+}
+
+.ph-countrySearch {
+  flex: 1;
+  border: 0;
+  outline: none;
+  padding: 0.5rem 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.ph-searchIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ph-countryList {
+  max-height: 14rem;
+  overflow-y: auto;
+}
+
+.ph-countryItem {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0.625rem 0.75rem;
+  cursor: pointer;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.ph-countryItem:hover {
+  background: #f7f8fb;
+}
+
+.ph-countryItem.active {
+  background: rgba(255, 122, 26, 0.12);
+}
+
+.ph-countryItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  overflow: hidden;
+}
+
+.ph-countryItemText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.ph-countryEmpty {
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  color: rgba(102, 112, 133, 0.9);
+  text-align: center;
+}
+
+/* Flags */
+.ph-flagSm {
+  width: 1.25rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
+  box-shadow: 0 0.5rem 1.125rem rgba(0, 0, 0, 0.08);
+}
+
+/* RIGHT */
+.ph-right {
+  flex: 1;
+  background: var(--primary-soft);
+  padding: 1.25rem;
+  overflow-y: auto;
+
+  /* hide scrollbar but keep scroll */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge legacy */
+}
+
+.ph-right::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Empty center state */
+.ph-rightEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ph-emptyWrap {
+  text-align: center;
+  max-width: 22rem;
+}
+
+.ph-emptySvg {
+  width: 12rem;
+  height: auto;
+  display: block;
+  margin: 0 auto 0.75rem auto;
+}
+
+.ph-emptyTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ph-emptySub {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Loader card EXACT (flag + number + verifying + bar) */
+.ph-loaderCard {
+  background: #ffffff;
+  border: 0.0625rem solid rgba(17, 24, 39, 0.12);
+  border-radius: 0.5rem;
+  padding: 0.875rem 1rem;
+}
+
+.ph-loaderTopLine {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+}
+
+.ph-loaderTopText {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.ph-loaderTopCode {
+  font-weight: 700;
+}
+
+.ph-loaderTopNum {
+  font-weight: 600;
+}
+
+.ph-loaderMid {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.ph-progress {
+  margin: 0.65rem auto 0 auto;
+  width: 10rem;
+  height: 0.25rem;
+  background: rgba(255, 122, 26, 0.25);
+  border-radius: 999rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.ph-progressFill {
+  position: absolute;
+  inset: 0;
+  width: 35%;
+  background: var(--primary);
+  border-radius: 999rem;
+  animation: phMove 1.1s ease-in-out infinite;
+}
+
+@keyframes phMove {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+
+/* Result card */
+.ph-resultCard {
+  background: #ffffff;
+  border: 0.0625rem solid rgba(17, 24, 39, 0.12);
+  border-radius: 0.5rem;
+  padding: 0.875rem 1rem;
+  margin-bottom: 0.7rem;
+}
+
+.ph-cardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.ph-cardLeft {
+  min-width: 0;
+}
+
+.ph-cardTop {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.ph-cardTopText {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ph-cardTopCode {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ph-cardTopNum {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(17, 24, 39, 0.85);
+}
+
+.ph-cardSub {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.ph-cardDate {
+  font-weight: 600;
+  color: rgba(17, 24, 39, 0.75);
+}
+
+.ph-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 0.0625rem solid transparent;
+  white-space: nowrap;
+  display: inline-flex;            /* keeps icon+text aligned */
+  align-items: center;
+  gap: 0.375rem;
+}
+
+/* Icon inside badge */
+.ph-badgeIcon{
+  font-size: 1.05rem !important;   /* desktop size */
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.ph-badgeIcon.valid{
+  color: var(--status-valid);
+}
+
+.ph-badgeIcon.invalid{
+  color: var(--status-invalid);
+}
+
+.ph-badgeText{
+  line-height: 1;
+}
+
+.ph-badge-valid {
+  color: var(--status-valid);
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.ph-badge-invalid {
+  color: var(--status-invalid);
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+/* 3 mini boxes */
+.ph-miniGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.ph-miniBox {
+  border: 0.0625rem solid rgba(17, 24, 39, 0.12);
+  background: #ffffff;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.ph-miniLabel {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.ph-miniValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* =========================================================
+   Responsive Breakpoints (clean + no conflicts)
+   Goal:
+   - Mobile/Tablet: title left, tabs right, smaller sizes
+   - Mobile/Tablet: left (validation) stays sticky, results scroll
+   - Fix issue: validation "disappears" when reaching end
+     (caused by inner scroll + overflow hidden + vh lock)
+========================================================= */
+
+/* <= 768px (tablets + mobile) */
+@media (max-width: 48rem) {
+
+  /* remove vh lock so content doesn’t push left away */
+  .ph-page {
+    height: 82vh;
+    min-height: 82vh;
+    padding: 0.75rem;
+    gap: 0.65rem;
+  }
+
+  /* keep title left + tabs right (no wrap) */
+  .ph-headerRow {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  /* smaller title */
+  .ph-title {
+    font-size: 1.12rem;
+    line-height: 1.15;
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* smaller tabs but same style */
+  .tab-btn {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.82rem;
+    min-width: 4.6rem;
+  }
+
+  .ph-badgeIcon{
+  font-size: 0.95rem !important;
+}
+
+  /* stack layout */
+  .ph-split {
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .ph-mainCard {
+    border-radius: 0.9rem;
+    overflow: hidden;
+    height: 100%;
+  }
+
+  /* left becomes sticky on top with spacing under it */
+  .ph-left {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #ffffff;
+
+    max-width: 100%;
+    min-width: 0;
+    flex: 0 0 auto;
+
+    border-right: 0;
+    border-bottom: 0.0625rem solid var(--border);
+
+    padding: 1rem;
+    margin-bottom: 0.85rem;
+    padding-bottom: 1.1rem;
+  }
+
+  /* right should not be its own scroll container in stacked mode */
+  .ph-right {
+    min-height: 0;        
+    overflow-y: auto;
+    padding: 1rem;
+  }
+
+  .ph-miniGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .ph-emptyWrap {
+    max-width: 18rem;
+  }
+
+  .ph-emptySvg {
+    width: 10rem;
+  }
+}
+
+/* <= 425px (small phones) */
+@media (max-width: 26.5625rem) {
+
+  .ph-page {
+    padding: 0.625rem;
+  }
+
+  /* smaller title */
+  .ph-title {
+    font-size: 1.0rem;
+  }
+
+  .ph-badgeIcon{
+  font-size: 0.88rem !important;
+}
+
+  /* tabs compact */
+  .tab-btn {
+    min-width: 3.75rem;
+    padding: 0.28rem 0.55rem;
+    font-size: 0.78rem;
+  }
+
+  /* keep sticky separation nice */
+  .ph-left {
+    margin-bottom: 0.9rem;
+    padding-bottom: 1.15rem;
+  }
+
+  /* full width verify button on small phones (your design request) */
+  .ph-verifyBtn {
+    width: 100%;
+    border-radius: 0.5rem;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .ph-resultCard,
+  .ph-loaderCard {
+    padding: 0.8rem 0.85rem;
+  }
+
+  .ph-badge {
+    padding: 0.32rem 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .ph-progress {
+    width: 9rem;
+  }
+
+  .ph-emptySvg {
+    width: 9rem;
+  }
+}
+
+/* >= 1024 (laptop baseline): keep EXACT current look (no changes) */
+@media (min-width: 64rem) {
+  /* intentionally empty to preserve your perfect laptop layout */
+}
+
+/* >= 1440 (large desktops): full stretch (no forced centering) */
+@media (min-width: 90rem) {
+  .ph-page {
+    max-width: none;
+    margin: 0;
+    padding: 1.1rem;
+  }
+
+  .ph-title {
+    font-size: 1.5rem;
+  }
+
+  .ph-left {
+    padding: 1.35rem;
+  }
+
+  .ph-right {
+    padding: 1.35rem;
+  }
+}
+
+/* >= 2560 (2K/4K wide): full stretch + comfortable spacing */
+@media (min-width: 160rem) {
+  .ph-page {
+    max-width: none;
+    margin: 0;
+    padding: 1.25rem;
+  }
+
+  .ph-title {
+    font-size: 1.65rem;
+  }
+
+  .ph-left {
+    padding: 1.5rem;
+  }
+
+  .ph-right {
+    padding: 1.5rem;
+  }
+
+  .ph-emptySvg {
+    width: 13rem;
+  }
+}

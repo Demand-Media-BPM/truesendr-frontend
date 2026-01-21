@@ -1,0 +1,40 @@
+/* BarsLoader.css */
+
+.bars-overlay {
+  position: fixed;
+  inset: 0;
+  /* translucent white overlay so you see the app behind */
+  background: rgba(255, 255, 255, 0.1);
+  /* blur whatever is behind the overlay */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.bars-loader {
+  display: flex;
+  gap: 8px;
+}
+
+.bar {
+  width: 24px;
+  height: 48px;
+  background: #000;
+  border-radius: 4px;
+  animation: barBounce 1s infinite ease-in-out;
+}
+
+.bar1 { animation-delay: 0s; }
+.bar2 { animation-delay: 0.1s; }
+.bar3 { animation-delay: 0.2s; }
+.bar4 { animation-delay: 0.3s; }
+.bar5 { animation-delay: 0.4s; }
+
+@keyframes barBounce {
+  0%, 80%, 100% { transform: scaleY(1); }
+  40%            { transform: scaleY(2); }
+}

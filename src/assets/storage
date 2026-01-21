@@ -1,0 +1,848 @@
+:root {
+  --c-green: #22c55e;
+  --c-orange: #f59e0b;
+  --c-red: #ef4444;
+  --c-gray: #94a3b8;
+
+  --bg: #f7f8fb;
+  --card: #ffffff;
+  --card-border: #e8eaef;
+  --text: #1f2a44;
+  --muted: #6b7280;
+  --accent: #2563eb;
+
+  --chip: #f3f4f6;
+  --chip-active: #ffeadd;
+
+  --shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+/* global reset-ish */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+}
+
+/* ───────────────── Layout wrapper ───────────────── */
+
+.dash-container {
+  padding: 20px;
+  color: var(--text);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* header bar */
+.dash-header {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin-bottom: 16px;
+}
+
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left h2 {
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ───────────────── Segmented controls ─────────────
+   Used for:
+   - Top date range (Today / This Week / ...)
+   - Usage: Both / Single / Bulk
+   - Recent type: Single / Bulk
+   -------------------------------------------------*/
+.header-range {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  min-width: 400px;     /* ⬅ IMPORTANT: Increase the container width */
+  height: 32px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  overflow: hidden;     /* ensures rounded edges */
+}
+
+.header-range .seg {
+  flex: 1;                   /* ⬅ Makes all buttons equal width ON ONE LINE */
+  padding: 6px 0;
+  text-align: center;
+  border-left: 1px solid #E5E7EB;
+  white-space: nowrap;
+}
+
+.header-range .seg:first-child {
+  border-left: none;
+}
+
+.header-range .seg.is-active {
+  background: #FFF7E6;
+  color: #000000;
+  font-weight: 400;
+  outline: none;
+}
+
+.segmenteds {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: 10px;
+  background: #ffffff;              /* white group background */
+  border: 1px solid #e5e7eb;        /* light outer border */
+  padding: 0;
+  overflow: hidden;                 /* keeps active segment nicely rounded */
+}
+
+.seg {
+  flex: 0 0 auto;                   /* shrink to text; stay on one line */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 20px;
+  border: none;
+  background: transparent;
+  color: #111827;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* vertical divider between segments */
+.segmenteds .seg + .seg {
+  border-left: 1px solid #e5e7eb;
+}
+
+/* rounded corners for first & last segment buttons */
+.segmenteds .seg:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.segmenteds .seg:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+
+/* active segment – peach bg + orange outline */
+.seg.is-active {
+  background: #ffe7d2;
+  font-weight: 400;
+  color: #111827;
+  outline: none; /* remove outline */
+  box-shadow: inset 0 0 0 1px #f97316; /* inner border that follows radius */
+}
+
+
+/* focus state for keyboard users */
+.seg:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+
+
+/* ───────────────── Grid & cards ───────────────── */
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+/* .kpi-pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 0px;
+} */
+
+.kpi-pill-valid {
+  background: #e8f9ef; /* light green */
+  color: #16a34a;      /* dark green */
+}
+
+.kpi-pill-invalid {
+  background: #fdecec; /* light red */
+  color: #b91c1c;      /* dark red */
+}
+
+.kpi-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpi-icon-box-valid {
+  background: #e8f9ef;
+  color: #16a34a;
+}
+
+.kpi-icon-box-invalid {
+  background: #fdecec;
+  color: #b91c1c;
+}
+
+.kpi-icon-box-risky {
+  background: #fff7e6;
+  color: #d97706;
+}
+
+.kpi-icon-box-unknown {
+  background: #eceff3;
+  color: #4b5563;
+}
+
+
+.kpi-pill-risky {
+  background: #fff7e6; /* light orange */
+  color: #d97706;      /* dark orange */
+}
+
+.kpi-pill-unknown {
+  background: #eceff3; /* light gray */
+  color: #4b5563;      /* dark gray */
+}
+
+
+.grid.two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.grid.kpi-five {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+@media (max-width: 1100px) {
+  .grid.kpi-five {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .grid.kpi-five {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .grid.two {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+}
+
+.section-gap {
+  margin-top: 16px;
+}
+
+.section-gap-large {
+  margin-top: 24px;
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* ───────────────── KPI cards (top row) ─────────── */
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.kpi-label {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.kpi-value {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.kpi-main {
+  padding: 16px 18px;
+}
+
+.kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.kpi-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.kpi-main-left {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+/* percentage text next to number */
+.kpi-percent {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.kpi-percent-valid {
+  color: var(--c-green);
+}
+
+.kpi-percent-invalid {
+  color: var(--c-red);
+}
+
+.kpi-percent-risky {
+  color: var(--c-orange);
+}
+
+.kpi-percent-unknown {
+  color: var(--c-gray);
+}
+
+/* circular status icon on the right */
+.kpi-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.kpi-icon-symbol {
+  line-height: 1;
+}
+
+/* variant colors */
+.kpi-icon-valid {
+  background: #ecfdf3;
+  border-color: #bbf7d0;
+  color: #16a34a;
+}
+
+.kpi-icon-invalid {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.kpi-icon-risky {
+  background: #fffbeb;
+  border-color: #fed7aa;
+  color: #92400e;
+}
+
+.kpi-icon-unknown {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+/* extra little pills if you use them */
+.kpi-line {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.kpi-pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;          /* square ends */
+  background: #f9fafb;
+}
+
+.kpi-icon-box svg {
+  stroke-width: 1.0;   /* default is ~1.5 */
+}
+
+
+
+.kpi-pill-valid {
+  background: #ecfdf3;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.kpi-pill-invalid {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.kpi-pill-risky {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fed7aa;
+}
+
+.kpi-pill-unknown {
+  background: #e5e7eb;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.kpi-green {
+  color: var(--c-green);
+}
+
+.kpi-red {
+  color: var(--c-red);
+}
+
+.kpi-orange {
+  color: var(--c-orange);
+}
+
+.kpi-gray {
+  color: var(--c-gray);
+}
+
+/* ───────────────── Donut section ──────────────── */
+
+.card-content {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr);
+  gap: 16px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+  .card-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.figma-card {
+  align-items: center;
+}
+
+.donut-wrap {
+  position: relative;
+  height: 220px;
+}
+
+.donut-total {
+  font-size: 18px;
+}
+
+.donut-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Stats list next to donut */
+
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.stat-count {
+  font-weight: 600;
+}
+
+.total-row {
+  margin-top: 6px;
+  border-top: 1px dashed var(--card-border);
+  padding-top: 6px;
+}
+
+.total-label {
+  font-weight: 600;
+}
+
+/* legend chip */
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.legend::before {
+  content: "";
+  width: 15px;
+  height: 8px;
+  background: var(--c, #ccc);
+  border-radius: 40%;
+  display: inline-block;
+}
+
+/* ───────────────── Card footer buttons ────────── */
+
+.card-footer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+}
+
+.btn-cta-outline {
+  border-radius: 6px;
+  padding: 9px 16px;
+  border: 1px solid #f97316;
+  background: #fff7ed;
+  color: #ea580c;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cta-outline:hover {
+  background: #fed7aa;
+}
+
+.btn-cta-full {
+  width: 100%;
+  text-align: center;
+}
+
+/* ───────────────── Usage / histogram ─────────── */
+
+.card-chart {
+  margin-top: 8px;
+  width: 100%;
+  height: 220px;
+}
+
+.card-chart.chart-taller {
+  height: 320px;
+}
+
+.hist-top-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  justify-content: center;
+}
+
+.usage-top {
+  align-items: center;
+}
+
+/* (no special colors here; they use shared .seg styles) */
+
+/* ───────────────── Tooltip ───────────────────── */
+
+.tt {
+  background: #fff;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow);
+  font-size: 12px;
+  min-width: 260px;
+  white-space: nowrap;
+}
+
+.tt-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.tt-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 0;
+}
+
+.tt-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+
+.tt-right {
+  font-weight: 600;
+}
+
+.tt .dot {
+  width: 15px;
+  height: 8px;
+  border-radius: 40%;
+  background: var(--c, #ccc);
+}
+
+.tt-total {
+  border-top: 1px dashed var(--card-border);
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+/* ───────────────── Buttons / alerts / skeletons ─ */
+
+.btn {
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  background: #fff;
+}
+
+.alert.error {
+  background: #fff1f2;
+  border-color: #ffe4e6;
+}
+
+.empty {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 32px;
+}
+
+.empty-title {
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.empty-sub {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.skeleton-wrap {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.skeleton-card,
+.skeleton-wide {
+  border-radius: 12px;
+  height: 260px;
+  background: linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6);
+  animation: shimmer 1.2s infinite;
+  background-size: 200% 100%;
+  border: 1px solid var(--card-border);
+}
+
+.skeleton-wide {
+  grid-column: 1 / -1;
+  height: 320px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ───────────────── Recent validations table ───── */
+
+.recent-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.recent-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.recent-table-wrap {
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  overflow: hidden;
+}
+
+.recent-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.recent-table thead {
+  background: #f3f6fb;
+}
+
+.recent-table th,
+.recent-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+.recent-table th {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.recent-table td.num {
+  text-align: right;
+}
+
+/* .recent-table tbody tr:hover {
+  background: #f9fafb;
+} */
+
+/* zebra striping for recent table: 2nd, 4th, ... rows */
+.recent-table tbody tr:nth-child(even) {
+  background: #f3f6fb; /* same soft color as the header */
+}
+
+
+/* status cell (dot + label) */
+
+.status-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 15px;
+  height: 8px;
+  border-radius: 40%;
+  background: #22c55e;
+}
+
+.status-dot-invalid {
+  background: #ef4444;
+}
+
+.status-dot-risky {
+  background: #f59e0b;
+}
+
+.status-dot-unknown {
+  background: #9ca3af;
+}
+
+.status-label {
+  font-size: 13px;
+  color: #111827;
+}
+
+.recent-loading,
+.recent-empty {
+  padding: 12px 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.recent-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ───────────────── Confidence bar (single tab) ── */
+
+.conf-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.conf-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  overflow: hidden;
+}
+
+.conf-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #f97316;
+}
+
+.conf-text {
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 40px;
+}

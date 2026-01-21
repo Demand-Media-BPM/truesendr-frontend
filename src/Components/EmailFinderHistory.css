@@ -1,0 +1,504 @@
+/* src/Components/EmailFinderHistory.css */
+
+:root {
+  --bg: #f7f8fb;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #667085;
+
+  --primary: #ff7a1a;
+  --ring: rgba(255, 122, 26, 0.18);
+
+  --border: #e5e7eb;
+
+  --efh-table-alt-bg: #f2f6fa;
+
+  --status-valid: #22c55e;
+  --status-invalid: #ef4444;
+  --status-risky: #f49e0a;
+  --status-unknown: #64748a;
+
+  --shadow: 0 0.5rem 1.25rem rgba(15, 23, 42, 0.04);
+}
+
+/* safety: don't let MUI Paper add bg */
+.efh-wrap .MuiPaper-root {
+  background: transparent;
+}
+
+/* Page wrapper */
+.efh-wrap {
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Toolbar */
+.efh-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* left group (search + dropdown) */
+.efh-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Search box (same look as single history) */
+.efh-searchBox {
+  min-width: 17.5rem; /* 280px */
+}
+
+.efh-input {
+  width: 100%;
+}
+
+.efh-input input {
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.efh-endIcon {
+  font-size: 1.125rem !important;
+  color: #334155;
+}
+
+/* keep dropdown wrapper name consistent */
+.efh-selectWrap {
+  /* no extra styles needed; uses efh-controlBox */
+}
+
+/* dropdown wrapper */
+.efh-controlBox {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background: var(--card);
+  border: 0.0625rem solid #e8eaef;
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  min-height: 2.9375rem;
+  box-shadow: var(--shadow);
+}
+
+/* Select */
+.efh-selectBox {
+  min-width: 10.625rem; /* 170px */
+  padding-right: 0.625rem;
+}
+
+.efh-select {
+  font-size: 0.875rem !important;
+  color: var(--text) !important;
+}
+
+/* remove extra padding */
+.efh-selectBox .MuiSelect-select {
+  padding: 0 !important;
+  padding-right: 2.25rem !important;
+}
+
+/* arrow */
+.efh-selectBox .MuiSelect-icon {
+  color: var(--text) !important;
+}
+
+/* Right side clear history */
+.efh-clearRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.efh-clearLink {
+  border: 0;
+  background: transparent;
+  color: #ff6d00;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.625rem;
+}
+
+.efh-clearLink:hover {
+  background: rgba(249, 115, 22, 0.08);
+}
+
+.efh-infoBtn {
+  padding: 0.125rem !important;
+}
+.efh-infoBtn svg {
+  font-size: 1.125rem !important;
+  color: #334155;
+}
+
+/* Table card */
+.efh-tableCard {
+  background: var(--card) !important;
+  border: 0.0625rem solid #e8eaef !important;
+  border-radius: 0.875rem !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* scroll body + sticky footer */
+.efh-cardBody {
+  height: calc(100vh - 13.125rem);
+  min-height: 32.5rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* table container - desktop hidden scrollbar */
+.efh-tableWrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.efh-tableWrap::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* sticky header */
+.efh-table .MuiTableCell-stickyHeader {
+  background: var(--efh-table-alt-bg) !important;
+}
+
+/* header cells */
+.efh-th {
+  font-weight: 600 !important;
+  color: #334155 !important;
+  background: var(--efh-table-alt-bg) !important;
+  border-bottom: 0.0625rem solid #e8eaef !important;
+  font-size: 0.78rem !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+  white-space: nowrap;
+}
+
+/* body cells */
+.efh-td {
+  font-size: 0.845rem !important;
+  color: var(--text) !important;
+  border-bottom: 0.0625rem solid #eef0f4 !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+  white-space: nowrap;
+}
+
+/* alternating rows */
+.efh-row.is-even td {
+  background: #ffffff !important;
+}
+.efh-row.is-odd td {
+  background: var(--efh-table-alt-bg) !important;
+}
+
+/* Column sizing (match PhoneHistory vibe) */
+.efh-col-name {
+  width: 16rem;
+}
+.efh-col-domain {
+  width: 12rem;
+}
+.efh-col-email {
+  width: 20rem;
+}
+.efh-col-date {
+  width: 14rem;
+}
+
+.efh-empty {
+  text-align: center !important;
+  padding: 2rem 1rem !important;
+  color: var(--muted) !important;
+  font-weight: 600;
+}
+
+/* Sticky pagination footer */
+.efh-pagination {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  background: var(--card);
+  border-top: 0.0625rem solid #e9eef5;
+}
+
+.efh-pagination .MuiTablePagination-toolbar {
+  min-height: 3.25rem;
+  padding: 0.2rem 0.75rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+}
+
+.efh-pagination .MuiTablePagination-actions {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+/* Confirm dialog */
+.efh-confirmPaper {
+  border-radius: 0.625rem !important;
+  width: 26.25rem;
+  max-width: calc(100vw - 3rem);
+  padding: 0.625rem 0.5rem;
+}
+
+.efh-confirmTitle {
+  font-weight: 650 !important;
+  font-size: 1.375rem !important;
+  padding: 1rem 1.125rem 0.5rem !important;
+  color: #0f172a !important;
+}
+
+.efh-confirmBody {
+  padding: 0 1.125rem 0.625rem !important;
+  font-size: 0.96875rem !important;
+  color: #0f172a !important;
+}
+
+.efh-confirmCount {
+  font-weight: 500;
+}
+
+.efh-confirmActions {
+  padding: 0.625rem 0.875rem 0.875rem !important;
+  gap: 0.875rem;
+}
+
+.efh-confirmCancel {
+  text-transform: none !important;
+  font-weight: 500 !important;
+  color: #0f172a !important;
+}
+
+.efh-confirmClear {
+  text-transform: none !important;
+  font-weight: 700 !important;
+  color: #ef4444 !important;
+}
+
+/* responsive (same as PhoneHistory) */
+@media (max-width: 64rem) {
+  .efh-wrap {
+    padding: 0.75rem;
+    gap: 0.65rem;
+  }
+
+  .efh-toolbar {
+    flex-wrap: nowrap; /* ✅ keep one horizontal line */
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .efh-left {
+    flex-wrap: nowrap; /* ✅ stop search + dropdown from wrapping */
+    flex: 1 1 auto; /* ✅ take remaining space */
+    min-width: 0; /* ✅ allows search to shrink instead of wrap */
+  }
+
+  .efh-searchBox {
+    flex: 1 1 auto; /* ✅ search grows/shrinks */
+    min-width: 12rem; /* ✅ safe min so it doesn’t collapse */
+  }
+
+  .efh-controlBox {
+    flex: 0 1 16rem;
+    max-width: 18rem;
+    min-width: 10rem;
+  }
+
+  .efh-selectWrap {
+    flex: 0 0 auto; /* ✅ dropdown stays fixed */
+  }
+
+  .efh-clearRight {
+    margin-left: auto; /* ✅ push clear history to far right */
+    flex: 0 0 auto;
+    white-space: nowrap; /* ✅ prevent Clear History wrapping */
+  }
+
+  .efh-tableWrap {
+    overflow-x: auto;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .efh-tableWrap::-webkit-scrollbar {
+    height: 0.5rem;
+    width: 0.5rem;
+  }
+  .efh-tableWrap::-webkit-scrollbar-thumb {
+    background: rgba(17, 24, 39, 0.2);
+    border-radius: 999rem;
+  }
+  .efh-tableWrap::-webkit-scrollbar-track {
+    background: rgba(17, 24, 39, 0.06);
+    border-radius: 999rem;
+  }
+
+  .efh-table {
+    min-width: 62rem;
+  }
+
+  .efh-th {
+    font-size: 0.75rem !important;
+  }
+  .efh-td {
+    font-size: 0.8125rem !important;
+  }
+}
+
+@media (max-width: 47.9375rem) {
+  .efh-controlBox {
+    min-height: 2.75rem;
+    padding: 0.45rem 0.65rem;
+  }
+
+  .efh-selectBox {
+    min-width: 9.5rem;
+  }
+
+  .efh-clearLink {
+    font-size: 0.875rem;
+    padding: 0.45rem;
+  }
+
+  .efh-table {
+    min-width: 58rem;
+  }
+
+  .efh-toolbar {
+    display: flex;
+    flex-direction: column; /* 2 rows like single */
+    align-items: stretch;
+    gap: 0.625rem;
+  }
+
+  .efh-left {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto; /* row2: dropdown left, clear right */
+  grid-template-rows: auto auto;              /* row1: search, row2: dropdown+clear */
+  gap: 0.625rem;
+  align-items: center;
+}
+
+  .efh-searchBox {
+    grid-column: 1 / -1; /* full width */
+    width: 100%;
+    min-width: 0;
+  }
+
+  .efh-selectWrap {
+    grid-column: 1 / 2;
+    width: auto; /* ✅ do not stretch full row width */
+    justify-self: start;
+  }
+
+  /* ✅ reduce dropdown width on mobile */
+  .efh-selectBox {
+    width: 9.5rem; /* adjust if you want smaller: 9rem */
+    min-width: 9.5rem;
+    max-width: 9.5rem;
+  }
+
+  .efh-clearRight {
+    grid-column: 2 / 3;
+    justify-self: end;
+    align-self: center;
+    margin-left: 0;
+    white-space: nowrap; /* ✅ keep "Clear History" one line */
+  }
+}
+
+@media (max-width: 26.5625rem) {
+  .efh-wrap {
+    padding: 0.625rem;
+    gap: 0.6rem;
+  }
+
+  .efh-toolbar {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .efh-controlBox {
+    width: auto;
+    flex: 0 1 11.5rem;
+    min-width: 8.5rem;
+  }
+
+  .efh-clearRight {
+    width: auto;
+    margin-left: auto;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+  }
+
+  .efh-table {
+    min-width: 54rem;
+  }
+
+  .efh-confirmPaper {
+    width: 100%;
+    max-width: calc(100vw - 1.5rem);
+  }
+
+  .efh-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .efh-left {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0.625rem;
+  }
+
+  .efh-searchBox {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .efh-selectWrap {
+    grid-column: 1 / 2;
+    width: 100%;
+  }
+
+  .efh-selectBox {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .efh-clearRight {
+    grid-column: 2 / 3;
+    justify-self: end;
+    align-self: center;
+    margin-left: 0;
+  }
+}

@@ -1,0 +1,491 @@
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+body {
+  background: #f5f5f5;
+}
+
+/* -----------------------------
+   Theme tokens
+------------------------------ */
+
+:root {
+  --sidebar-bg: #ffece0;
+  --sidebar-text: #222;
+  --sidebar-muted: #9b9b9b;
+  --sidebar-orange: #ff7a00;
+  --sidebar-border: #f3d4bf;
+
+  --main-bg: #ffffff;
+
+  --primary: #ff7a1a;
+  --primary-soft: #ffece0;
+  --text: #111827;
+  --muted: #667085;
+  --border-soft: #ffe0c2;
+
+  /* sizes in rem for responsiveness */
+  --sidebar-w: 14rem; /* ~224px */
+  --radius: 0.75rem;
+}
+
+/* -----------------------------
+   App layout
+------------------------------ */
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* -----------------------------
+   Toastify (your premium style)
+------------------------------ */
+
+.Toastify__toast-container {
+  top: 0.875rem !important;
+  padding: 0 !important;
+}
+
+.Toastify__toast {
+  border-radius: 1rem;
+  padding: 0.75rem 0.875rem;
+  min-height: auto;
+
+  background: linear-gradient(180deg, #ffffff 0%, #fff7f1 100%);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 1rem 2.5rem rgba(17, 24, 39, 0.14);
+
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.875rem;
+  color: var(--text);
+
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.Toastify__toast::before {
+  content: "";
+  width: 0.375rem;
+  align-self: stretch;
+  border-radius: 999px;
+  background: var(--primary);
+  margin-right: 0.125rem;
+}
+
+.Toastify__toast-icon {
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  margin-inline-start: 0.125rem;
+  flex: 0 0 auto;
+
+  background: var(--primary-soft);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 0.5rem 1.125rem rgba(255, 122, 26, 0.18);
+}
+
+.Toastify__toast-icon svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.Toastify__toast-body {
+  padding: 0;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.Toastify__toast-body > div:last-child {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.Toastify__close-button {
+  display: none !important;
+}
+
+/* type variations */
+.Toastify__toast--success::before {
+  background: #22c55e;
+}
+.Toastify__toast--success .Toastify__toast-icon {
+  background: #ecfdf3;
+  border-color: rgba(34, 197, 94, 0.25);
+  box-shadow: 0 0.625rem 1.375rem rgba(34, 197, 94, 0.18);
+}
+
+.Toastify__toast--error::before {
+  background: #ef4444;
+}
+.Toastify__toast--error .Toastify__toast-icon {
+  background: #fef2f2;
+  border-color: rgba(239, 68, 68, 0.25);
+  box-shadow: 0 0.625rem 1.375rem rgba(239, 68, 68, 0.16);
+}
+
+.Toastify__toast--info::before {
+  background: var(--primary);
+}
+.Toastify__toast--info .Toastify__toast-icon {
+  background: var(--primary-soft);
+  border-color: var(--border-soft);
+  box-shadow: 0 0.625rem 1.375rem rgba(255, 122, 26, 0.18);
+}
+
+.Toastify__toast--warning::before {
+  background: #f97316;
+}
+.Toastify__toast--warning .Toastify__toast-icon {
+  background: #fff7ed;
+  border-color: rgba(249, 115, 22, 0.25);
+  box-shadow: 0 0.625rem 1.375rem rgba(249, 115, 22, 0.18);
+}
+
+/* -----------------------------
+   Sidebar (desktop)
+------------------------------ */
+
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+
+  padding: 0.75rem 0.75rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  height: 100vh;
+  min-height: 0;
+}
+
+.sidebar-top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--sidebar-bg);
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(243, 212, 191, 0.7);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.25rem 0.75rem;
+}
+
+.sidebar-logo {
+  width: 11.5rem;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* scrollable section */
+.sidebar-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding: 0.75rem 0.25rem 0.75rem;
+
+  scrollbar-width: none; /* Firefox hidden by default */
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+
+  /* Firefox colors (will show when scrollbar-width != none) */
+  scrollbar-color: rgba(255, 109, 0, 0.55) rgba(148, 163, 184, 0.18);
+}
+
+/* Chrome/Safari: hidden by default */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Desktop: show only on hover */
+@media (hover: hover) {
+  .sidebar-scroll:hover {
+    scrollbar-width: thin; /* Firefox */
+  }
+
+  .sidebar-scroll:hover::-webkit-scrollbar {
+    width: 0.28rem; /* thinner */
+  }
+
+  .sidebar-scroll:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 109, 0, 0.55);
+    border-radius: 999px;
+  }
+
+  .sidebar-scroll:hover::-webkit-scrollbar-track {
+    background: rgba(148, 163, 184, 0.18);
+    border-radius: 999px;
+  }
+}
+
+.sidebar-section {
+  margin-bottom: 1rem;
+}
+
+.sidebar-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sidebar-muted);
+  margin: 0 0 0.5rem 0.25rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  padding: 0.55rem 0.65rem;
+  border-radius: var(--radius);
+
+  text-decoration: none;
+  color: var(--sidebar-text);
+  font-weight: 600;
+  font-size: 0.95rem;
+
+  margin-bottom: 0.3rem;
+  transition: all 0.15s ease;
+}
+
+.nav-link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.nav-link-icon svg {
+  font-size: 1.25rem;
+  color: inherit;
+}
+
+.nav-link:hover {
+  background: rgba(255, 122, 0, 0.12);
+}
+
+.nav-link.active {
+  background: var(--sidebar-orange);
+  color: #fff;
+}
+
+.nav-link.active .nav-link-icon svg {
+  color: #fff !important;
+}
+
+/* -----------------------------
+   Content
+------------------------------ */
+
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--main-bg);
+  min-width: 0;
+}
+
+.main-content {
+  padding: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  background-color: #f9fafb;
+}
+
+.main-content::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* -----------------------------
+   Mobile drawer controls
+------------------------------ */
+
+.topbar-row {
+  position: relative;
+}
+
+.mobile-menu-btn {
+  display: none;
+  position: fixed;
+  left: 0.75rem;
+  top: 0.625rem;
+
+  width: 2.3rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+
+  border: 1px solid var(--border-soft);
+  background: linear-gradient(180deg, #ffffff 0%, #fff7f1 100%);
+  box-shadow: 0 0.625rem 1.375rem rgba(255, 122, 26, 0.16);
+
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  z-index: 9999;
+}
+
+.mobile-menu-btn svg {
+  font-size: 1.6rem;
+  color: var(--primary);
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.45);
+  z-index: 900;
+}
+
+/* =========================================================
+   BREAKPOINTS YOU REQUESTED:
+   1024, 768, 425, 1440, 2560
+========================================================= */
+
+/* ✅ 1024 and below: use drawer (hamburger) */
+@media (max-width: 64rem) {
+  /* 1024px */
+  .mobile-menu-btn {
+    display: inline-flex;
+  }
+
+  .sleek-header {
+    padding-right: 4.5rem;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0; 
+    right: auto; 
+    height: 100vh;
+
+    width: min(78vw, 16.5rem);
+    max-width: 16.5rem;
+
+    z-index: 1000;
+    transform: translateX(-110%); 
+    transition: transform 0.22s ease;
+
+    padding: 0.65rem 0.65rem;
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0%);
+  }
+
+  .main-content {
+    padding: 0.875rem;
+  }
+
+  .sidebar-logo {
+    width: 10.5rem;
+  }
+
+  /* ✅ Touch devices: show scrollbar (thin) */
+  .sidebar-scroll {
+    scrollbar-width: thin;
+  }
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 0.3rem;
+  }
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 109, 0, 0.55);
+    border-radius: 999px;
+  }
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: rgba(148, 163, 184, 0.18);
+    border-radius: 999px;
+  }
+}
+
+/* ✅ 768 and below: tighten drawer & text a bit */
+@media (max-width: 48rem) {
+  /* 768px */
+  .sidebar {
+    width: min(76vw, 16rem);
+    max-width: 16rem;
+  }
+
+  .nav-link {
+    font-size: 0.93rem;
+    padding: 0.55rem 0.6rem;
+  }
+
+  .main-content {
+    padding: 0.75rem;
+  }
+}
+
+/* ✅ 425 and below: small phone tuning */
+@media (max-width: 26.5625rem) {
+  /* 425px */
+  .sidebar {
+    width: min(82vw, 15.5rem);
+    max-width: 15.5rem;
+  }
+
+  .nav-link {
+    font-size: 0.92rem;
+    padding: 0.6rem 0.62rem;
+  }
+
+  .sidebar-logo {
+    width: 9.75rem;
+  }
+}
+
+/* ✅ 1440+: don’t let content feel stretched */
+@media (min-width: 90rem) {
+  /* 1440px */
+  .main-content {
+    padding: clamp(16px, 2vw, 36px);
+    max-width: none;
+    margin: 0;
+    width: 100%;
+  }
+}
+
+/* ✅ 2560+: ultra-wide screens */
+@media (min-width: 160rem) {
+  /* 2560px */
+  .main-content {
+    padding: clamp(20px, 2.2vw, 44px);
+    max-width: none;
+    margin: 0;
+    width: 100%;
+  }
+
+  /* optional: tiny boost for sidebar readability on huge screens */
+  .nav-link {
+    font-size: 1rem;
+  }
+}

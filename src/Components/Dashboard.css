@@ -1,0 +1,882 @@
+:root {
+  --c-green: #22c55e;
+  --c-orange: #f59e0b;
+  --c-red: #ef4444;
+  --c-gray: #94a3b8;
+
+  --bg: #f7f8fb;
+  --card: #ffffff;
+  --card-border: #e8eaef;
+  --text: #1f2a44;
+  --muted: #E2E8F0;
+  --accent: #2563eb;
+
+  --chip: #f3f4f6;
+  --chip-active: #ffeadd;
+
+  --shadow: 0 0.5rem 1.25rem rgba(15, 23, 42, 0.04);
+}
+
+/* ------------- GLOBAL ------------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.dash-container {
+  width: 100%;
+  max-width: none;          /* ✅ remove fixed max width */
+  margin: 0;                /* ✅ stop centering gap */
+  padding: 0.75rem;         /* keep your spacing */
+  color: var(--text);
+}
+
+
+/* ------------- HEADER BAR ------------- */
+
+.dash-header {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin-bottom: 0.9rem;
+}
+
+.header-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.header-left h2 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.25rem, 1.1rem + 0.3vw, 1.5rem);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* ------------- SEGMENTED CONTROLS ------------- */
+
+.segmenteds {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: 0.625rem;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* top range group */
+.header-range {
+  width: 100%;
+  max-width: 24rem;
+  height: 2rem;
+}
+
+/* generic buttons */
+.seg {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.6rem;
+  border: none;
+  background: transparent;
+  color: #111827;
+  cursor: pointer;
+  font-size: clamp(0.72rem, 0.7rem + 0.15vw, 0.8rem);
+  white-space: nowrap;
+}
+
+.header-range .seg + .seg,
+.segmenteds .seg + .seg {
+  border-left: 1px solid #e5e7eb;
+}
+
+.segmenteds .seg:first-child {
+  border-top-left-radius: 0.625rem;
+  border-bottom-left-radius: 0.625rem;
+}
+
+.segmenteds .seg:last-child {
+  border-top-right-radius: 0.625rem;
+  border-bottom-right-radius: 0.625rem;
+}
+
+/* active state – shared across ALL segmented controls */
+.seg.is-active,
+.header-range .seg.is-active {
+  background: #FFE9D9;
+  color: #111827;
+  font-weight: 500;
+  box-shadow: inset 0 0 0 1px #f97316;
+  outline: none;
+}
+
+.seg:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 0.125rem;
+}
+
+/* usage & recent segmented controls – make them look like small copies of header */
+.usage-range,
+.recent-type {
+  height: 1.8rem;
+}
+
+.usage-range .seg,
+.recent-type .seg {
+  flex: 1 1 auto;
+  padding-inline: 0.8rem;
+  font-size: clamp(0.7rem, 0.68rem + 0.15vw, 0.78rem);
+}
+
+/* ------------- GRID & CARDS ------------- */
+
+.grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+/* KPI top row – xs default: 1 column */
+.grid.kpi-five {
+  grid-template-columns: 1fr;
+}
+
+/* two-column sections (single/bulk donuts) */
+.grid.two {
+  grid-template-columns: 1fr;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+  /* a little more horizontal breathing room */
+  padding: 0.6rem 1rem;
+  box-shadow: var(--shadow);
+}
+
+.section-gap {
+  margin-top: 0.75rem;
+}
+
+.section-gap-large {
+  margin-top: 1.1rem;
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: clamp(0.9rem, 0.85rem + 0.2vw, 1rem);
+  color: #334155;
+}
+
+/* ------------- KPI CARDS ------------- */
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.kpi-main {
+  padding: 0.8rem 0.9rem;
+}
+
+.kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.2rem;
+}
+
+.kpi-label {
+  font-size: clamp(0.65rem, 0.6rem + 0.15vw, 0.75rem);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.kpi-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+}
+
+.kpi-main-left {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.kpi-value {
+  font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.65rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* percentage pill */
+.kpi-pill {
+  font-size: clamp(0.7rem, 0.65rem + 0.15vw, 0.8rem);
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 0.25rem;
+}
+
+.kpi-pill-valid {
+  background: #e6f7eb;
+  color: #059569;
+  border-color: #bbf7d0;
+}
+
+.kpi-pill-invalid {
+  background: #fce1e1;
+  color: #db2626;
+  border-color: #fecaca;
+}
+
+.kpi-pill-risky {
+  background: #fffbeb;
+  color:  #f49e0a;
+  border-color: #fed7aa;
+}
+
+.kpi-pill-unknown {
+  background:  #f0f4fa;
+  color:  #64748a;
+  border-color: #d1d5db;
+}
+
+/* icon box on right */
+.kpi-icon-box {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpi-icon-box-valid {
+  background: #e6f7eb;
+  color: #059569;
+}
+
+.kpi-icon-box-invalid {
+  background: #fce1e1;
+  color:  #db2626;
+}
+
+.kpi-icon-box-risky {
+  background:  #fff6e6;
+  color:  #f49e0a;
+}
+
+.kpi-icon-box-unknown {
+  background:  #f0f4fa;
+  color:  #64748a;
+}
+
+/* make icons appear a bit bolder */
+.kpi-icon-box svg {
+  stroke-width: 1.3;
+  transform: scale(1.00);
+}
+
+/* ------------- DONUT SECTION ------------- */
+
+.card-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: center;
+  margin-top: 0.4rem;
+  padding-inline: 0.6rem;  /* more inner space for both sides */
+}
+
+.donut-wrap {
+  position: relative;
+  height: clamp(11.5rem, 10.5rem + 3vw, 14rem);
+}
+
+.donut-total {
+  font-size: 1.125rem;
+}
+
+.donut-sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* stats next to donut */
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-right: 0.9rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: clamp(0.75rem, 0.7rem + 0.15vw, 0.8125rem);
+}
+
+.stat-count {
+  font-weight: 600;
+}
+
+.total-row {
+  margin-top: 0.35rem;
+  border-top: 1px dashed var(--card-border);
+  padding-top: 0.35rem;
+}
+
+.total-label {
+  font-weight: 600;
+}
+
+/* legend chip */
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: clamp(0.75rem, 0.7rem + 0.15vw, 0.8125rem);
+  color: var(--muted);
+}
+
+.legend::before {
+  content: "";
+  width: 0.9rem;
+  height: 0.5rem;
+  background: var(--c, #ccc);
+  border-radius: 40%;
+  display: inline-block;
+}
+
+/* ------------- CARD FOOTER BUTTONS ------------- */
+
+.card-footer {
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+}
+
+.btn-cta-outline {
+  border-radius: 0.35rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #FF7F26;
+  background: #fff7ed;
+  color: #FF7F26;
+  font-size: clamp(0.75rem, 0.7rem + 0.15vw, 0.8125rem);
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-cta-outline:hover {
+  background: #FFDABF;
+}
+
+.btn-cta-full {
+  width: 100%;
+}
+
+/* ------------- USAGE / HISTOGRAM ------------- */
+
+.card-chart {
+  margin-top: 0.4rem;
+  width: 100%;
+  height: clamp(13rem, 12rem + 4vw, 16rem);
+}
+
+.card-chart.chart-taller {
+  height: clamp(15rem, 13rem + 6vw, 20rem);
+}
+
+.recharts-text {
+  dominant-baseline: central;
+}
+
+.hist-top-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 0.5rem auto 0;
+  justify-content: center;
+}
+
+.usage-top {
+  align-items: center;
+}
+
+/* ------------- TOOLTIP ------------- */
+
+.tt {
+  background: #fff;
+  border: 1px solid var(--card-border);
+  border-radius: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  box-shadow: var(--shadow);
+  font-size: 0.75rem;
+  min-width: 14rem;
+  white-space: nowrap;
+}
+
+.tt-title {
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.tt-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-block: 0.125rem;
+}
+
+.tt-left {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--muted);
+}
+
+.tt-right {
+  font-weight: 600;
+}
+
+.tt .dot {
+  width: 0.9rem;
+  height: 0.5rem;
+  border-radius: 40%;
+  background: var(--c, #ccc);
+}
+
+.tt-total {
+  border-top: 1px dashed var(--card-border);
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+}
+
+/* ------------- BUTTONS / ALERTS / SKELETONS ------------- */
+
+.btn {
+  border: 1px solid var(--card-border);
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.8125rem;
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--card-border);
+  background: #fff;
+  font-size: 0.8125rem;
+}
+
+.alert.error {
+  background: #fff1f2;
+  border-color: #ffe4e6;
+}
+
+.empty {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-title {
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
+}
+
+.empty-sub {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.skeleton-wrap {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: 1fr;
+}
+
+.skeleton-card,
+.skeleton-wide {
+  border-radius: 0.75rem;
+  height: clamp(11rem, 10rem + 4vw, 15rem);
+  background: linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6);
+  animation: shimmer 1.2s infinite;
+  background-size: 200% 100%;
+  border: 1px solid var(--card-border);
+}
+
+.skeleton-wide {
+  grid-column: 1 / -1;
+  height: clamp(13rem, 11rem + 5vw, 18rem);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ------------- RECENT TABLE ------------- */
+
+.recent-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.recent-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.recent-table-wrap {
+  margin-top: 0.6rem;
+  border-radius: 0.625rem;
+  border: 1px solid var(--card-border);
+  background: #fff;
+  overflow: hidden; /* keeps rounded corners clean */
+}
+
+/* NEW: inner horizontal scroll layer */
+.recent-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* make sure table doesn't shrink too much on small screens */
+.recent-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  min-width: 42rem; /* 👈 forces horizontal scroll on small screens */
+}
+
+.recent-table thead {
+  background: #f7f8fa;
+}
+
+.recent-table th,
+.recent-table td {
+  padding: 0.45rem 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+.recent-table th {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.recent-table th.num,
+.recent-table td.num {
+  text-align: left;
+}
+
+/* zebra striping */
+.recent-table tbody tr:nth-child(even) {
+  background: #f7f8fa;
+}
+
+/* status cell */
+.status-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.status-dot {
+  width: 0.9rem;
+  height: 0.5rem;
+  border-radius: 40%;
+  background: #059569;
+}
+
+.status-dot-invalid {
+  background: #db2626;
+}
+
+.status-dot-risky {
+  background: #f49e0a;
+}
+
+.status-dot-unknown {
+  background: #64748a;
+}
+
+.status-label {
+  font-size: 0.8125rem;
+  color: #111827;
+}
+
+.recent-loading,
+.recent-empty {
+  padding: 0.7rem 0.1rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.recent-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+/* ------------- CONFIDENCE BAR ------------- */
+
+.conf-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.conf-bar {
+  flex: 1;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  overflow: hidden;
+}
+
+.conf-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #FF7F26;
+}
+
+.conf-text {
+  font-size: 0.75rem;
+  color: var(--muted);
+  min-width: 2.5rem;
+}
+/* =============================
+   BREAKPOINTS (Required)
+   425, 768, 1024, 1440, 2560
+============================= */
+
+/* <= 425 (small phones) */
+@media (max-width: 26.5625rem) { /* 425px */
+  .dash-container {
+    padding: 0.6rem;
+  }
+
+  .header-range {
+    max-width: 100%;
+    height: 2.1rem;
+  }
+
+  .card {
+    padding: 0.55rem 0.75rem;
+  }
+
+  .card-chart {
+    height: 15rem;
+  }
+
+  .card-chart.chart-taller {
+    height: 18rem;
+  }
+
+  /* donut gets a bit smaller so it fits clean */
+  .donut-wrap {
+    height: 11.5rem;
+  }
+
+  /* legend spacing */
+  .hist-top-legend {
+    gap: 0.75rem;
+  }
+
+  /* keep segmented buttons readable */
+  .seg {
+    padding-inline: 0.45rem;
+  }
+
+  /* Table scroll is already enabled, keep table min-width */
+  .recent-table {
+    min-width: 44rem;
+  }
+}
+
+/* ----------------------------------
+   Score column dot (Single table)
+   (NO layout break)
+----------------------------------- */
+
+
+.recent-table-wrap.is-single
+.recent-table tbody tr td:nth-child(3) {
+  position: relative;
+  padding-left: 1.35rem;        /* space for dot */
+  text-align: left !important;  /* keep number left aligned */
+}
+
+.recent-table-wrap.is-single
+.recent-table tbody tr td:nth-child(3)::before {
+  content: "";
+  position: absolute;
+  left: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #94a3b8;          /* same gray as design */
+}
+
+
+
+/* >= 768 */
+@media (min-width: 48rem) { /* 768px */
+  .header-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-right {
+    justify-content: flex-end;
+    flex: 1;              /* ✅ add this */
+  }
+
+  .header-range {
+    width: auto;
+    max-width: none;
+  }
+
+  .card-content {
+    grid-template-columns: minmax(12rem, 0.9fr) minmax(12rem, 1.1fr);
+    align-items: center;
+  }
+}
+
+
+
+/* >= 1024 */
+@media (min-width: 64rem) {
+  .dash-container {
+    padding-inline: 1.25rem;
+  }
+
+  .grid.kpi-five {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .grid.two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card-chart.chart-taller {
+    height: 20rem;
+  }
+
+  .card-content {
+    padding-inline: 0.9rem;
+  }
+}
+
+/* >= 1440 */
+@media (min-width: 90rem) { /* 1440px */
+  .dash-container {
+    width: 100%;
+    max-width: none;                /* ✅ remove cap */
+    margin: 0;                      /* ✅ no centering */
+    padding-inline: clamp(16px, 2vw, 36px);  /* ✅ nice spacing */
+  }
+
+  .card-chart.chart-taller {
+    height: 22rem;
+  }
+
+  .donut-wrap {
+    height: 14rem;
+  }
+}
+
+
+/* >= 2560 (very large screens) */
+@media (min-width: 160rem) { /* 2560px */
+  .dash-container {
+    width: 100%;
+    max-width: none;                /* ✅ remove cap */
+    margin: 0;                      /* ✅ no centering */
+    padding-inline: clamp(20px, 2.2vw, 44px);
+  }
+
+  .card {
+    padding: 0.9rem 1.25rem;
+  }
+
+  .card-chart.chart-taller {
+    height: 26rem;
+  }
+
+  .donut-wrap {
+    height: 16rem;
+  }
+
+  .header-left h2 {
+    font-size: 1.75rem;
+  }
+}
+

@@ -1,0 +1,505 @@
+/* src/Components/PhoneHistory.css */
+
+:root {
+  --bg: #f7f8fb;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #667085;
+
+  --primary: #ff7a1a;
+  --ring: rgba(255, 122, 26, 0.18);
+
+  --border: #e5e7eb;
+
+  /* match your table header / alt row color */
+  --phh-table-alt-bg: #f2f6fa;
+
+  --status-valid: #22c55e;
+  --status-invalid: #ef4444;
+  --status-risky: #f49e0a;
+  --status-unknown: #64748a;
+
+  --shadow: 0 0.5rem 1.25rem rgba(15, 23, 42, 0.04);
+}
+
+/* safety: don't let MUI Paper add bg */
+.phh-wrap .MuiPaper-root {
+  background: transparent;
+}
+
+/* Page wrapper */
+.phh-wrap {
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Toolbar */
+.phh-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* dropdown wrapper */
+.phh-controlBox {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background: var(--card);
+  border: 0.0625rem solid #e8eaef;
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  min-height: 2.9375rem;
+  box-shadow: var(--shadow);
+}
+
+/* Select */
+.phh-selectBox {
+  min-width: 10.625rem; /* 170px */
+  padding-right: 0.625rem;
+}
+
+.phh-select {
+  font-size: 0.875rem !important;
+  color: var(--text) !important;
+}
+
+/* remove extra padding */
+.phh-selectBox .MuiSelect-select {
+  padding: 0 !important;
+  padding-right: 3.6rem !important;
+}
+
+/* arrow */
+.phh-selectBox .MuiSelect-icon {
+  color: var(--text) !important;
+}
+
+/* Right side clear history */
+.phh-clearRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.phh-clearLink {
+  border: 0;
+  background: transparent;
+  color: #ff6d00;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.625rem;
+}
+
+.phh-clearLink:hover {
+  background: rgba(249, 115, 22, 0.08);
+}
+
+.phh-infoBtn {
+  padding: 0.125rem !important;
+}
+.phh-infoBtn svg {
+  font-size: 1.125rem !important;
+  color: #334155;
+}
+
+/* Table card */
+.phh-tableCard {
+  background: var(--card) !important;
+  border: 0.0625rem solid #e8eaef !important;
+  border-radius: 0.875rem !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* scroll body + sticky footer */
+.phh-cardBody {
+  height: calc(100vh - 13.125rem);
+  min-height: 32.5rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* TableContainer:
+   - desktop: your current behavior (vertical scroll only, hidden scrollbar)
+   - <=1024: allow horizontal scroll + show scrollbar */
+.phh-tableWrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overflow-y: auto;
+  scrollbar-width: none; /* desktop hidden */
+}
+.phh-tableWrap::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* sticky header */
+.phh-table .MuiTableCell-stickyHeader {
+  background: var(--phh-table-alt-bg) !important;
+}
+
+/* header cells */
+.phh-th {
+  font-weight: 600 !important;
+  color: #334155 !important;
+  background: var(--phh-table-alt-bg) !important;
+  border-bottom: 0.0625rem solid #e8eaef !important;
+  font-size: 0.78rem !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+  white-space: nowrap;
+}
+
+/* body cells */
+.phh-td {
+  font-size: 0.845rem !important;
+  color: var(--text) !important;
+  border-bottom: 0.0625rem solid #eef0f4 !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+  white-space: nowrap;
+}
+
+/* alternating rows */
+.phh-row.is-even td {
+  background: #ffffff !important;
+}
+.phh-row.is-odd td {
+  background: var(--phh-table-alt-bg) !important;
+}
+
+/* Column sizing (desktop stays perfect) */
+.phh-col-phone {
+  width: 10.5rem;
+}
+.phh-col-country {
+  width: 7rem;
+}
+.phh-col-status {
+  width: 7rem;
+}
+.phh-col-provider {
+  width: 12rem;
+}
+.phh-col-line {
+  width: 8.5rem;
+}
+.phh-col-conf {
+  width: 11.5rem;
+}
+.phh-col-date {
+  width: 12rem;
+}
+
+/* Country cell */
+.phh-countryCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.phh-flag {
+  width: 1.35rem;
+  height: 0.95rem;
+  border-radius: 0.18rem;
+  box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.12);
+  flex: 0 0 auto;
+}
+
+.phh-countryText {
+  color: rgba(17, 24, 39, 0.9);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Status */
+.phh-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 500;
+  color: rgba(17, 24, 39, 0.9);
+  white-space: nowrap;
+}
+
+.phh-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999rem;
+  display: inline-block;
+}
+.phh-dot-valid {
+  background: var(--status-valid);
+}
+.phh-dot-invalid {
+  background: var(--status-invalid);
+}
+.phh-dot-risky {
+  background: var(--status-risky);
+}
+.phh-dot-unknown {
+  background: var(--status-unknown);
+}
+
+/* Confidence bar */
+.phh-confWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.phh-confBar {
+  width: 5.2rem;
+  height: 0.25rem;
+  border-radius: 999rem;
+  background: rgba(17, 24, 39, 0.12);
+  overflow: hidden;
+}
+.phh-confFill {
+  height: 100%;
+  display: block;
+  background: var(--primary);
+  border-radius: 999rem;
+}
+.phh-confPct {
+  font-weight: 700;
+  color: rgba(17, 24, 39, 0.9);
+  font-size: 0.8rem;
+}
+
+.phh-dash {
+  color: var(--muted);
+}
+
+.phh-empty {
+  text-align: center !important;
+  padding: 2rem 1rem !important;
+  color: var(--muted) !important;
+  font-weight: 600;
+}
+
+/* Sticky pagination footer */
+.phh-pagination {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  background: var(--card);
+  border-top: 0.0625rem solid #e9eef5;
+}
+
+.phh-pagination .MuiTablePagination-toolbar {
+  min-height: 3.25rem;
+  padding: 0.2rem 0.75rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+}
+
+.phh-pagination .MuiTablePagination-actions {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+/* Confirm dialog */
+.phh-confirmPaper {
+  border-radius: 0.625rem !important;
+  width: 26.25rem; /* 420px */
+  max-width: calc(100vw - 3rem);
+  padding: 0.625rem 0.5rem;
+}
+
+.phh-confirmTitle {
+  font-weight: 650 !important;
+  font-size: 1.375rem !important;
+  padding: 1rem 1.125rem 0.5rem !important;
+  color: #0f172a !important;
+}
+
+.phh-confirmBody {
+  padding: 0 1.125rem 0.625rem !important;
+  font-size: 0.96875rem !important; /* 15.5px */
+  color: #0f172a !important;
+}
+
+.phh-confirmCount {
+  font-weight: 500;
+}
+
+.phh-confirmActions {
+  padding: 0.625rem 0.875rem 0.875rem !important;
+  gap: 0.875rem;
+}
+
+.phh-confirmCancel {
+  text-transform: none !important;
+  font-weight: 500 !important;
+  color: #0f172a !important;
+}
+
+.phh-confirmClear {
+  text-transform: none !important;
+  font-weight: 700 !important;
+  color: #ef4444 !important;
+}
+
+/* =========================================================
+   RESPONSIVE BREAKPOINTS
+   Requirement:
+   - Mobile & tablet => table stays horizontally scrollable
+   - Do NOT touch laptop view (already perfect)
+   ========================================================= */
+
+/* 2560px+ (2K/4K): keep same but allow a bit more breathing room */
+@media (min-width: 160rem) {
+  /* 2560px */
+  .phh-wrap {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+}
+
+/* 1440px+ */
+@media (min-width: 90rem) {
+  /* 1440px */
+  /* no layout changes - keep your perfect laptop/desktop */
+}
+
+/* <=1024px: enable horizontal scroll for table */
+@media (max-width: 64rem) {
+  /* 1024px */
+  .phh-wrap {
+    padding: 0.75rem;
+    gap: 0.65rem;
+  }
+
+  /* toolbar stacks nicely if needed */
+  .phh-toolbar {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .phh-controlBox {
+    flex: 0 1 16rem;
+    max-width: 18rem;
+    min-width: 10rem;
+  }
+
+  .phh-clearRight {
+    margin-left: auto;
+  }
+
+  /* Horizontal scroll visible */
+  .phh-tableWrap {
+    overflow-x: auto;
+    overflow-y: auto;
+    scrollbar-width: thin; /* firefox: show */
+  }
+  .phh-tableWrap::-webkit-scrollbar {
+    height: 0.5rem;
+    width: 0.5rem;
+  }
+  .phh-tableWrap::-webkit-scrollbar-thumb {
+    background: rgba(17, 24, 39, 0.2);
+    border-radius: 999rem;
+  }
+  .phh-tableWrap::-webkit-scrollbar-track {
+    background: rgba(17, 24, 39, 0.06);
+    border-radius: 999rem;
+  }
+
+  /* Force table to stay wide so horizontal scroll is meaningful */
+  .phh-table {
+    min-width: 62rem; /* keeps all columns in one line */
+  }
+
+  /* slightly smaller text */
+  .phh-th {
+    font-size: 0.75rem !important;
+  }
+  .phh-td {
+    font-size: 0.8125rem !important;
+  }
+
+  .phh-confBar {
+    width: 4.8rem;
+  }
+}
+
+/* <=768px: slightly tighter spacing */
+@media (max-width: 48rem) {
+  /* 768px */
+  .phh-controlBox {
+    min-height: 2.75rem;
+    padding: 0.45rem 0.65rem;
+  }
+
+  .phh-selectBox {
+    min-width: 9.5rem;
+  }
+
+  .phh-clearLink {
+    font-size: 0.875rem;
+    padding: 0.45rem;
+  }
+
+  .phh-confBar {
+    width: 4.4rem;
+  }
+
+  .phh-table {
+    min-width: 58rem;
+  }
+}
+
+/* <=425px: phone */
+@media (max-width: 27.5625rem) {
+  /* 425px */
+  .phh-wrap {
+    padding: 0.625rem;
+    gap: 0.6rem;
+  }
+
+  .phh-toolbar {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .phh-controlBox {
+    width: auto;
+    flex: 0 1 11.5rem; /* ~200px */
+    min-width: 8.5rem;
+  }
+
+  .phh-clearRight {
+    width: auto;
+    margin-left: auto;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+  }
+
+  .phh-table {
+    min-width: 54rem;
+  }
+
+  .phh-confBar {
+    width: 4.1rem;
+  }
+
+  .phh-confirmPaper {
+    width: 100%;
+    max-width: calc(100vw - 1.5rem);
+  }
+}

@@ -1,0 +1,723 @@
+/* =========================
+   SingleValidationHistory.css
+   Responsive, rem-based, attractive
+   Breakpoints:
+   425px  = 26.5625em
+   768px  = 48em
+   1024px = 64em
+   1440px = 90em
+   2560px = 160em
+   ========================= */
+
+:root {
+  /* --- Core surfaces --- */
+  --svh-card: #ffffff;
+  --svh-card-border: #e8eaef;
+  --svh-text: #0f172a;
+  --svh-muted: #334155;
+
+  /* --- Table / section backgrounds --- */
+  --svh-header-row: #eef2f7;
+
+  /* --- Status dots --- */
+  --svh-c-green: #059569;
+  --svh-c-orange: #f49e0a;
+  --svh-c-red: #db2626;
+  --svh-c-gray: #64748a;
+
+  /* --- Reason text colors --- */
+  --svh-reason-valid: #059569;
+  --svh-reason-invalid: #db2626;
+  --svh-reason-risky: #f49e0a;
+  --svh-reason-unknown: #64748a;
+
+  /* --- Lines / dividers --- */
+  --svh-row-divider: #eef0f4;
+  --svh-pagination-divider: #e9eef5;
+  --svh-dash-divider: #d6dde8;
+  --svh-table-alt-bg: #f2f6fa;
+
+  /* --- Shadows --- */
+  --svh-shadow: 0 0.5rem 1.25rem rgba(15, 23, 42, 0.04);
+
+  /* --- Clear History (toolbar) --- */
+  --svh-clear-accent: #ff6d00;
+  --svh-clear-hover-bg: rgba(249, 115, 22, 0.08);
+
+  /* --- Expand button (circle) --- */
+  --svh-expand-border: #111827;
+  --svh-expand-bg: #ffffff;
+  --svh-expand-hover-bg: #f4f6fa;
+  --svh-expand-icon: #111827;
+
+  /* --- Score dot --- */
+  --svh-score-dot: #9aa4b2;
+
+  /* --- Expanded area --- */
+  --svh-msg-text: #3b4758;
+
+  /* --- Confidence bar --- */
+  --svh-bar-track: #dbe3ee;
+  --svh-bar-fill: #ff6d00;
+
+  /* --- Misc --- */
+  --svh-odd-row: #ffffff;
+}
+
+/* layout */
+.svh-wrap {
+  padding: 0.875rem; /* 14px */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* 12px */
+}
+
+/* toolbar */
+.svh-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem; /* 12px */
+  flex-wrap: wrap;
+}
+
+.svh-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* search/select boxes */
+.svh-controlBox {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem; /* 10px */
+  background: var(--svh-card);
+  border: 0.0625rem solid var(--svh-card-border);
+  border-radius: 0.625rem; /* 10px */
+  padding: 0.5rem 0.75rem; /* 8px 12px */
+  min-height: 2.9375rem; /* 47px */
+  box-shadow: var(--svh-shadow);
+}
+
+.svh-searchBox {
+  min-width: 17.5rem; /* 280px */
+}
+
+.svh-selectBox {
+  min-width: 10.625rem; /* 170px */
+  padding-right: 0.625rem;
+}
+
+.svh-input {
+  width: 100%;
+}
+
+.svh-input input {
+  font-size: 0.875rem; /* 14px */
+  color: var(--svh-text);
+}
+
+.svh-endIcon {
+  font-size: 1.125rem !important; /* 18px */
+  color: var(--svh-muted);
+}
+
+.svh-select {
+  font-size: 0.875rem !important;
+  color: var(--svh-text) !important;
+}
+
+.svh-selectBox .MuiSelect-select {
+  padding: 0 !important;
+}
+
+/* clear history */
+.svh-clearBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px */
+  color: var(--svh-clear-accent);
+  font-weight: 700;
+  border-radius: 0.625rem;
+  padding: 0.375rem 0.625rem; /* 6 10 */
+  user-select: none;
+  white-space: nowrap;
+}
+
+.svh-clearBtn:hover {
+  background: var(--svh-clear-hover-bg);
+}
+
+.svh-clearText {
+  font-size: 0.9rem;
+}
+
+.svh-infoBtn {
+  padding: 0.125rem !important; /* 2px */
+}
+
+.svh-infoBtn svg {
+  font-size: 1.125rem !important;
+  color: var(--svh-muted);
+}
+
+.svh-infoBtn:hover svg {
+  color: var(--svh-expand-icon);
+}
+
+/* card */
+.svh-paper {
+  background: var(--svh-card);
+  border: 0.0625rem solid var(--svh-card-border);
+  border-radius: 0.875rem; /* 14px */
+  overflow: hidden;
+  box-shadow: var(--svh-shadow);
+}
+
+/* table + pagination inside fixed height */
+.svh-cardBody {
+  height: calc(100vh - 13.125rem); /* ~210px */
+  display: flex;
+  flex-direction: column;
+  min-height: 32.5rem; /* 520px */
+}
+
+/* internal scrolling (hidden) */
+.svh-tableWrap {
+  flex: 1;
+  overflow: auto;
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox hide */
+}
+
+.svh-tableWrap::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.svh-tableWrap table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* ✅ Figma-like column widths (only via CSS classes) */
+.svh-col-email  { width: 24rem; }   /* biggest */
+.svh-col-status { width: 9rem; }    /* fixed */
+.svh-col-reason { width: 14rem; }   /* medium */
+.svh-col-score  { width: 5rem; }    /* small */
+.svh-col-expand { width: 3rem; }    /* smallest */
+
+/* head */
+.svh-th {
+  font-weight: 500 !important;
+  color: var(--svh-muted) !important;
+  background: var(--svh-table-alt-bg) !important;
+  border-bottom: 0.0625rem solid var(--svh-card-border) !important;
+  font-size: 0.78rem !important; /* ~12.5px */
+}
+
+/* row base */
+.svh-row td {
+  border-bottom: 0.0625rem solid var(--svh-row-divider) !important;
+  font-weight: 400 !important;
+  font-size: 0.845rem !important; /* ~13.5px */
+  color: var(--svh-text) !important;
+}
+
+/* zebra based on map index */
+.svh-dataRow.is-even td {
+  background: var(--svh-table-alt-bg) !important;
+}
+.svh-dataRow.is-odd td {
+  background: var(--svh-odd-row) !important;
+}
+
+/* expanded area matches zebra */
+.svh-expandRow.is-even .svh-expandCell,
+.svh-expandRow.is-even .svh-details {
+  background: var(--svh-table-alt-bg) !important;
+}
+
+.svh-expandRow.is-odd .svh-expandCell,
+.svh-expandRow.is-odd .svh-details {
+  background: var(--svh-odd-row) !important;
+}
+
+/* email */
+.svh-email {
+  font-weight: 500;
+  color: var(--svh-text);
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+
+.svh-plainText {
+  font-weight: 500;
+  color: var(--svh-text);
+}
+
+/* ✅ prevent Status from wrapping (stops collision) */
+.svh-statusPlain {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem; /* 10px */
+  white-space: nowrap;
+}
+
+/* ✅ reason: keep clean & prevent collision */
+.svh-reasonPlain {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* status dot */
+.svh-dot {
+  width: 0.5625rem; /* 9px */
+  height: 0.5625rem;
+  border-radius: 62.4375rem;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+.svh-dot-valid { background: var(--svh-c-green); }
+.svh-dot-invalid { background: var(--svh-c-red); }
+.svh-dot-risky { background: var(--svh-c-orange); }
+.svh-dot-unknown { background: var(--svh-c-gray); }
+
+/* reason colors */
+.svh-reason-valid { color: var(--svh-reason-valid); }
+.svh-reason-invalid { color: var(--svh-reason-invalid); }
+.svh-reason-risky { color: var(--svh-reason-risky); }
+.svh-reason-unknown { color: var(--svh-reason-unknown); }
+
+/* score */
+.svh-scorePlain {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  white-space: nowrap;
+}
+
+.svh-dot-score {
+  background: var(--svh-score-dot);
+}
+
+/* expand button */
+.svh-expandBtn {
+  width: 1.125rem !important;  /* 18px */
+  height: 1.125rem !important;
+  border-radius: 62.4375rem !important;
+  border: 0.0625rem solid var(--svh-expand-border) !important;
+  background: var(--svh-expand-bg) !important;
+  padding: 0 !important;
+}
+
+.svh-expandBtn svg {
+  font-size: 1.125rem !important;
+  color: var(--svh-expand-icon);
+}
+
+.svh-expandBtn:hover {
+  background: var(--svh-expand-hover-bg) !important;
+}
+
+/* expanded row */
+.svh-expandRow td {
+  padding: 0 !important;
+  border-bottom: 0.0625rem solid var(--svh-row-divider) !important;
+}
+
+.svh-expandCell { background: var(--svh-table-alt-bg); }
+
+.svh-details {
+  padding: 1rem 1.125rem; /* 16 18 */
+  background: var(--svh-table-alt-bg);
+}
+
+.svh-msgLine {
+  color: var(--svh-msg-text);
+  font-size: 0.82rem; /* ~13px */
+  margin-bottom: 0.875rem; /* 14px */
+}
+
+/* details grid */
+.svh-detailGrid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.1fr 1.4fr;
+  gap: 0;
+  border-radius: 0.625rem;
+}
+
+.svh-detailCol {
+  padding: 0.75rem 1rem; /* 12 16 */
+  min-width: 0;
+}
+
+.svh-detailCol:not(:last-child) {
+  border-right: 0.125rem dashed var(--svh-dash-divider); /* 2px */
+}
+
+.svh-detailTitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--svh-reason-unknown);
+  margin-bottom: 0.625rem; /* 10px */
+}
+
+/* pairs */
+.svh-pairs {
+  display: grid;
+  gap: 0.875rem 1.375rem; /* 14 22 */
+  min-width: 0;
+}
+
+.svh-pairs-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.svh-pairs-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.svh-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem; /* 6px */
+  min-width: 0;
+}
+
+.svh-label {
+  font-size: 0.75rem; /* 12px */
+  color: var(--svh-reason-unknown);
+  white-space: nowrap;
+}
+
+.svh-value {
+  font-size: 0.845rem; /* ~13.5px */
+  color: #0f172a;
+  font-weight: 500;
+  text-align: left;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.25;
+}
+
+.svh-clamp2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* confidence */
+.svh-confidence {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.625rem; /* 10 */
+  min-width: 0;
+}
+
+.svh-bar {
+  width: 100%;
+  max-width: 8.75rem; /* 140px */
+  height: 0.375rem; /* 6px */
+  background: var(--svh-bar-track);
+  border-radius: 62.4375rem;
+  overflow: hidden;
+}
+
+.svh-barFill {
+  height: 100%;
+  background: var(--svh-bar-fill);
+  border-radius: 62.4375rem;
+}
+
+/* pagination */
+.svh-pagination {
+  border-top: 0.0625rem solid var(--svh-pagination-divider);
+  background: var(--svh-card);
+}
+
+/* ✅ pagination: keep arrows in same right line */
+.svh-pagination .MuiTablePagination-toolbar {
+  min-height: 3.25rem;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap; /* key */
+  gap: 0.75rem;
+}
+
+.svh-pagination .MuiTablePagination-selectLabel,
+.svh-pagination .MuiTablePagination-displayedRows {
+  font-size: 0.8rem;
+  color: var(--svh-muted);
+  white-space: nowrap;
+}
+
+.svh-pagination .MuiTablePagination-actions {
+  margin-left: auto; /* pushes arrows to right */
+  flex: 0 0 auto;
+}
+
+.svh-pagination .MuiTablePagination-spacer {
+  flex: 1 1 auto;
+}
+
+/* empty */
+.svh-empty {
+  color: var(--svh-muted);
+  font-weight: 600;
+  padding: 1.125rem !important; /* 18px */
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE BREAKPOINTS
+───────────────────────────────────────────── */
+
+/* <= 1024 */
+@media (max-width: 64em) {
+  .svh-cardBody {
+    height: calc(100vh - 15rem);
+  }
+}
+
+/* ✅ <= 768: toolbar exactly like your screenshot:
+   Row 1: search full width
+   Row 2: dropdown left + clear right (same line) */
+@media (max-width: 48em) {
+  .svh-wrap {
+    padding: 0.75rem;
+    gap: 0.625rem;
+  }
+
+  .svh-toolbar {
+    display: flex;
+    flex-direction: column;  /* key: 2 rows */
+    align-items: stretch;
+    gap: 0.625rem;
+  }
+
+  .svh-left {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto; /* row 2: select left, clear right */
+    grid-template-rows: auto auto;   /* row 1: search, row 2: select+clear */
+    gap: 0.625rem;
+  }
+
+  .svh-selectBox {
+    grid-column: 1 / 2;
+    min-width: 0;          /* key: allow shrink */
+    width: 100%;
+  }
+
+  /* row 2 left */
+  .svh-searchBox {
+    grid-column: 1 / -1;  /* span full row */
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* row 2 right */
+  .svh-clearBtn {
+    grid-column: 2 / 3;
+    justify-self: end;     /* key: right align */
+    align-self: center;    /* keep same height line */
+    margin-left: 0;        /* stop flex push */
+    box-shadow: var(--svh-shadow);
+    padding: 0.45rem 0.65rem;
+  }
+
+  /* columns tighter but still Figma-like */
+  .svh-col-email  { width: 16rem; }
+  .svh-col-status { width: 8.5rem; }
+  .svh-col-score  { width: 5.5rem; }
+  .svh-col-expand { width: 3.25rem; }
+
+  /* prevent collision more */
+  .svh-th { font-size: 0.75rem !important; }
+  .svh-row td { font-size: 0.82rem !important; }
+  .svh-statusPlain { gap: 0.5rem; }
+}
+
+/* ✅ Tablet/Mobile: force 2-row toolbar layout */
+.svh-searchRow {
+  width: 100%;
+  display: flex;
+}
+
+.svh-filterRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+
+/* ✅ <= 425: hide Reason + Score (your old logic), keep Status clean */
+@media (max-width: 26.5625em) {
+  .svh-controlBox {
+    min-height: 2.75rem;
+    padding: 0.5rem 0.625rem;
+  }
+
+  .svh-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }  
+
+  .svh-left {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto; /* dropdown + clear same line */
+    grid-template-rows: auto auto;   /* search row + filter row */
+    gap: 0.625rem;
+  }
+
+
+  .svh-searchBox {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* keep dropdown + clear same line */
+  .svh-selectBox {
+    grid-column: 1 / 2;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .svh-clearBtn {
+    grid-column: 2 / 3;
+    justify-self: end;
+    align-self: center;
+  }
+
+  .svh-clearText { font-size: 0.88rem; }
+
+  .svh-col-reason,
+  .svh-col-score {
+    display: none !important;
+  }
+
+  .svh-row td:nth-child(3),
+  .svh-row td:nth-child(4) {
+    display: none !important;
+  }
+
+  .svh-email { font-size: 0.86rem; }
+
+  .svh-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  /* pagination: allow shrinking but keep arrows right */
+  .svh-pagination .MuiTablePagination-toolbar {
+    gap: 0.5rem;
+    padding: 0.5rem 0.5rem;
+  }
+}
+
+/* ✅ TABLET: 426px–768px → Search + Status + Clear in one row */
+@media (min-width: 26.625em) and (max-width: 48em) {
+
+  /* Toolbar becomes a 3-col grid */
+  .svh-toolbar{
+    display: grid !important;
+    grid-template-columns: 1fr auto;   /* dropdown | clear */
+    grid-template-rows: auto auto;     /* search row + second row */
+    gap: 0.625rem !important;
+    align-items: center !important;
+  }
+
+  /* svh-left should NOT wrap into 2 rows on tablet */
+  .svh-left{
+    display: contents !important;  /* important: lets children become grid items */
+  }
+
+  /* place search in col 1 */
+  .svh-searchBox{
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0 !important;
+  }
+
+
+  /* place dropdown in col 2 */
+  .svh-selectBox{
+    grid-column: 1 / 2;
+    grid-row: 2;
+    width: 100%;
+    min-width: 0 !important;
+  }
+
+  /* place clear in col 3 */
+   .svh-clearBtn{
+    grid-column: 2 / 3;
+    grid-row: 2;
+    justify-self: start;  /* left aligned (you asked left align) */
+    align-self: center;
+    margin-left: 0 !important;
+    padding: 0.375rem 0.55rem;
+  }
+}
+
+
+/* >= 1440 */
+@media (min-width: 90em) {
+  .svh-wrap {
+    padding: 1rem;
+    gap: 0.875rem;
+  }
+
+  .svh-th { font-size: 0.82rem !important; }
+  .svh-row td { font-size: 0.9rem !important; }
+
+  .svh-searchBox { min-width: 20rem; }
+  .svh-selectBox { min-width: 12rem; }
+
+  .svh-col-email  { width: 24rem; }
+  .svh-col-status { width: 9.5rem; }
+  .svh-col-score  { width: 6.25rem; }
+  .svh-col-expand { width: 3.75rem; }
+}
+
+/* >= 2560 */
+@media (min-width: 160em) {
+  .svh-wrap { padding: 1.5rem; }
+
+  .svh-cardBody { min-height: 40rem; }
+
+  .svh-controlBox {
+    border-radius: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    min-height: 3.25rem;
+  }
+
+  .svh-input input,
+  .svh-select { font-size: 1.02rem !important; }
+
+  .svh-th { font-size: 0.95rem !important; }
+  .svh-row td { font-size: 1.02rem !important; }
+
+  .svh-detailTitle { font-size: 1.02rem; }
+  .svh-label { font-size: 0.92rem; }
+  .svh-value { font-size: 1.02rem; }
+
+  .svh-bar {
+    max-width: 12.5rem;
+    height: 0.5rem;
+  }
+}

@@ -1,0 +1,551 @@
+:root {
+  /* core surfaces */
+  --bkh-card: #ffffff;
+  --bkh-card-border: #e8eaef;
+  --bkh-text: #0f172a;
+  --bkh-muted: #334155;
+
+  /* table backgrounds */
+  --bkh-table-alt-bg: #eef2f7;
+  --bkh-odd-row: #ffffff;
+
+  /* dividers */
+  --bkh-row-divider: #eef0f4;
+  --bkh-pagination-divider: #e9eef5;
+
+  /* shadow */
+  --bkh-shadow: 0 0.5rem 1.25rem rgba(15, 23, 42, 0.04);
+
+  /* status dots */
+  --bkh-blue: #2563eb; /* In Progress dot */
+  --bkh-green: #059569; /* Completed dot */
+  --bkh-red: #db2626; /* Failed dot */
+  --bkh-gray: #64748a; /* Canceled/Unknown dot */
+
+  /* expand button */
+  --bkh-expand-border: #111827;
+  --bkh-expand-bg: #ffffff;
+  --bkh-expand-hover-bg: #f4f6fa;
+  --bkh-expand-icon: #111827;
+
+  /* Height of top navbar + BulkValidation header area (adjust if needed) */
+  --bulk-top-offset: 8.125rem; /* 130px */
+}
+
+/* ───────────────── Wrap ───────────────── */
+.bkh-wrap {
+  height: auto;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* 12px */
+  padding: 0.625rem; /* 10px */
+  box-sizing: border-box;
+}
+
+/* ───────────────── Toolbar ───────────────── */
+.bkh-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem; /* 12px */
+}
+
+.bkh-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 12px */
+  flex-wrap: wrap;
+}
+
+/* search/select boxes */
+.bkh-controlBox {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem; /* 10px */
+  background: var(--bkh-card);
+  border: 0.0625rem solid var(--bkh-card-border);
+  border-radius: 0.625rem; /* 10px */
+  padding: 0.5rem 0.75rem; /* 8 12 */
+  min-height: 2.9375rem; /* 47px */
+  box-shadow: var(--bkh-shadow);
+}
+
+.bkh-searchBox {
+  min-width: 17.5rem; /* 280px */
+}
+
+.bkh-selectBox {
+  min-width: 10.625rem; /* 170px */
+  padding-right: 0.625rem; /* 10px */
+}
+
+.bkh-input {
+  width: 100%;
+}
+
+.bkh-input input {
+  font-size: 0.875rem; /* 14px */
+  color: var(--bkh-text);
+}
+
+.bkh-endIcon {
+  font-size: 1.125rem !important; /* 18px */
+  color: var(--bkh-muted);
+}
+
+.bkh-select {
+  font-size: 0.875rem !important; /* 14px */
+  color: var(--bkh-text) !important;
+}
+
+.bkh-selectBox .MuiSelect-select {
+  padding: 0 !important;
+}
+
+/* icon buttons */
+.bkh-iconBtn {
+  padding: 0.375rem !important; /* 6px */
+  border-radius: 0.625rem !important; /* 10px */
+  background: transparent !important;
+}
+
+.bkh-iconBtn svg {
+  font-size: 1.25rem !important; /* 20px */
+  color: #64748a;
+}
+
+.bkh-iconBtn:hover {
+  background: rgba(15, 23, 42, 0.06) !important;
+}
+
+/* ───────────────── Card / Sticky Layout ───────────────── */
+.bkh-paper {
+  background: var(--bkh-card);
+  border: 0.0625rem solid var(--bkh-card-border);
+  border-radius: 0.875rem; /* 14px */
+  overflow: hidden;
+  box-shadow: var(--bkh-shadow);
+
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.bkh-paper.bkh-stickyLayout {
+  position: sticky;
+  top: var(--bulk-top-offset);
+  z-index: 20;
+  height: calc(100vh - var(--bulk-top-offset) - 1rem);
+  min-height: 32.5rem; /* 520px */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.bkh-cardBody {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ✅ IMPORTANT:
+   Vertical scroll for rows is here.
+   Horizontal scroll is enabled in responsive via media queries. */
+.bkh-tableWrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.bkh-tableWrap::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.bkh-tableWrap thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.bkh-tableWrap table {
+  width: 100%;
+  table-layout: fixed; /* desktop */
+}
+
+/* head */
+.bkh-th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bkh-table-alt-bg) !important;
+  font-weight: 700 !important;
+}
+
+/* row base */
+.bkh-row td {
+  border-bottom: 0.0625rem solid var(--bkh-row-divider) !important;
+  font-weight: 400 !important;
+  font-size: 0.84375rem !important; /* 13.5px */
+  color: var(--bkh-text) !important;
+}
+
+/* zebra */
+.bkh-dataRow.is-even td {
+  background: var(--bkh-table-alt-bg) !important;
+}
+.bkh-dataRow.is-odd td {
+  background: var(--bkh-odd-row) !important;
+}
+
+.bkh-expandRow.is-even .bkh-expandCell,
+.bkh-expandRow.is-even .bkh-details {
+  background: var(--bkh-table-alt-bg) !important;
+}
+.bkh-expandRow.is-odd .bkh-expandCell,
+.bkh-expandRow.is-odd .bkh-details {
+  background: var(--bkh-odd-row) !important;
+}
+
+/* name */
+.bkh-nameLink {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--bkh-text);
+  font-weight: 600;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.bkh-nameLink:hover {
+  text-decoration: underline;
+}
+
+/* status */
+.bkh-statusPlain {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem; /* 10px */
+}
+
+.bkh-dot {
+  width: 0.5625rem; /* 9px */
+  height: 0.5625rem;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.bkh-dot-inprogress {
+  background: var(--bkh-blue);
+}
+.bkh-dot-completed {
+  background: var(--bkh-green);
+}
+.bkh-dot-failed {
+  background: var(--bkh-red);
+}
+.bkh-dot-canceled,
+.bkh-dot-unknown {
+  background: var(--bkh-gray);
+}
+
+.bkh-plainText {
+  font-weight: 400;
+  color: var(--bkh-text);
+}
+
+/* actions */
+.bkh-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem; /* 10px */
+}
+
+/* expand btn circle */
+.bkh-expandBtn {
+  width: 1.125rem !important; /* 18px */
+  height: 1.125rem !important;
+  border-radius: 999px !important;
+  border: 0.0625rem solid var(--bkh-expand-border) !important;
+  background: var(--bkh-expand-bg) !important;
+  padding: 0 !important;
+}
+.bkh-expandBtn svg {
+  font-size: 1.125rem !important; /* 18px */
+  color: var(--bkh-expand-icon);
+}
+.bkh-expandBtn:hover {
+  background: var(--bkh-expand-hover-bg) !important;
+}
+
+/* expanded area */
+.bkh-expandRow td {
+  padding: 0 !important;
+  border-bottom: 0.0625rem solid var(--bkh-row-divider) !important;
+}
+
+.bkh-details {
+  padding: 0.875rem 0.875rem 1rem; /* 14 14 16 */
+}
+
+.bkh-statGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(10rem, 1fr)); /* 160px */
+  gap: 0.75rem; /* 12px */
+}
+
+.bkh-statCard {
+  background: #fff;
+  border: 0.0625rem solid var(--bkh-card-border);
+  border-radius: 0.625rem; /* 10px */
+  padding: 0.75rem; /* 12px */
+}
+
+.bkh-statLabel {
+  font-size: 0.75rem; /* 12px */
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 0.375rem; /* 6px */
+}
+
+.bkh-statValue {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 700;
+  color: var(--bkh-text);
+}
+
+.bkh-statRow {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem; /* 10px */
+}
+
+/* percent pills */
+.bkh-pill {
+  font-size: 0.75rem; /* 12px */
+  font-weight: 700;
+  padding: 0.1875rem 0.625rem; /* 3 10 */
+  border-radius: 999px;
+  line-height: 1.125rem; /* 18px */
+}
+
+.bkh-pill-green {
+  background: #dcfce7;
+  color: #059569;
+}
+.bkh-pill-red {
+  background: #fee2e2;
+  color: #db2626;
+}
+.bkh-pill-orange {
+  background: #ffedd5;
+  color: #f49e0a;
+}
+.bkh-pill-gray {
+  background: #eef2f7;
+  color: #64748a;
+}
+
+/* pagination */
+.bkh-pagination {
+  flex: 0 0 auto;
+  border-top: 0.0625rem solid var(--bkh-pagination-divider);
+  background: var(--bkh-card);
+}
+
+/* empty */
+.bkh-empty {
+  color: var(--bkh-muted);
+  font-weight: 600;
+  padding: 1.125rem !important; /* 18px */
+}
+
+/* Confirm dialog */
+.bkh-confirmPaper {
+  border-radius: 0.75rem !important; /* 12px */
+  border: 0.0625rem solid #e5e7eb !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+.bkh-confirmTitle {
+  font-size: 1.125rem !important; /* 18px */
+  font-weight: 800 !important;
+  color: #111827 !important;
+  padding: 1rem 1.25rem 0.375rem !important; /* 16 20 6 */
+}
+.bkh-confirmContent {
+  font-size: 0.875rem !important; /* 14px */
+  color: #334155 !important;
+  padding: 0.625rem 1.25rem 1.125rem !important; /* 10 20 18 */
+}
+.bkh-confirmActions {
+  padding: 0.625rem 1rem 0.875rem !important; /* 10 16 14 */
+  justify-content: flex-end !important;
+  gap: 1.375rem !important; /* 22px */
+}
+.bkh-confirmBtn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 700;
+  color: #111827;
+  cursor: pointer;
+}
+.bkh-confirmBtn:hover {
+  opacity: 0.9;
+}
+.bkh-confirmDanger {
+  color: #ef4444;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   ✅ RESPONSIVE: Keep table as table, enable horizontal scroll
+────────────────────────────────────────────────────────────── */
+
+/* <= 1024px: stats grid becomes 2 cols */
+/* <= 1024px: keep stats in ONE ROW (5 cards) and allow horizontal scroll */
+@media (max-width: 64em) {
+  /* the expanded container should scroll sideways */
+  .bkh-details {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    /* optional: give a little bottom padding so scrollbar doesn't touch cards */
+    padding-bottom: 0.75rem;
+  }
+
+  /* force the 5 cards to stay in a single line */
+  .bkh-statGrid {
+    grid-template-columns: repeat(5, minmax(10rem, 1fr));
+    width: max-content;        /* makes it wider than screen so it scrolls */
+    min-width: 100%;           /* still looks fine on larger tablets */
+  }
+
+  /* prevent each card from shrinking too small */
+  .bkh-statCard {
+    min-width: 10rem;          /* same as your minmax */
+  }
+
+  /* show scrollbar (don’t hide it here) */
+  .bkh-details::-webkit-scrollbar {
+    height: 10px;
+  }
+  .bkh-details::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.25);
+    border-radius: 999px;
+  }
+  .bkh-details::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+
+/* ✅ <= 900px: enable horizontal scrolling like SingleHistory
+   - table stays table
+   - headers remain, just scrollable */
+@media (max-width: 56.25em) {
+  .bkh-searchBox,
+  .bkh-selectBox {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* allow x scroll inside table container */
+  .bkh-tableWrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    /* show scrollbar (don’t hide on responsive) */
+    scrollbar-width: thin;
+    -ms-overflow-style: auto;
+  }
+
+  .bkh-tableWrap::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+  }
+  .bkh-tableWrap::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.25);
+    border-radius: 999px;
+  }
+  .bkh-tableWrap::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* important: don't force fixed layout on small screens */
+  .bkh-tableWrap table {
+    table-layout: auto;
+    min-width: 980px; /* force horizontal scroll */
+    width: max-content;
+  }
+
+  /* keep cells readable */
+  .bkh-row td,
+  .bkh-th {
+    white-space: nowrap;
+  }
+
+  /* name can wrap if you want, but usually it should also stay nowrap for consistent columns */
+  .bkh-nameCell,
+  .bkh-nameLink {
+    white-space: nowrap;
+  }
+
+  /* make sticky layout less aggressive if needed on small/tablet */
+  .bkh-paper.bkh-stickyLayout {
+    position: relative;
+    top: auto;
+    height: auto;
+    min-height: 0;
+  }
+}
+
+/* <= 425px: tighter paddings + still scroll horizontally */
+@media (max-width: 26.5625em) {
+  .bkh-wrap {
+    padding: 0.5rem;
+  }
+  .bkh-controlBox {
+    width: 100%;
+  }
+  .bkh-row td {
+    font-size: 0.82rem !important;
+  }
+  .bkh-tableWrap table {
+    min-width: 980px;
+  }
+}
+
+/* >= 1440px: slightly roomier */
+@media (min-width: 90em) {
+  .bkh-wrap {
+    padding: 0.75rem;
+  }
+  .bkh-controlBox {
+    min-height: 3.0625rem;
+  }
+  .bkh-statGrid {
+    grid-template-columns: repeat(5, minmax(10.5rem, 1fr));
+  }
+}
+
+/* >= 2560px */
+@media (min-width: 160em) {
+  .bkh-wrap {
+    padding: 1rem;
+  }
+  .bkh-row td {
+    font-size: 0.95rem !important;
+  }
+  .bkh-statValue {
+    font-size: 1.25rem;
+  }
+}
