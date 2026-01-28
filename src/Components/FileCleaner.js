@@ -162,6 +162,12 @@ export default function FileCleaner() {
     setStep("picked");
   };
 
+  function downloadClick(e, type) {
+    e.preventDefault();
+    e.stopPropagation();
+    handleDownload(type);
+  }
+
   const goBackFromResults = () => {
     // for mobile/tablet back on right side
     setStats(null);
@@ -190,7 +196,7 @@ export default function FileCleaner() {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-        }
+        },
       );
 
       if (!res.data || !res.data.ok) {
@@ -206,11 +212,67 @@ export default function FileCleaner() {
       toast.error(
         err?.response?.data?.message ||
           err?.message ||
-          "Something went wrong while cleaning the file."
+          "Something went wrong while cleaning the file.",
       );
     } finally {
       setLoading(false);
     }
+  }
+
+  // async function handleDownload(type) {
+  //   if (!jobId) {
+  //     toast.warn("No cleaned job found yet. Please clean a file first.");
+  //     return;
+  //   }
+
+  //   const url = `${apiBase()}/file-cleaner/download/${jobId}?type=${encodeURIComponent(
+  //     type
+  //   )}`;
+
+  //   try {
+  //     const res = await axios.get(url, { responseType: "blob" });
+
+  //     // Extract filename if backend sends it
+  //     const cd = res.headers?.["content-disposition"] || "";
+  //     const match = cd.match(/filename="([^"]+)"/i);
+  //     const filename = match?.[1] || `file-cleaner-${type}.xlsx`;
+
+  //     const blobUrl = window.URL.createObjectURL(res.data);
+  //     const a = document.createElement("a");
+  //     a.href = blobUrl;
+  //     a.download = filename;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     a.remove();
+  //     window.URL.revokeObjectURL(blobUrl);
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error("Download failed.");
+  //   }
+  // }
+
+  function downloadViaIframe(url) {
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = url;
+    document.body.appendChild(iframe);
+
+    // cleanup
+    setTimeout(() => {
+      try {
+        iframe.remove();
+      } catch {}
+    }, 10_000);
+  }
+
+  function triggerDownload(url) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.setAttribute("download", ""); // hint, backend still controls filename via Content-Disposition
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   }
 
   async function handleDownload(type) {
@@ -219,14 +281,43 @@ export default function FileCleaner() {
       return;
     }
 
-    const url = `${apiBase()}/file-cleaner/download/${jobId}?type=${encodeURIComponent(
-      type
-    )}`;
+    const url = `${apiBase()}/file-cleaner/download/${jobId}?type=${encodeURIComponent(type)}`;
+
+    // 1 small retry (because jobStore may not be ready instantly / race)
+    const tryFetch = async () => {
+      return axios.get(url, {
+        responseType: "blob",
+        validateStatus: () => true,
+        headers: { "Cache-Control": "no-cache" },
+      });
+    };
 
     try {
-      const res = await axios.get(url, { responseType: "blob" });
+      let res = await tryFetch();
 
-      // Extract filename if backend sends it
+      const contentType = res.headers?.["content-type"] || "";
+      const isJson = contentType.includes("application/json");
+
+      // if not ready, retry once quickly
+      if ((res.status !== 200 || isJson) && res.status === 404) {
+        await new Promise((r) => setTimeout(r, 200));
+        res = await tryFetch();
+      }
+
+      const contentType2 = res.headers?.["content-type"] || "";
+      const isJson2 = contentType2.includes("application/json");
+
+      if (res.status !== 200 || isJson2) {
+        let msg = "Download failed.";
+        try {
+          const text = await res.data.text();
+          const parsed = JSON.parse(text);
+          msg = parsed?.message || msg;
+        } catch {}
+        toast.error(msg);
+        return;
+      }
+
       const cd = res.headers?.["content-disposition"] || "";
       const match = cd.match(/filename="([^"]+)"/i);
       const filename = match?.[1] || `file-cleaner-${type}.xlsx`;
@@ -365,7 +456,9 @@ export default function FileCleaner() {
                   >
                     <ArrowBackRoundedIcon fontSize="small" />
                   </button>
-                  <div className="fcui-rulesTopText">Select cleaning filters</div>
+                  <div className="fcui-rulesTopText">
+                    Select cleaning filters
+                  </div>
                 </div>
 
                 <div className="fcui-rulesWrap">
@@ -528,7 +621,7 @@ export default function FileCleaner() {
                   <button
                     type="button"
                     className="fcui-downloadPrimary"
-                    onClick={() => handleDownload("clean")}
+                    onClick={(e) => handleDownload("clean")}
                     disabled={!jobId}
                   >
                     Download Cleaned File
@@ -537,7 +630,7 @@ export default function FileCleaner() {
                   <button
                     type="button"
                     className="fcui-downloadLink"
-                    onClick={() => handleDownload("invalid")}
+                    onClick={(e) => handleDownload("invalid")}
                     disabled={!jobId}
                   >
                     Download Invalid Rows
@@ -546,7 +639,7 @@ export default function FileCleaner() {
                   <button
                     type="button"
                     className="fcui-downloadLink"
-                    onClick={() => handleDownload("duplicates")}
+                    onClick={(e) => handleDownload("duplicates")}
                     disabled={!jobId}
                   >
                     Download Duplicates
