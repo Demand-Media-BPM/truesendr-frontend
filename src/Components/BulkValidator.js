@@ -1551,173 +1551,439 @@ const BulkValidator = () => {
   const cpCount = cpEmails.length;
 
   // ───────────────── WS: update any job by bulkId ─────────────────
+  // useEffect(() => {
+  //   try {
+  //     const user = encodeURIComponent(getUser());
+  //     const sid = encodeURIComponent(sessionIdRef.current);
+  //     const ws = new WebSocket(`${WS_URL}/?sessionId=${sid}&user=${user}`);
+  //     wsRef.current = ws;
+
+  //     ws.onopen = () => {
+  //       try {
+  //         ws.send(
+  //           JSON.stringify({
+  //             sessionId: sessionIdRef.current,
+  //             user: getUser(),
+  //           }),
+  //         );
+  //       } catch {}
+  //     };
+
+  //     ws.onmessage = (event) => {
+  //       try {
+  //         const data = JSON.parse(event.data);
+
+  //         // phase/state updates (preflight/cleaned/etc.)
+  //         if (
+  //           data?.bulkId &&
+  //           (data.phase || data.state) &&
+  //           data?.type !== "progress" &&
+  //           data?.type !== "bulk:stats" &&
+  //           data?.type !== "bulk:done"
+  //         ) {
+  //           const bulkId = data.bulkId;
+
+  //           setJobs((prev) =>
+  //             prev.map((j) => {
+  //               if (j.bulkId !== bulkId) return j;
+
+  //               const nextState = data.state || j.state;
+  //               const nextStage = stageFromStatePhase(
+  //                 nextState,
+  //                 data.phase || "",
+  //               );
+
+  //               return {
+  //                 ...j,
+  //                 state: nextState,
+  //                 stage: nextStage,
+  //                 totals: data.totals ? normTotals(data.totals) : j.totals,
+  //                 creditsRequired: data.creditsRequired ?? j.creditsRequired,
+  //                 cleaned: data.cleaned
+  //                   ? { ...j.cleaned, ...data.cleaned }
+  //                   : j.cleaned,
+  //               };
+  //             }),
+  //           );
+  //         }
+
+  //         // progress updates
+  //         if (
+  //           data?.type === "progress" &&
+  //           data.bulkId &&
+  //           typeof data.current === "number" &&
+  //           typeof data.total === "number"
+  //         ) {
+  //           const bulkId = data.bulkId;
+  //           setJobs((prev) =>
+  //             prev.map((j) => {
+  //               if (j.bulkId !== bulkId) return j;
+  //               // ✅ never allow progress to go backwards (fixes blinking on tab switch)
+  //               const incomingTotal = data.total || 0;
+  //               const incomingCurrent = data.current || 0;
+
+  //               // total can increase, never decrease
+  //               const nextTotal = Math.max(j.progressTotal || 0, incomingTotal);
+
+  //               // current can increase, never decrease
+  //               const nextCurrent = Math.max(
+  //                 j.progressCurrent || 0,
+  //                 incomingCurrent,
+  //               );
+
+  //               // clamp current to total (if total known)
+  //               const safeCurrent =
+  //                 nextTotal > 0
+  //                   ? Math.min(nextTotal, nextCurrent)
+  //                   : nextCurrent;
+
+  //               const nextPct =
+  //                 nextTotal > 0
+  //                   ? Math.min(100, Math.round((safeCurrent / nextTotal) * 100))
+  //                   : 0;
+
+  //               // const completedNow = nextTotal > 0 && safeCurrent >= nextTotal;
+
+  //               // return {
+  //               //   ...j,
+  //               //   stage:
+  //               //     j.stage === "completed"
+  //               //       ? "completed"
+  //               //       : completedNow
+  //               //       ? "completed"
+  //               //       : "validating",
+  //               //   progressCurrent: safeCurrent,
+  //               //   progressTotal: nextTotal,
+  //               //   progressPct: nextPct,
+  //               //   completedAt:
+  //               //     completedNow && !j.completedAt ? Date.now() : j.completedAt,
+  //               // };
+  //               const doneNow = nextTotal > 0 && safeCurrent >= nextTotal;
+
+  //               return {
+  //                 ...j,
+  //                 stage:
+  //                   j.stage === "completed"
+  //                     ? "completed"
+  //                     : doneNow
+  //                       ? "finalizing"
+  //                       : "validating",
+  //                 progressCurrent: safeCurrent,
+  //                 progressTotal: nextTotal,
+  //                 progressPct: nextPct,
+  //               };
+  //             }),
+  //           );
+  //         }
+
+  //         if (data?.type === "bulk:done" && data.bulkId) {
+  //           const bulkId = data.bulkId;
+  //           setJobs((prev) =>
+  //             prev.map((j) =>
+  //               j.bulkId === bulkId
+  //                 ? {
+  //                     ...j,
+  //                     stage: "completed",
+  //                     state: "done",
+  //                     creditsUsed: data.creditsUsed ?? j.creditsUsed ?? 0,
+  //                     counts: data.counts
+  //                       ? { ...j.counts, ...data.counts }
+  //                       : j.counts,
+  //                     completedAt: data.finishedAt
+  //                       ? new Date(data.finishedAt).getTime()
+  //                       : Date.now(),
+  //                   }
+  //                 : j,
+  //             ),
+  //           );
+  //         }
+
+  //         // aggregated counts
+  //         if (data?.type === "bulk:stats" && data.bulkId && data.counts) {
+  //           const bulkId = data.bulkId;
+  //           const counts = {
+  //             valid: data.counts.valid || 0,
+  //             risky: data.counts.risky || 0,
+  //             invalid: data.counts.invalid || 0,
+  //             unknown: data.counts.unknown || 0,
+  //           };
+  //           setJobs((prev) =>
+  //             prev.map((j) => (j.bulkId === bulkId ? { ...j, counts } : j)),
+  //           );
+  //         }
+  //       } catch {}
+  //     };
+
+  //     ws.onclose = () => {
+  //       wsRef.current = null;
+  //     };
+  //   } catch {}
+
+  //   return () => {
+  //     try {
+  //       wsRef.current && wsRef.current.close();
+  //     } catch {}
+  //   };
+  // }, []);
+
+  // ───────────────── WS: update any job by bulkId (with auto-reconnect) ─────────────────
   useEffect(() => {
-    try {
-      const user = encodeURIComponent(getUser());
-      const sid = encodeURIComponent(sessionIdRef.current);
-      const ws = new WebSocket(`${WS_URL}/?sessionId=${sid}&user=${user}`);
-      wsRef.current = ws;
+    let alive = true;
+    let retry = 0;
+    let retryTimer = null;
 
-      ws.onopen = () => {
-        try {
-          ws.send(
-            JSON.stringify({
-              sessionId: sessionIdRef.current,
-              user: getUser(),
-            }),
-          );
-        } catch {}
-      };
+    const connect = () => {
+      try {
+        const user = encodeURIComponent(getUser());
+        const sid = encodeURIComponent(sessionIdRef.current);
 
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
+        const ws = new WebSocket(`${WS_URL}/?sessionId=${sid}&user=${user}`);
+        wsRef.current = ws;
 
-          // phase/state updates (preflight/cleaned/etc.)
-          if (
-            data?.bulkId &&
-            (data.phase || data.state) &&
-            data?.type !== "progress" &&
-            data?.type !== "bulk:stats" &&
-            data?.type !== "bulk:done"
-          ) {
-            const bulkId = data.bulkId;
-
-            setJobs((prev) =>
-              prev.map((j) => {
-                if (j.bulkId !== bulkId) return j;
-
-                const nextState = data.state || j.state;
-                const nextStage = stageFromStatePhase(
-                  nextState,
-                  data.phase || "",
-                );
-
-                return {
-                  ...j,
-                  state: nextState,
-                  stage: nextStage,
-                  totals: data.totals ? normTotals(data.totals) : j.totals,
-                  creditsRequired: data.creditsRequired ?? j.creditsRequired,
-                  cleaned: data.cleaned
-                    ? { ...j.cleaned, ...data.cleaned }
-                    : j.cleaned,
-                };
+        ws.onopen = () => {
+          retry = 0; // reset backoff
+          try {
+            ws.send(
+              JSON.stringify({
+                sessionId: sessionIdRef.current,
+                user: getUser(),
               }),
             );
-          }
+          } catch {}
+        };
 
-          // progress updates
-          if (
-            data?.type === "progress" &&
-            data.bulkId &&
-            typeof data.current === "number" &&
-            typeof data.total === "number"
-          ) {
-            const bulkId = data.bulkId;
-            setJobs((prev) =>
-              prev.map((j) => {
-                if (j.bulkId !== bulkId) return j;
-                // ✅ never allow progress to go backwards (fixes blinking on tab switch)
-                const incomingTotal = data.total || 0;
-                const incomingCurrent = data.current || 0;
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
 
-                // total can increase, never decrease
-                const nextTotal = Math.max(j.progressTotal || 0, incomingTotal);
+            // phase/state updates (preflight/cleaned/etc.)
+            if (
+              data?.bulkId &&
+              (data.phase || data.state) &&
+              data?.type !== "progress" &&
+              data?.type !== "bulk:stats" &&
+              data?.type !== "bulk:done"
+            ) {
+              const bulkId = data.bulkId;
 
-                // current can increase, never decrease
-                const nextCurrent = Math.max(
-                  j.progressCurrent || 0,
-                  incomingCurrent,
-                );
+              setJobs((prev) =>
+                prev.map((j) => {
+                  if (j.bulkId !== bulkId) return j;
 
-                // clamp current to total (if total known)
-                const safeCurrent =
-                  nextTotal > 0
-                    ? Math.min(nextTotal, nextCurrent)
-                    : nextCurrent;
+                  const nextState = data.state || j.state;
+                  const nextStage = stageFromStatePhase(
+                    nextState,
+                    data.phase || "",
+                  );
 
-                const nextPct =
-                  nextTotal > 0
-                    ? Math.min(100, Math.round((safeCurrent / nextTotal) * 100))
-                    : 0;
+                  return {
+                    ...j,
+                    state: nextState,
+                    stage: nextStage,
+                    totals: data.totals ? normTotals(data.totals) : j.totals,
+                    creditsRequired: data.creditsRequired ?? j.creditsRequired,
+                    cleaned: data.cleaned
+                      ? { ...j.cleaned, ...data.cleaned }
+                      : j.cleaned,
+                  };
+                }),
+              );
+            }
 
-                // const completedNow = nextTotal > 0 && safeCurrent >= nextTotal;
+            // progress updates
+            if (
+              data?.type === "progress" &&
+              data.bulkId &&
+              typeof data.current === "number" &&
+              typeof data.total === "number"
+            ) {
+              const bulkId = data.bulkId;
+              setJobs((prev) =>
+                prev.map((j) => {
+                  if (j.bulkId !== bulkId) return j;
 
-                // return {
-                //   ...j,
-                //   stage:
-                //     j.stage === "completed"
-                //       ? "completed"
-                //       : completedNow
-                //       ? "completed"
-                //       : "validating",
-                //   progressCurrent: safeCurrent,
-                //   progressTotal: nextTotal,
-                //   progressPct: nextPct,
-                //   completedAt:
-                //     completedNow && !j.completedAt ? Date.now() : j.completedAt,
-                // };
-                return {
-                  ...j,
-                  stage: j.stage === "completed" ? "completed" : "validating",
-                  progressCurrent: safeCurrent,
-                  progressTotal: nextTotal,
-                  progressPct: nextPct,
-                };
-              }),
-            );
-          }
+                  const incomingTotal = data.total || 0;
+                  const incomingCurrent = data.current || 0;
 
-          if (data?.type === "bulk:done" && data.bulkId) {
-            const bulkId = data.bulkId;
-            setJobs((prev) =>
-              prev.map((j) =>
-                j.bulkId === bulkId
-                  ? {
-                      ...j,
-                      stage: "completed",
-                      state: "done",
-                      creditsUsed: data.creditsUsed ?? j.creditsUsed ?? 0,
-                      counts: data.counts
-                        ? { ...j.counts, ...data.counts }
-                        : j.counts,
-                      completedAt: data.finishedAt
-                        ? new Date(data.finishedAt).getTime()
-                        : Date.now(),
-                    }
-                  : j,
-              ),
-            );
-          }
+                  const nextTotal = Math.max(
+                    j.progressTotal || 0,
+                    incomingTotal,
+                  );
+                  const nextCurrent = Math.max(
+                    j.progressCurrent || 0,
+                    incomingCurrent,
+                  );
 
-          // aggregated counts
-          if (data?.type === "bulk:stats" && data.bulkId && data.counts) {
-            const bulkId = data.bulkId;
-            const counts = {
-              valid: data.counts.valid || 0,
-              risky: data.counts.risky || 0,
-              invalid: data.counts.invalid || 0,
-              unknown: data.counts.unknown || 0,
-            };
-            setJobs((prev) =>
-              prev.map((j) => (j.bulkId === bulkId ? { ...j, counts } : j)),
-            );
-          }
-        } catch {}
-      };
+                  const safeCurrent =
+                    nextTotal > 0
+                      ? Math.min(nextTotal, nextCurrent)
+                      : nextCurrent;
 
-      ws.onclose = () => {
-        wsRef.current = null;
-      };
-    } catch {}
+                  const nextPct =
+                    nextTotal > 0
+                      ? Math.min(
+                          100,
+                          Math.round((safeCurrent / nextTotal) * 100),
+                        )
+                      : 0;
+
+                  const doneNow = nextTotal > 0 && safeCurrent >= nextTotal;
+
+                  return {
+                    ...j,
+                    stage:
+                      j.stage === "completed"
+                        ? "completed"
+                        : doneNow
+                          ? "finalizing"
+                          : "validating",
+                    progressCurrent: safeCurrent,
+                    progressTotal: nextTotal,
+                    progressPct: nextPct,
+                  };
+                }),
+              );
+            }
+
+            // done
+            if (data?.type === "bulk:done" && data.bulkId) {
+              const bulkId = data.bulkId;
+              setJobs((prev) =>
+                prev.map((j) =>
+                  j.bulkId === bulkId
+                    ? {
+                        ...j,
+                        stage: "completed",
+                        state: "done",
+                        creditsUsed: data.creditsUsed ?? j.creditsUsed ?? 0,
+                        counts: data.counts
+                          ? { ...j.counts, ...data.counts }
+                          : j.counts,
+                        completedAt: data.finishedAt
+                          ? new Date(data.finishedAt).getTime()
+                          : Date.now(),
+                      }
+                    : j,
+                ),
+              );
+            }
+
+            // aggregated counts
+            if (data?.type === "bulk:stats" && data.bulkId && data.counts) {
+              const bulkId = data.bulkId;
+              const counts = {
+                valid: data.counts.valid || 0,
+                risky: data.counts.risky || 0,
+                invalid: data.counts.invalid || 0,
+                unknown: data.counts.unknown || 0,
+              };
+              setJobs((prev) =>
+                prev.map((j) => (j.bulkId === bulkId ? { ...j, counts } : j)),
+              );
+            }
+          } catch {}
+        };
+
+        ws.onclose = () => {
+          wsRef.current = null;
+          if (!alive) return;
+
+          // exponential backoff: 0.6s, 1.2s, 2.4s, ... max 8s
+          const wait = Math.min(8000, 600 * Math.pow(2, retry++));
+          retryTimer = setTimeout(() => {
+            if (alive) connect();
+          }, wait);
+        };
+
+        ws.onerror = () => {
+          try {
+            ws.close();
+          } catch {}
+        };
+      } catch {}
+    };
+
+    connect();
 
     return () => {
+      alive = false;
+      try {
+        if (retryTimer) clearTimeout(retryTimer);
+      } catch {}
       try {
         wsRef.current && wsRef.current.close();
       } catch {}
     };
   }, []);
+
+  // ───────────────── Finalizing watchdog: if WS misses bulk:done, confirm via /meta ─────────────────
+  useEffect(() => {
+    const inflightFinalizing = jobs.filter(
+      (j) => j.stage === "finalizing" && j.bulkId,
+    );
+
+    if (!inflightFinalizing.length) return;
+
+    const t = setInterval(async () => {
+      // check only a couple jobs, and only while finalizing (very light)
+      await Promise.all(
+        inflightFinalizing.map(async (j) => {
+          try {
+            const resp = await fetch(
+              `${API_BASE}/api/bulk/meta?bulkId=${encodeURIComponent(j.bulkId)}&username=${encodeURIComponent(getUser())}`,
+              { headers: { ...apiHeaders(), "Cache-Control": "no-cache" } },
+            );
+            if (!resp.ok) return;
+
+            const meta = await resp.json();
+            if (!meta) return;
+
+            // if backend says done -> flip UI immediately
+            if (
+              meta.state === "done" ||
+              meta.phase === "done" ||
+              meta.canDownload
+            ) {
+              setJobs((prev) =>
+                prev.map((x) =>
+                  x.bulkId === j.bulkId
+                    ? {
+                        ...x,
+                        stage: "completed",
+                        state: "done",
+                        creditsUsed: meta.creditsUsed ?? x.creditsUsed ?? 0,
+                        counts: meta.counts
+                          ? { ...x.counts, ...meta.counts }
+                          : x.counts,
+                        completedAt: meta.finishedAt
+                          ? new Date(meta.finishedAt).getTime()
+                          : Date.now(),
+                        progressCurrent:
+                          meta.progress?.current ?? x.progressCurrent,
+                        progressTotal: meta.progress?.total ?? x.progressTotal,
+                        progressPct:
+                          (meta.progress?.total || 0) > 0
+                            ? Math.min(
+                                100,
+                                Math.round(
+                                  ((meta.progress?.current || 0) /
+                                    (meta.progress?.total || 1)) *
+                                    100,
+                                ),
+                              )
+                            : x.progressPct,
+                      }
+                    : x,
+                ),
+              );
+            }
+          } catch {}
+        }),
+      );
+    }, 1200); // not aggressive; won’t impact speed
+
+    return () => clearInterval(t);
+  }, [jobs]);
 
   // ───────────────── Rehydrate cards from DB (fix: loader disappears on tab switch) ─────────────────
   useEffect(() => {
@@ -1745,7 +2011,10 @@ const BulkValidator = () => {
             const old = byId.get(fresh.bulkId);
             if (!old) return fresh;
 
-            const oldValidating = old.stage === "validating";
+            // const oldValidating = old.stage === "validating";
+            const oldValidating =
+              old.stage === "validating" || old.stage === "finalizing";
+
             const freshSaysDone =
               fresh.state === "done" ||
               fresh.stage === "completed" ||
@@ -1757,7 +2026,9 @@ const BulkValidator = () => {
 
               // ✅ don't reset loader/progress during validation
               stage:
-                oldValidating && !freshSaysDone ? "validating" : fresh.stage,
+                oldValidating && !freshSaysDone
+                  ? old.stage // keep "validating" or "finalizing" as-is
+                  : fresh.stage,
 
               // ✅ keep progress if fresh briefly returns 0
               progressCurrent:
@@ -1824,17 +2095,20 @@ const BulkValidator = () => {
 
   // ───────────────── Poll fallback for validating jobs ─────────────────
   useEffect(() => {
-    const hasValidating = jobs.some((j) => j.stage === "validating");
-    if (!hasValidating) return;
+    const hasInFlight = jobs.some(
+      (j) => j.stage === "validating" || j.stage === "finalizing",
+    );
+    if (!hasInFlight) return;
 
     const t = setInterval(async () => {
-      const validating = jobs.filter(
-        (j) => j.stage === "validating" && j.bulkId,
+      const inflight = jobs.filter(
+        (j) =>
+          (j.stage === "validating" || j.stage === "finalizing") && j.bulkId,
       );
-      if (!validating.length) return;
+      if (!inflight.length) return;
 
       await Promise.all(
-        validating.map(async (j) => {
+        inflight.map(async (j) => {
           try {
             const res = await fetch(
               `${API_BASE}/api/bulk/progress?sessionId=${encodeURIComponent(
@@ -1895,12 +2169,19 @@ const BulkValidator = () => {
                   //       : x.completedAt,
                   // };
 
+                  const doneNow = nextTotal > 0 && safeCurrent >= nextTotal;
+
                   return {
                     ...x,
                     progressCurrent: safeCurrent,
                     progressTotal: nextTotal,
                     progressPct: nextPct,
-                    stage: x.stage === "completed" ? "completed" : "validating",
+                    stage:
+                      x.stage === "completed"
+                        ? "completed"
+                        : doneNow
+                          ? "finalizing"
+                          : "validating",
                   };
                 }),
               );
@@ -2518,12 +2799,15 @@ function JobCard({
     (counts.unknown || 0);
 
   const showCompleted = job.stage === "completed";
-  const showValidating = job.stage === "validating";
+  // const showValidating = job.stage === "validating";
+  const showValidating =
+    job.stage === "validating" || job.stage === "finalizing";
   const showAnalyzing = job.stage === "analyzing";
   const showCleaning = job.stage === "cleaning";
   const showReport = job.stage === "report";
   const showNeedsFix = job.stage === "needs_fix";
   const showReady = job.stage === "ready";
+  const showFinalizing = job.stage === "finalizing";
   const showCompactStage = showAnalyzing || showCleaning || showValidating;
   const showHeaderMeta = showCompleted;
 
@@ -2656,7 +2940,9 @@ function JobCard({
       {showValidating && (
         <div className="bv-figmaStage">
           <div className="bv-figmaName">{job.fileName}</div>
-          <div className="bv-figmaLabel">Verifying</div>
+          <div className="bv-figmaLabel">
+            {job.stage === "finalizing" ? "Finalizing" : "Verifying"}
+          </div>
 
           <div className="bv-figmaTrack">
             <div
