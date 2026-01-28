@@ -1276,9 +1276,6 @@
 
 // export default BulkValidator;
 
-
-
-
 // BulkValidator.jsx (MULTI-CARD FLOW UI — matches screenshots + persistence fixes)
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
@@ -1286,7 +1283,6 @@ import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import "./BulkValidator.css";
 import BulkHistory from "./BulkHistory";
-
 
 // /** ───────────────── Endpoint resolution ───────────────── */
 // const DEFAULT_API_PORT = 5000;
@@ -1334,7 +1330,12 @@ import BulkHistory from "./BulkHistory";
 const API_BASE = process.env.REACT_APP_API_BASE;
 const WS_URL = process.env.REACT_APP_WS_URL;
 
-console.log("[BulkValidator][HARDCODED] API_BASE =", API_BASE, "WS_URL =", WS_URL);
+console.log(
+  "[BulkValidator][HARDCODED] API_BASE =",
+  API_BASE,
+  "WS_URL =",
+  WS_URL,
+);
 
 // keep these as-is (auth + polling)
 const BASIC_AUTH_B64 =
@@ -1344,7 +1345,6 @@ const BASIC_AUTH_B64 =
   "";
 
 const PROGRESS_POLL_MS = 700;
-
 
 const getUser = () =>
   typeof localStorage !== "undefined"
@@ -1407,7 +1407,7 @@ const bulkItemToJob = (item) => {
   const total =
     typeof item.progressTotal === "number" && item.progressTotal > 0
       ? item.progressTotal
-      : item.totalRows ?? totals.uniqueValid ?? item.creditsRequired ?? 0;
+      : (item.totalRows ?? totals.uniqueValid ?? item.creditsRequired ?? 0);
 
   return {
     uiId: item.bulkId,
@@ -1561,7 +1561,10 @@ const BulkValidator = () => {
       ws.onopen = () => {
         try {
           ws.send(
-            JSON.stringify({ sessionId: sessionIdRef.current, user: getUser() })
+            JSON.stringify({
+              sessionId: sessionIdRef.current,
+              user: getUser(),
+            }),
           );
         } catch {}
       };
@@ -1587,7 +1590,7 @@ const BulkValidator = () => {
                 const nextState = data.state || j.state;
                 const nextStage = stageFromStatePhase(
                   nextState,
-                  data.phase || ""
+                  data.phase || "",
                 );
 
                 return {
@@ -1600,7 +1603,7 @@ const BulkValidator = () => {
                     ? { ...j.cleaned, ...data.cleaned }
                     : j.cleaned,
                 };
-              })
+              }),
             );
           }
 
@@ -1625,7 +1628,7 @@ const BulkValidator = () => {
                 // current can increase, never decrease
                 const nextCurrent = Math.max(
                   j.progressCurrent || 0,
-                  incomingCurrent
+                  incomingCurrent,
                 );
 
                 // clamp current to total (if total known)
@@ -1639,23 +1642,30 @@ const BulkValidator = () => {
                     ? Math.min(100, Math.round((safeCurrent / nextTotal) * 100))
                     : 0;
 
-                const completedNow = nextTotal > 0 && safeCurrent >= nextTotal;
+                // const completedNow = nextTotal > 0 && safeCurrent >= nextTotal;
 
+                // return {
+                //   ...j,
+                //   stage:
+                //     j.stage === "completed"
+                //       ? "completed"
+                //       : completedNow
+                //       ? "completed"
+                //       : "validating",
+                //   progressCurrent: safeCurrent,
+                //   progressTotal: nextTotal,
+                //   progressPct: nextPct,
+                //   completedAt:
+                //     completedNow && !j.completedAt ? Date.now() : j.completedAt,
+                // };
                 return {
                   ...j,
-                  stage:
-                    j.stage === "completed"
-                      ? "completed"
-                      : completedNow
-                      ? "completed"
-                      : "validating",
+                  stage: j.stage === "completed" ? "completed" : "validating",
                   progressCurrent: safeCurrent,
                   progressTotal: nextTotal,
                   progressPct: nextPct,
-                  completedAt:
-                    completedNow && !j.completedAt ? Date.now() : j.completedAt,
                 };
-              })
+              }),
             );
           }
 
@@ -1676,8 +1686,8 @@ const BulkValidator = () => {
                         ? new Date(data.finishedAt).getTime()
                         : Date.now(),
                     }
-                  : j
-              )
+                  : j,
+              ),
             );
           }
 
@@ -1691,7 +1701,7 @@ const BulkValidator = () => {
               unknown: data.counts.unknown || 0,
             };
             setJobs((prev) =>
-              prev.map((j) => (j.bulkId === bulkId ? { ...j, counts } : j))
+              prev.map((j) => (j.bulkId === bulkId ? { ...j, counts } : j)),
             );
           }
         } catch {}
@@ -1776,7 +1786,7 @@ const BulkValidator = () => {
             "needs_cleanup",
             "needs_fix",
             "ready",
-          ].includes(it.state)
+          ].includes(it.state),
         );
 
         await Promise.all(
@@ -1794,10 +1804,10 @@ const BulkValidator = () => {
                     ...apiHeaders(),
                     "Content-Type": "application/json",
                   },
-                }
+                },
               );
             } catch {}
-          })
+          }),
         );
       } catch {}
     };
@@ -1819,7 +1829,7 @@ const BulkValidator = () => {
 
     const t = setInterval(async () => {
       const validating = jobs.filter(
-        (j) => j.stage === "validating" && j.bulkId
+        (j) => j.stage === "validating" && j.bulkId,
       );
       if (!validating.length) return;
 
@@ -1828,9 +1838,9 @@ const BulkValidator = () => {
           try {
             const res = await fetch(
               `${API_BASE}/api/bulk/progress?sessionId=${encodeURIComponent(
-                sessionIdRef.current
+                sessionIdRef.current,
               )}&bulkId=${encodeURIComponent(j.bulkId)}`,
-              { headers: { ...apiHeaders(), "Cache-Control": "no-cache" } }
+              { headers: { ...apiHeaders(), "Cache-Control": "no-cache" } },
             );
             const p = await res.json();
             if (
@@ -1846,11 +1856,11 @@ const BulkValidator = () => {
 
                   const nextTotal = Math.max(
                     x.progressTotal || 0,
-                    incomingTotal
+                    incomingTotal,
                   );
                   const nextCurrent = Math.max(
                     x.progressCurrent || 0,
-                    incomingCurrent
+                    incomingCurrent,
                   );
                   const safeCurrent =
                     nextTotal > 0
@@ -1861,34 +1871,42 @@ const BulkValidator = () => {
                     nextTotal > 0
                       ? Math.min(
                           100,
-                          Math.round((safeCurrent / nextTotal) * 100)
+                          Math.round((safeCurrent / nextTotal) * 100),
                         )
                       : 0;
 
-                  const completedNow =
-                    nextTotal > 0 && safeCurrent >= nextTotal;
+                  // const completedNow =
+                  //   nextTotal > 0 && safeCurrent >= nextTotal;
+
+                  // return {
+                  //   ...x,
+                  //   progressCurrent: safeCurrent,
+                  //   progressTotal: nextTotal,
+                  //   progressPct: nextPct,
+                  //   stage:
+                  //     x.stage === "completed"
+                  //       ? "completed"
+                  //       : completedNow
+                  //       ? "completed"
+                  //       : "validating",
+                  //   completedAt:
+                  //     completedNow && !x.completedAt
+                  //       ? Date.now()
+                  //       : x.completedAt,
+                  // };
 
                   return {
                     ...x,
                     progressCurrent: safeCurrent,
                     progressTotal: nextTotal,
                     progressPct: nextPct,
-                    stage:
-                      x.stage === "completed"
-                        ? "completed"
-                        : completedNow
-                        ? "completed"
-                        : "validating",
-                    completedAt:
-                      completedNow && !x.completedAt
-                        ? Date.now()
-                        : x.completedAt,
+                    stage: x.stage === "completed" ? "completed" : "validating",
                   };
-                })
+                }),
               );
             }
           } catch {}
-        })
+        }),
       );
     }, PROGRESS_POLL_MS);
 
@@ -1932,7 +1950,7 @@ const BulkValidator = () => {
   // ───────────────── Job actions ─────────────────
   const updateJob = (uiId, patch) => {
     setJobs((prev) =>
-      prev.map((j) => (j.uiId === uiId ? { ...j, ...patch } : j))
+      prev.map((j) => (j.uiId === uiId ? { ...j, ...patch } : j)),
     );
   };
 
@@ -1982,7 +2000,7 @@ const BulkValidator = () => {
           fileName: cpFileName || "EnteredManually.xlsx",
           text,
         },
-        { headers: { ...apiHeaders(), "Content-Type": "application/json" } }
+        { headers: { ...apiHeaders(), "Content-Type": "application/json" } },
       );
 
       const totals = normTotals(data.totals || {});
@@ -2055,7 +2073,7 @@ const BulkValidator = () => {
         formData,
         {
           headers: { ...apiHeaders() },
-        }
+        },
       );
 
       const totals = normTotals(data.totals || {});
@@ -2098,7 +2116,7 @@ const BulkValidator = () => {
           sessionId: sessionIdRef.current,
           username: getUser(),
         },
-        { headers: { ...apiHeaders(), "Content-Type": "application/json" } }
+        { headers: { ...apiHeaders(), "Content-Type": "application/json" } },
       );
 
       const invalidRemaining = data.invalidFormatRemaining ?? 0;
@@ -2151,7 +2169,7 @@ const BulkValidator = () => {
             hard: true,
             sessionId: sessionIdRef.current,
           },
-        }
+        },
       );
 
       removeJob(job.uiId);
@@ -2222,7 +2240,7 @@ const BulkValidator = () => {
       URL.revokeObjectURL(url);
     } catch (e) {
       toast.error(
-        `❌ Result download failed: ${e?.response?.data || e.message}`
+        `❌ Result download failed: ${e?.response?.data || e.message}`,
       );
     }
   };
@@ -2321,7 +2339,7 @@ const BulkValidator = () => {
                         {
                           headers: apiHeaders(),
                           responseType: "blob",
-                        }
+                        },
                       );
 
                       const ct =
@@ -2338,7 +2356,7 @@ const BulkValidator = () => {
                       URL.revokeObjectURL(url);
                     } catch (e) {
                       toast.error(
-                        `❌ Template download failed: ${e?.message || "Error"}`
+                        `❌ Template download failed: ${e?.message || "Error"}`,
                       );
                     }
                   }}
@@ -2522,7 +2540,7 @@ function JobCard({
   const fallbackTotal =
     typeof job.progressTotal === "number" && job.progressTotal > 0
       ? job.progressTotal
-      : job?.totals?.uniqueValid ?? job?.creditsRequired ?? 0;
+      : (job?.totals?.uniqueValid ?? job?.creditsRequired ?? 0);
 
   const safeCurrent =
     typeof job.progressCurrent === "number" ? job.progressCurrent : 0;

@@ -25,7 +25,6 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
 
 // MUI Icons
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -299,7 +298,6 @@ export default function BulkHistory({ refreshKey = 0 }) {
       .trim()
       .toLowerCase();
     return (rows || []).filter((r) => {
-      const cat = bulkStatusCategory(r.status);
 
       const statusOk =
         status === "all" ? true : String(r.status).toLowerCase() === status;
