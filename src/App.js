@@ -7,6 +7,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import axios from "axios";
+import { CreditsProvider } from "./credits/CreditsContext";
 
 /* Pages */
 import SingleValidator from "./Components/SingleValidator";
@@ -49,14 +50,14 @@ const App = () => {
   const [collapsed] = useState(false);
 
   const [isLoggedIn, setIsLoggedIn] = useState(
-    () => localStorage.getItem("isLoggedIn") === "true"
+    () => localStorage.getItem("isLoggedIn") === "true",
   );
   const [loggedInUser, setLoggedInUser] = useState(
-    () => localStorage.getItem("loggedInUser") || ""
+    () => localStorage.getItem("loggedInUser") || "",
   );
   const [showLoader, setShowLoader] = useState(false);
   const [credits, setCredits] = useState(() =>
-    Number(localStorage.getItem("credits") || 0)
+    Number(localStorage.getItem("credits") || 0),
   );
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -125,176 +126,178 @@ const App = () => {
           <Route path="*" element={<Navigate to="/signup" replace />} />
         </Routes>
       ) : (
-        <div className="app-container">
-          {/* ───────── SIDEBAR ───────── */}
-          <aside
-            className={`sidebar ${collapsed ? "collapsed" : ""} ${
-              mobileSidebarOpen ? "mobile-open" : ""
-            }`}
-          >
-            {/* Sticky top (logo) */}
-            <div className="sidebar-top">
-              <div className="sidebar-brand">
-                <img src={logo} alt="TrueSendr" className="sidebar-logo" />
-              </div>
-            </div>
-
-            {/* Scrollable nav */}
-            <div className="sidebar-scroll">
-              {/* MAIN */}
-              <div className="sidebar-section">
-                <div className="sidebar-section-title">MAIN</div>
-                <NavLink
-                  to="/dashboard"
-                  onClick={closeMobileSidebar}
-                  className={({ isActive }) =>
-                    isActive ? "nav-link active" : "nav-link"
-                  }
-                >
-                  <span className="nav-link-icon">
-                    <DashboardIcon />
-                  </span>
-                  <span className="nav-link-label">Dashboard</span>
-                </NavLink>
+        <CreditsProvider username={loggedInUser}>
+          <div className="app-container">
+            {/* ───────── SIDEBAR ───────── */}
+            <aside
+              className={`sidebar ${collapsed ? "collapsed" : ""} ${
+                mobileSidebarOpen ? "mobile-open" : ""
+              }`}
+            >
+              {/* Sticky top (logo) */}
+              <div className="sidebar-top">
+                <div className="sidebar-brand">
+                  <img src={logo} alt="TrueSendr" className="sidebar-logo" />
+                </div>
               </div>
 
-              {/* VALIDATION */}
-              <div className="sidebar-section">
-                <div className="sidebar-section-title">VALIDATION</div>
+              {/* Scrollable nav */}
+              <div className="sidebar-scroll">
+                {/* MAIN */}
+                <div className="sidebar-section">
+                  <div className="sidebar-section-title">MAIN</div>
+                  <NavLink
+                    to="/dashboard"
+                    onClick={closeMobileSidebar}
+                    className={({ isActive }) =>
+                      isActive ? "nav-link active" : "nav-link"
+                    }
+                  >
+                    <span className="nav-link-icon">
+                      <DashboardIcon />
+                    </span>
+                    <span className="nav-link-label">Dashboard</span>
+                  </NavLink>
+                </div>
 
-                <NavLink
-                  to="/single"
-                  onClick={closeMobileSidebar}
-                  className={({ isActive }) =>
-                    isActive ? "nav-link active" : "nav-link"
-                  }
-                >
-                  <span className="nav-link-icon">
-                    <MailOutlineIcon />
-                  </span>
-                  <span className="nav-link-label">Single</span>
-                </NavLink>
+                {/* VALIDATION */}
+                <div className="sidebar-section">
+                  <div className="sidebar-section-title">VALIDATION</div>
 
-                <NavLink
-                  to="/bulk"
-                  onClick={closeMobileSidebar}
-                  className={({ isActive }) =>
-                    isActive ? "nav-link active" : "nav-link"
-                  }
-                >
-                  <span className="nav-link-icon">
-                    <DescriptionOutlinedIcon />
-                  </span>
-                  <span className="nav-link-label">Bulk</span>
-                </NavLink>
+                  <NavLink
+                    to="/single"
+                    onClick={closeMobileSidebar}
+                    className={({ isActive }) =>
+                      isActive ? "nav-link active" : "nav-link"
+                    }
+                  >
+                    <span className="nav-link-icon">
+                      <MailOutlineIcon />
+                    </span>
+                    <span className="nav-link-label">Single</span>
+                  </NavLink>
 
-                <NavLink
-                  to="/phone"
-                  onClick={closeMobileSidebar}
-                  className={({ isActive }) =>
-                    isActive ? "nav-link active" : "nav-link"
-                  }
-                >
-                  <span className="nav-link-icon">
-                    <PhoneIphoneOutlinedIcon />
-                  </span>
-                  <span className="nav-link-label">Phone</span>
-                </NavLink>
+                  <NavLink
+                    to="/bulk"
+                    onClick={closeMobileSidebar}
+                    className={({ isActive }) =>
+                      isActive ? "nav-link active" : "nav-link"
+                    }
+                  >
+                    <span className="nav-link-icon">
+                      <DescriptionOutlinedIcon />
+                    </span>
+                    <span className="nav-link-label">Bulk</span>
+                  </NavLink>
+
+                  <NavLink
+                    to="/phone"
+                    onClick={closeMobileSidebar}
+                    className={({ isActive }) =>
+                      isActive ? "nav-link active" : "nav-link"
+                    }
+                  >
+                    <span className="nav-link-icon">
+                      <PhoneIphoneOutlinedIcon />
+                    </span>
+                    <span className="nav-link-label">Phone</span>
+                  </NavLink>
+                </div>
+
+                {/* EMAIL TOOLS */}
+                <div className="sidebar-section">
+                  <div className="sidebar-section-title">EMAIL TOOLS</div>
+
+                  <NavLink
+                    to="/finder"
+                    onClick={closeMobileSidebar}
+                    className={({ isActive }) =>
+                      isActive ? "nav-link active" : "nav-link"
+                    }
+                  >
+                    <span className="nav-link-icon">
+                      <SearchOutlinedIcon />
+                    </span>
+                    <span className="nav-link-label">Finder</span>
+                  </NavLink>
+
+                  <NavLink
+                    to="/Deliverability"
+                    onClick={closeMobileSidebar}
+                    className={({ isActive }) =>
+                      isActive ? "nav-link active" : "nav-link"
+                    }
+                  >
+                    <span className="nav-link-icon">
+                      <ForwardToInboxOutlinedIcon />
+                    </span>
+                    <span className="nav-link-label">Deliverability</span>
+                  </NavLink>
+                </div>
+
+                {/* UTILITIES */}
+                <div className="sidebar-section">
+                  <div className="sidebar-section-title">UTILITIES</div>
+
+                  <NavLink
+                    to="/Cleaner"
+                    onClick={closeMobileSidebar}
+                    className={({ isActive }) =>
+                      isActive ? "nav-link active" : "nav-link"
+                    }
+                  >
+                    <span className="nav-link-icon">
+                      <CleaningServicesOutlinedIcon />
+                    </span>
+                    <span className="nav-link-label">File Cleaner</span>
+                  </NavLink>
+                </div>
               </div>
+            </aside>
 
-              {/* EMAIL TOOLS */}
-              <div className="sidebar-section">
-                <div className="sidebar-section-title">EMAIL TOOLS</div>
+            {mobileSidebarOpen && (
+              <div className="sidebar-overlay" onClick={closeMobileSidebar} />
+            )}
 
-                <NavLink
-                  to="/finder"
-                  onClick={closeMobileSidebar}
-                  className={({ isActive }) =>
-                    isActive ? "nav-link active" : "nav-link"
-                  }
-                >
-                  <span className="nav-link-icon">
-                    <SearchOutlinedIcon />
-                  </span>
-                  <span className="nav-link-label">Finder</span>
-                </NavLink>
-
-                <NavLink
-                  to="/Deliverability"
-                  onClick={closeMobileSidebar}
-                  className={({ isActive }) =>
-                    isActive ? "nav-link active" : "nav-link"
-                  }
-                >
-                  <span className="nav-link-icon">
-                    <ForwardToInboxOutlinedIcon />
-                  </span>
-                  <span className="nav-link-label">Deliverability</span>
-                </NavLink>
-              </div>
-
-              {/* UTILITIES */}
-              <div className="sidebar-section">
-                <div className="sidebar-section-title">UTILITIES</div>
-
-                <NavLink
-                  to="/Cleaner"
-                  onClick={closeMobileSidebar}
-                  className={({ isActive }) =>
-                    isActive ? "nav-link active" : "nav-link"
-                  }
-                >
-                  <span className="nav-link-icon">
-                    <CleaningServicesOutlinedIcon />
-                  </span>
-                  <span className="nav-link-label">File Cleaner</span>
-                </NavLink>
-              </div>
-            </div>
-          </aside>
-
-          {mobileSidebarOpen && (
-            <div className="sidebar-overlay" onClick={closeMobileSidebar} />
-          )}
-
-          {/* ───────── MAIN CONTENT ───────── */}
-          <div className="content-area">
-            <div className="topbar-row">
-              <HeaderBar
-                onLogout={handleLogout}
-                username={loggedInUser}
-                credits={credits}
-              />
-
-              <button
-                className="mobile-menu-btn"
-                onClick={
-                  mobileSidebarOpen ? closeMobileSidebar : openMobileSidebar
-                }
-                aria-label="Open menu"
-                type="button"
-              >
-                {mobileSidebarOpen ? <CloseIcon /> : <MenuIcon />}
-              </button>
-            </div>
-
-            <main className="main-content">
-              <Routes>
-                <Route
-                  path="/"
-                  element={<Navigate to="/dashboard" replace />}
+            {/* ───────── MAIN CONTENT ───────── */}
+            <div className="content-area">
+              <div className="topbar-row">
+                <HeaderBar
+                  onLogout={handleLogout}
+                  username={loggedInUser}
+                  // credits={credits}
                 />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/single" element={<SingleValidator />} />
-                <Route path="/bulk" element={<BulkValidator />} />
-                <Route path="/finder" element={<EmailFinder />} />
-                <Route path="/phone" element={<PhoneValidator />} />
-                <Route path="/Deliverability" element={<Deliverability />} />
-                <Route path="/Cleaner" element={<FileCleaner />} />
-              </Routes>
-            </main>
+
+                <button
+                  className="mobile-menu-btn"
+                  onClick={
+                    mobileSidebarOpen ? closeMobileSidebar : openMobileSidebar
+                  }
+                  aria-label="Open menu"
+                  type="button"
+                >
+                  {mobileSidebarOpen ? <CloseIcon /> : <MenuIcon />}
+                </button>
+              </div>
+
+              <main className="main-content">
+                <Routes>
+                  <Route
+                    path="/"
+                    element={<Navigate to="/dashboard" replace />}
+                  />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/single" element={<SingleValidator />} />
+                  <Route path="/bulk" element={<BulkValidator />} />
+                  <Route path="/finder" element={<EmailFinder />} />
+                  <Route path="/phone" element={<PhoneValidator />} />
+                  <Route path="/Deliverability" element={<Deliverability />} />
+                  <Route path="/Cleaner" element={<FileCleaner />} />
+                </Routes>
+              </main>
+            </div>
           </div>
-        </div>
+        </CreditsProvider>
       )}
 
       {/* <ToastContainer position="top-right" autoClose={4000} theme="light" /> */}

@@ -1276,6 +1276,8 @@
 
 // export default BulkValidator;
 
+
+
 // BulkValidator.jsx (MULTI-CARD FLOW UI — matches screenshots + persistence fixes)
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
@@ -1283,50 +1285,8 @@ import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import "./BulkValidator.css";
 import BulkHistory from "./BulkHistory";
+import { useCredits } from "../credits/CreditsContext";
 
-// /** ───────────────── Endpoint resolution ───────────────── */
-// const DEFAULT_API_PORT = 5000;
-// const isBrowser = typeof window !== "undefined";
-// const loc = isBrowser
-//   ? window.location
-//   : { protocol: "http:", hostname: "localhost", host: "localhost" };
-// const isLocalHost = /^(localhost|127\.0\.0\.1)$/i.test(loc?.hostname || "");
-
-// const envApi =
-//   (typeof process !== "undefined" &&
-//     process.env &&
-//     process.env.REACT_APP_API_BASE) ||
-//   "";
-// const envWs =
-//   (typeof process !== "undefined" &&
-//     process.env &&
-//     process.env.REACT_APP_WS_URL) ||
-//   "";
-
-// const API_BASE =
-//   envApi ||
-//   (isLocalHost
-//     ? `http://localhost:${DEFAULT_API_PORT}`
-//     : `${loc.protocol}//${loc.host}`);
-
-// const WS_URL =
-//   envWs ||
-//   (API_BASE.startsWith("http")
-//     ? API_BASE.replace(/^http/i, "ws").replace(/\/+$/, "")
-//     : (loc.protocol === "https:" ? "wss:" : "ws:") +
-//       (isLocalHost ? `//localhost:${DEFAULT_API_PORT}` : `//${loc.host}`));
-
-// const BASIC_AUTH_B64 =
-//   (typeof process !== "undefined" &&
-//     process.env &&
-//     process.env.REACT_APP_BULK_AUTH_B64) ||
-//   "";
-
-// const PROGRESS_POLL_MS = 700;
-
-/** ───────────────── Endpoint resolution (HARDCODED FOR DEBUG) ───────────────── */
-
-// ⚠️ TEMP: force backend + ws to production domain only (bypasses env + localhost logic)
 const API_BASE = process.env.REACT_APP_API_BASE;
 const WS_URL = process.env.REACT_APP_WS_URL;
 
@@ -1398,7 +1358,6 @@ const bulkItemToJob = (item) => {
     (counts.risky || 0) +
     (counts.unknown || 0);
 
-  // ✅ prefer backend persisted progress (stable)
   const done =
     typeof item.progressCurrent === "number"
       ? item.progressCurrent
@@ -1535,6 +1494,19 @@ const BulkValidator = () => {
   const sessionIdRef = useRef(uuidv4());
   const wsRef = useRef(null);
 
+  const { refreshCredits } = useCredits();
+  const creditsRefreshTimerRef = useRef(null);
+  const refreshedBulkIdsRef = useRef(new Set());
+
+  const scheduleCreditsRefresh = () => {
+    if (creditsRefreshTimerRef.current)
+      clearTimeout(creditsRefreshTimerRef.current);
+
+    creditsRefreshTimerRef.current = setTimeout(() => {
+      refreshCredits?.();
+    }, 700);
+  };
+
   // Copy & Paste modal
   const [cpOpen, setCpOpen] = useState(false);
   const [cpFileName, setCpFileName] = useState("filename.xlsx");
@@ -1550,183 +1522,6 @@ const BulkValidator = () => {
 
   const cpCount = cpEmails.length;
 
-  // ───────────────── WS: update any job by bulkId ─────────────────
-  // useEffect(() => {
-  //   try {
-  //     const user = encodeURIComponent(getUser());
-  //     const sid = encodeURIComponent(sessionIdRef.current);
-  //     const ws = new WebSocket(`${WS_URL}/?sessionId=${sid}&user=${user}`);
-  //     wsRef.current = ws;
-
-  //     ws.onopen = () => {
-  //       try {
-  //         ws.send(
-  //           JSON.stringify({
-  //             sessionId: sessionIdRef.current,
-  //             user: getUser(),
-  //           }),
-  //         );
-  //       } catch {}
-  //     };
-
-  //     ws.onmessage = (event) => {
-  //       try {
-  //         const data = JSON.parse(event.data);
-
-  //         // phase/state updates (preflight/cleaned/etc.)
-  //         if (
-  //           data?.bulkId &&
-  //           (data.phase || data.state) &&
-  //           data?.type !== "progress" &&
-  //           data?.type !== "bulk:stats" &&
-  //           data?.type !== "bulk:done"
-  //         ) {
-  //           const bulkId = data.bulkId;
-
-  //           setJobs((prev) =>
-  //             prev.map((j) => {
-  //               if (j.bulkId !== bulkId) return j;
-
-  //               const nextState = data.state || j.state;
-  //               const nextStage = stageFromStatePhase(
-  //                 nextState,
-  //                 data.phase || "",
-  //               );
-
-  //               return {
-  //                 ...j,
-  //                 state: nextState,
-  //                 stage: nextStage,
-  //                 totals: data.totals ? normTotals(data.totals) : j.totals,
-  //                 creditsRequired: data.creditsRequired ?? j.creditsRequired,
-  //                 cleaned: data.cleaned
-  //                   ? { ...j.cleaned, ...data.cleaned }
-  //                   : j.cleaned,
-  //               };
-  //             }),
-  //           );
-  //         }
-
-  //         // progress updates
-  //         if (
-  //           data?.type === "progress" &&
-  //           data.bulkId &&
-  //           typeof data.current === "number" &&
-  //           typeof data.total === "number"
-  //         ) {
-  //           const bulkId = data.bulkId;
-  //           setJobs((prev) =>
-  //             prev.map((j) => {
-  //               if (j.bulkId !== bulkId) return j;
-  //               // ✅ never allow progress to go backwards (fixes blinking on tab switch)
-  //               const incomingTotal = data.total || 0;
-  //               const incomingCurrent = data.current || 0;
-
-  //               // total can increase, never decrease
-  //               const nextTotal = Math.max(j.progressTotal || 0, incomingTotal);
-
-  //               // current can increase, never decrease
-  //               const nextCurrent = Math.max(
-  //                 j.progressCurrent || 0,
-  //                 incomingCurrent,
-  //               );
-
-  //               // clamp current to total (if total known)
-  //               const safeCurrent =
-  //                 nextTotal > 0
-  //                   ? Math.min(nextTotal, nextCurrent)
-  //                   : nextCurrent;
-
-  //               const nextPct =
-  //                 nextTotal > 0
-  //                   ? Math.min(100, Math.round((safeCurrent / nextTotal) * 100))
-  //                   : 0;
-
-  //               // const completedNow = nextTotal > 0 && safeCurrent >= nextTotal;
-
-  //               // return {
-  //               //   ...j,
-  //               //   stage:
-  //               //     j.stage === "completed"
-  //               //       ? "completed"
-  //               //       : completedNow
-  //               //       ? "completed"
-  //               //       : "validating",
-  //               //   progressCurrent: safeCurrent,
-  //               //   progressTotal: nextTotal,
-  //               //   progressPct: nextPct,
-  //               //   completedAt:
-  //               //     completedNow && !j.completedAt ? Date.now() : j.completedAt,
-  //               // };
-  //               const doneNow = nextTotal > 0 && safeCurrent >= nextTotal;
-
-  //               return {
-  //                 ...j,
-  //                 stage:
-  //                   j.stage === "completed"
-  //                     ? "completed"
-  //                     : doneNow
-  //                       ? "finalizing"
-  //                       : "validating",
-  //                 progressCurrent: safeCurrent,
-  //                 progressTotal: nextTotal,
-  //                 progressPct: nextPct,
-  //               };
-  //             }),
-  //           );
-  //         }
-
-  //         if (data?.type === "bulk:done" && data.bulkId) {
-  //           const bulkId = data.bulkId;
-  //           setJobs((prev) =>
-  //             prev.map((j) =>
-  //               j.bulkId === bulkId
-  //                 ? {
-  //                     ...j,
-  //                     stage: "completed",
-  //                     state: "done",
-  //                     creditsUsed: data.creditsUsed ?? j.creditsUsed ?? 0,
-  //                     counts: data.counts
-  //                       ? { ...j.counts, ...data.counts }
-  //                       : j.counts,
-  //                     completedAt: data.finishedAt
-  //                       ? new Date(data.finishedAt).getTime()
-  //                       : Date.now(),
-  //                   }
-  //                 : j,
-  //             ),
-  //           );
-  //         }
-
-  //         // aggregated counts
-  //         if (data?.type === "bulk:stats" && data.bulkId && data.counts) {
-  //           const bulkId = data.bulkId;
-  //           const counts = {
-  //             valid: data.counts.valid || 0,
-  //             risky: data.counts.risky || 0,
-  //             invalid: data.counts.invalid || 0,
-  //             unknown: data.counts.unknown || 0,
-  //           };
-  //           setJobs((prev) =>
-  //             prev.map((j) => (j.bulkId === bulkId ? { ...j, counts } : j)),
-  //           );
-  //         }
-  //       } catch {}
-  //     };
-
-  //     ws.onclose = () => {
-  //       wsRef.current = null;
-  //     };
-  //   } catch {}
-
-  //   return () => {
-  //     try {
-  //       wsRef.current && wsRef.current.close();
-  //     } catch {}
-  //   };
-  // }, []);
-
-  // ───────────────── WS: update any job by bulkId (with auto-reconnect) ─────────────────
   useEffect(() => {
     let alive = true;
     let retry = 0;
@@ -1866,6 +1661,10 @@ const BulkValidator = () => {
                     : j,
                 ),
               );
+              if (!refreshedBulkIdsRef.current.has(bulkId)) {
+                refreshedBulkIdsRef.current.add(bulkId);
+                scheduleCreditsRefresh();
+              }
             }
 
             // aggregated counts
@@ -1888,7 +1687,6 @@ const BulkValidator = () => {
           wsRef.current = null;
           if (!alive) return;
 
-          // exponential backoff: 0.6s, 1.2s, 2.4s, ... max 8s
           const wait = Math.min(8000, 600 * Math.pow(2, retry++));
           retryTimer = setTimeout(() => {
             if (alive) connect();
@@ -1913,6 +1711,8 @@ const BulkValidator = () => {
       try {
         wsRef.current && wsRef.current.close();
       } catch {}
+      if (creditsRefreshTimerRef.current)
+        clearTimeout(creditsRefreshTimerRef.current);
     };
   }, []);
 
@@ -1925,7 +1725,6 @@ const BulkValidator = () => {
     if (!inflightFinalizing.length) return;
 
     const t = setInterval(async () => {
-      // check only a couple jobs, and only while finalizing (very light)
       await Promise.all(
         inflightFinalizing.map(async (j) => {
           try {
@@ -1938,7 +1737,6 @@ const BulkValidator = () => {
             const meta = await resp.json();
             if (!meta) return;
 
-            // if backend says done -> flip UI immediately
             if (
               meta.state === "done" ||
               meta.phase === "done" ||
@@ -1976,12 +1774,15 @@ const BulkValidator = () => {
                     : x,
                 ),
               );
+              if (!refreshedBulkIdsRef.current.has(j.bulkId)) {
+                refreshedBulkIdsRef.current.add(j.bulkId);
+                scheduleCreditsRefresh();
+              }
             }
           } catch {}
         }),
       );
-    }, 1200); // not aggressive; won’t impact speed
-
+    }, 1200); 
     return () => clearInterval(t);
   }, [jobs]);
 
@@ -2003,7 +1804,6 @@ const BulkValidator = () => {
         const items = res.data?.items || [];
         const nextJobs = items.map(bulkItemToJob);
 
-        // ✅ keep newest at top (backend already sorted)
         setJobs((prev) => {
           const byId = new Map(prev.map((j) => [j.bulkId, j]));
 
@@ -2011,7 +1811,6 @@ const BulkValidator = () => {
             const old = byId.get(fresh.bulkId);
             if (!old) return fresh;
 
-            // const oldValidating = old.stage === "validating";
             const oldValidating =
               old.stage === "validating" || old.stage === "finalizing";
 
@@ -2024,13 +1823,11 @@ const BulkValidator = () => {
               ...old,
               ...fresh,
 
-              // ✅ don't reset loader/progress during validation
               stage:
                 oldValidating && !freshSaysDone
                   ? old.stage // keep "validating" or "finalizing" as-is
                   : fresh.stage,
 
-              // ✅ keep progress if fresh briefly returns 0
               progressCurrent:
                 oldValidating && (fresh.progressCurrent ?? 0) === 0
                   ? old.progressCurrent
@@ -2148,26 +1945,6 @@ const BulkValidator = () => {
                           Math.round((safeCurrent / nextTotal) * 100),
                         )
                       : 0;
-
-                  // const completedNow =
-                  //   nextTotal > 0 && safeCurrent >= nextTotal;
-
-                  // return {
-                  //   ...x,
-                  //   progressCurrent: safeCurrent,
-                  //   progressTotal: nextTotal,
-                  //   progressPct: nextPct,
-                  //   stage:
-                  //     x.stage === "completed"
-                  //       ? "completed"
-                  //       : completedNow
-                  //       ? "completed"
-                  //       : "validating",
-                  //   completedAt:
-                  //     completedNow && !x.completedAt
-                  //       ? Date.now()
-                  //       : x.completedAt,
-                  // };
 
                   const doneNow = nextTotal > 0 && safeCurrent >= nextTotal;
 
@@ -2344,7 +2121,7 @@ const BulkValidator = () => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("sessionId", sessionIdRef.current);
-    formData.append("bulkId", bulkId); // ✅ important (persist job id)
+    formData.append("bulkId", bulkId); 
 
     try {
       setUploading(true);
@@ -2519,6 +2296,7 @@ const BulkValidator = () => {
       a.click();
 
       URL.revokeObjectURL(url);
+      scheduleCreditsRefresh();
     } catch (e) {
       toast.error(
         `❌ Result download failed: ${e?.response?.data || e.message}`,
@@ -2775,8 +2553,6 @@ const BulkValidator = () => {
       )}
     </div>
   );
-  //   </div>
-  // );
 };
 
 function JobCard({
@@ -2799,7 +2575,6 @@ function JobCard({
     (counts.unknown || 0);
 
   const showCompleted = job.stage === "completed";
-  // const showValidating = job.stage === "validating";
   const showValidating =
     job.stage === "validating" || job.stage === "finalizing";
   const showAnalyzing = job.stage === "analyzing";
@@ -2882,7 +2657,6 @@ function JobCard({
             <div className="bv-figmaBar indeterminate" />
           </div>
 
-          {/* numbers hidden for analyzing/cleaning */}
         </div>
       )}
 

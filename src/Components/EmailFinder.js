@@ -320,11 +320,11 @@
 //   );
 // }
 
-
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "./EmailFinder.css";
 import EmailFinderHistory from "./EmailFinderHistory";
+import { useCredits } from "../credits/CreditsContext";
 
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 
@@ -412,6 +412,26 @@ export default function EmailFinder() {
   const username = getUsername();
   const token = getToken();
 
+  const { refreshCredits } = useCredits();
+  const creditsRefreshTimersRef = useRef([]);
+  const refreshedJobIdsRef = useRef(new Set()); // refresh once per job
+
+  const scheduleCreditsRefresh = () => {
+    // clear old scheduled refreshes
+    creditsRefreshTimersRef.current.forEach((t) => clearTimeout(t));
+    creditsRefreshTimersRef.current = [];
+
+    // 1) quick refresh (for cache-hit paths)
+    creditsRefreshTimersRef.current.push(
+      setTimeout(() => refreshCredits?.(), 400),
+    );
+
+    // 2) delayed refresh (for worker path where credit decrements AFTER state becomes done)
+    creditsRefreshTimersRef.current.push(
+      setTimeout(() => refreshCredits?.(), 2200),
+    );
+  };
+
   const [activeTab, setActiveTab] = useState("validate"); // validate | history
 
   // Left form
@@ -450,14 +470,14 @@ export default function EmailFinder() {
       try {
         const res = await axios.get(
           apiUrl(`/api/finder/history?limit=5&_ts=${Date.now()}`),
-          { headers: buildHeaders() }
+          { headers: buildHeaders() },
         );
 
         const items = Array.isArray(res.data?.items)
           ? res.data.items
           : Array.isArray(res.data?.history)
-          ? res.data.history
-          : [];
+            ? res.data.history
+            : [];
 
         const normalized = items.map((it) => ({
           _id: String(it._id),
@@ -500,18 +520,31 @@ export default function EmailFinder() {
       try {
         const resp = await axios.get(
           apiUrl(
-            `/api/finder/job/${encodeURIComponent(jobId)}?_ts=${Date.now()}`
+            `/api/finder/job/${encodeURIComponent(jobId)}?_ts=${Date.now()}`,
           ),
-          { headers: buildHeaders() }
+          { headers: buildHeaders() },
         );
 
         const j = resp.data || {};
+        const nextState = j.state || "done"; // backend should return state
+        const prevState = cards.find(
+          (c) => String(c._id) === String(jobId),
+        )?.state;
+        const justFinished = prevState === "running" && nextState !== "running";
+
+        // ✅ CREDIT REFRESH: exactly when backend returns final result
+        // (this is the moment you deduct credits + card becomes final)
+        if (justFinished && !refreshedJobIdsRef.current.has(String(jobId))) {
+          refreshedJobIdsRef.current.add(String(jobId));
+          scheduleCreditsRefresh();
+        }
+
         setCards((prev) =>
           prev.map((c) => {
             if (String(c._id) !== String(jobId)) return c;
             return {
               ...c,
-              state: j.state || c.state,
+              state: nextState,
               fullName: j.fullName || c.fullName,
               domain: j.domain || c.domain,
               email: j.email || "",
@@ -519,7 +552,7 @@ export default function EmailFinder() {
               updatedAt: j.updatedAt || c.updatedAt,
               createdAt: j.createdAt || c.createdAt,
             };
-          })
+          }),
         );
       } catch {
         // ignore transient
@@ -553,6 +586,9 @@ export default function EmailFinder() {
       if (pollTimerRef.current) clearInterval(pollTimerRef.current);
       pollTimerRef.current = null;
       inflightRef.current.clear();
+
+      creditsRefreshTimersRef.current.forEach((t) => clearTimeout(t));
+      creditsRefreshTimersRef.current = [];
     };
   }, []);
 
@@ -586,10 +622,23 @@ export default function EmailFinder() {
       const resp = await axios.post(
         apiUrl("/api/finder/start"),
         { fullName: n, domain: d },
-        { headers: buildHeaders() }
+        { headers: buildHeaders() },
       );
 
       const jobId = resp.data?.jobId;
+      if (!jobId) throw new Error("No jobId returned");
+      const stateFromStart = resp.data?.state; // running | done | error (if provided)
+
+      // ✅ if backend returns final result immediately and you create final card now
+      if (
+        stateFromStart &&
+        stateFromStart !== "running" &&
+        !refreshedJobIdsRef.current.has(String(jobId))
+      ) {
+        refreshedJobIdsRef.current.add(String(jobId));
+        scheduleCreditsRefresh();
+      }
+
       if (!jobId) throw new Error("No jobId returned");
 
       const nowIso = new Date().toISOString();
@@ -597,11 +646,11 @@ export default function EmailFinder() {
       // add running card to top immediately (so loader card shows)
       const newCard = {
         _id: String(jobId),
-        state: "running",
+        state: stateFromStart || "running",
         fullName: n,
         domain: d,
-        email: "",
-        error: "",
+        email: resp.data?.email || "",
+        error: resp.data?.error || "",
         createdAt: nowIso,
         updatedAt: nowIso,
       };

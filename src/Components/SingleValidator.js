@@ -645,13 +645,13 @@
 
 // export default SingleValidator;
 
-
 // SingleValidator.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import "./SingleValidator.css";
 import SingleValidationHistory from "./SingleValidationHistory";
+import { useCredits } from "../credits/CreditsContext";
 
 // MUI icons for status pills
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -670,45 +670,6 @@ const HINT_2_MS = 14000;
 // Set to true to re-enable logs, badges, etc.
 const SHOW_DEBUG = false;
 
-// /** ───────────────── Endpoint resolution ───────────────── */
-// const isBrowser = typeof window !== "undefined";
-// const loc = isBrowser
-//   ? window.location
-//   : { protocol: "http:", hostname: "localhost", host: "localhost" };
-// const isLocalHost = /^(localhost|127\.0\.0\.1)$/i.test(loc.hostname || "");
-// const envApi =
-//   (typeof process !== "undefined" &&
-//     process.env &&
-//     process.env.REACT_APP_API_BASE) ||
-//   "";
-// const envWs =
-//   (typeof process !== "undefined" &&
-//     process.env &&
-//     process.env.REACT_APP_WS_URL) ||
-//   "";
-
-// const wsProto = loc.protocol === "https:" ? "wss:" : "ws:";
-
-// const API_BASE =
-//   envApi ||
-//   (isLocalHost
-//     ? `http://localhost:${DEFAULT_API_PORT}`
-//     : `${loc.protocol}//${loc.host}`);
-
-// const WS_URL =
-//   envWs ||
-//   (isLocalHost
-//     ? `${wsProto}//localhost:${DEFAULT_API_PORT}/`
-//     : `${wsProto}//${loc.host}/`);
-
-// console.log("[SingleValidator] API_BASE =", API_BASE, "WS_URL =", WS_URL);
-
-/** ───────────────── Endpoint resolution (HARDCODED FOR DEBUG) ───────────────── */
-
-// ⚠️ TEMP: force backend + ws to production domain only (bypasses env + localhost logic)
-// const API_BASE = "https://app.truenotsendr.com";
-// const WS_URL = "wss://app.truenotsendr.com";
-
 const API_BASE = process.env.REACT_APP_API_BASE;
 const WS_URL = process.env.REACT_APP_WS_URL;
 
@@ -716,9 +677,8 @@ console.log(
   "[SingleValidator][HARDCODED] API_BASE =",
   API_BASE,
   "WS_URL =",
-  WS_URL
+  WS_URL,
 );
-
 
 /** ───────────────── Helpers ───────────────── */
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -781,6 +741,21 @@ const SingleValidator = () => {
   const wsRef = useRef(null);
   const wsReconnectTimer = useRef(null);
 
+  // ✅ Credits hook (Option A)
+  const { refreshCredits } = useCredits();
+
+  // debounce credits refresh so multiple finalizations don't spam /get-credits
+  const creditRefreshTimerRef = useRef(null);
+
+  const scheduleCreditRefresh = () => {
+    if (creditRefreshTimerRef.current)
+      clearTimeout(creditRefreshTimerRef.current);
+
+    creditRefreshTimerRef.current = setTimeout(() => {
+      refreshCredits?.();
+    }, 600);
+  };
+
   const pageVisibleRef = useRef(true);
   const hintTimersRef = useRef([]);
 
@@ -808,9 +783,12 @@ const SingleValidator = () => {
       setTimeout(
         () =>
           setWaitingHint("Still verifying — some mail servers respond slowly."),
-        HINT_1_MS
+        HINT_1_MS,
       ),
-      setTimeout(() => setWaitingHint("Running extra checks to be sure."), HINT_2_MS),
+      setTimeout(
+        () => setWaitingHint("Running extra checks to be sure."),
+        HINT_2_MS,
+      ),
     ];
   };
   const stopHintTimers = () => {
@@ -821,7 +799,9 @@ const SingleValidator = () => {
 
   /** ───────────────── Stabilizers (per email) ───────────────── */
   const stopStabilizerFor = (emailAddr) => {
-    const key = String(emailAddr || "").trim().toLowerCase();
+    const key = String(emailAddr || "")
+      .trim()
+      .toLowerCase();
     if (!key) return;
 
     const t = pollTimersRef.current.get(key);
@@ -858,7 +838,9 @@ const SingleValidator = () => {
       const idKey = idKeyByEmailRef.current.get(key);
       if (!idKey) {
         stopStabilizerFor(e);
-        setPendingEmails((prev) => prev.filter((p) => p.email.toLowerCase() !== key));
+        setPendingEmails((prev) =>
+          prev.filter((p) => p.email.toLowerCase() !== key),
+        );
         return;
       }
 
@@ -920,7 +902,8 @@ const SingleValidator = () => {
       score: typeof data.score === "number" ? data.score : 0,
     };
 
-    const confVal = typeof data.confidence === "number" ? data.confidence : null;
+    const confVal =
+      typeof data.confidence === "number" ? data.confidence : null;
     if (confVal !== null) setConfidence(confVal);
 
     const { msg, reasonText, color } = renderFromResult({
@@ -946,7 +929,9 @@ const SingleValidator = () => {
     setStatusColor(color);
 
     // remove this email from pending list
-    setPendingEmails((prev) => prev.filter((p) => p.email.toLowerCase() !== key));
+    setPendingEmails((prev) =>
+      prev.filter((p) => p.email.toLowerCase() !== key),
+    );
 
     // add/update in results (one card per email)
     setResults((prev) => {
@@ -966,6 +951,7 @@ const SingleValidator = () => {
 
     // trigger history refresh for the history tab
     setHistoryReloadTrigger((prev) => prev + 1);
+    scheduleCreditRefresh();
   };
 
   /** ───────────────── WebSocket ───────────────── */
@@ -983,7 +969,7 @@ const SingleValidator = () => {
             JSON.stringify({
               sessionId: sessionIdRef.current,
               username: getUser(),
-            })
+            }),
           );
         } catch {}
       };
@@ -999,7 +985,8 @@ const SingleValidator = () => {
               const metaSender =
                 data?.meta?.sender ||
                 (typeof data.message === "string"
-                  ? (data.message.match(/Using probe sender:\s*([^\s]+)/i) || [])[1]
+                  ? (data.message.match(/Using probe sender:\s*([^\s]+)/i) ||
+                      [])[1]
                   : "");
               if (metaSender) setProbeUsed(metaSender);
             }
@@ -1007,7 +994,8 @@ const SingleValidator = () => {
               const metaMx =
                 data?.meta?.mx ||
                 (typeof data.message === "string"
-                  ? (data.message.match(/Probing (?:mx|host):\s*([^\s]+)/i) || [])[1]
+                  ? (data.message.match(/Probing (?:mx|host):\s*([^\s]+)/i) ||
+                      [])[1]
                   : "");
               if (metaMx) setMxHost(metaMx);
             }
@@ -1016,7 +1004,10 @@ const SingleValidator = () => {
 
           if (data?.type === "status") {
             // IMPORTANT: finalize based on data.email (so concurrent emails work)
-            if (isDefinitive(String(data.status || "")) || data.inProgress === false) {
+            if (
+              isDefinitive(String(data.status || "")) ||
+              data.inProgress === false
+            ) {
               finalize(data);
             }
           }
@@ -1062,7 +1053,12 @@ const SingleValidator = () => {
           });
           const data = await res.json();
 
-          if (data && data.ok && Array.isArray(data.pendings) && data.pendings.length > 0) {
+          if (
+            data &&
+            data.ok &&
+            Array.isArray(data.pendings) &&
+            data.pendings.length > 0
+          ) {
             const pendings = data.pendings
               .map((p) => {
                 const em = p?.email ? String(p.email).trim() : "";
@@ -1110,6 +1106,8 @@ const SingleValidator = () => {
       } catch {}
       stopAllStabilizers();
       stopHintTimers();
+      if (creditRefreshTimerRef.current) clearTimeout(creditRefreshTimerRef.current);
+
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -1214,20 +1212,27 @@ const SingleValidator = () => {
       const prelim = await res.json();
 
       if (prelim?.error) {
-        setPendingEmails((prev) => prev.filter((p) => p.email.toLowerCase() !== key));
+        setPendingEmails((prev) =>
+          prev.filter((p) => p.email.toLowerCase() !== key),
+        );
         stopStabilizerFor(trimmed);
         toast.error(prelim.error);
         return;
       }
 
-      if (isDefinitive(String(prelim.status || "")) || prelim.inProgress === false) {
+      if (
+        isDefinitive(String(prelim.status || "")) ||
+        prelim.inProgress === false
+      ) {
         finalize(prelim);
       } else {
         // start per-email stabilizer
         startStabilizerFor(trimmed);
       }
     } catch (error) {
-      setPendingEmails((prev) => prev.filter((p) => p.email.toLowerCase() !== key));
+      setPendingEmails((prev) =>
+        prev.filter((p) => p.email.toLowerCase() !== key),
+      );
       stopStabilizerFor(trimmed);
       toast.error("❌ Error: " + error.message);
     }
@@ -1278,7 +1283,9 @@ const SingleValidator = () => {
       <div className="result-card-header">
         <div>
           <div className="result-email">{r.email}</div>
-          <div className="result-subline">Validated on: {formatDateTime(r.timestamp)}</div>
+          <div className="result-subline">
+            Validated on: {formatDateTime(r.timestamp)}
+          </div>
         </div>
         <span className={statusPillClass(r.status)}>
           {statusIconNode(r.status)}
@@ -1299,8 +1306,8 @@ const SingleValidator = () => {
             {typeof r.confidence === "number"
               ? `${Math.round(r.confidence * 100)}%`
               : typeof confidence === "number"
-              ? `${Math.round(confidence * 100)}%`
-              : "—"}
+                ? `${Math.round(confidence * 100)}%`
+                : "—"}
           </div>
         </div>
       </div>
@@ -1326,9 +1333,13 @@ const SingleValidator = () => {
             <span className="metric-header-cell">Role Based</span>
           </div>
           <div className="metric-value-row">
-            <span className="metric-value-cell">{r.isDisposable ? "Yes" : "No"}</span>
+            <span className="metric-value-cell">
+              {r.isDisposable ? "Yes" : "No"}
+            </span>
             <span className="metric-value-cell">{r.isFree ? "Yes" : "No"}</span>
-            <span className="metric-value-cell">{r.isRoleBased ? "Yes" : "No"}</span>
+            <span className="metric-value-cell">
+              {r.isRoleBased ? "Yes" : "No"}
+            </span>
           </div>
         </div>
       </div>
@@ -1390,7 +1401,9 @@ const SingleValidator = () => {
                 pendingEmails.map((p) => (
                   <div className="pending-card" key={`pending-${p.email}`}>
                     <div className="pending-email">{p.email}</div>
-                    <div className="pending-bar-text">{waitingHint || "Verifying"}</div>
+                    <div className="pending-bar-text">
+                      {waitingHint || "Verifying"}
+                    </div>
                     <div className="pending-bar-track">
                       <div className="pending-bar-thumb" />
                     </div>
@@ -1407,7 +1420,9 @@ const SingleValidator = () => {
 
               {results.length > 0 && (
                 <div className="result-list">
-                  {results.map((r, idx) => renderResultCard(r, `${r.email}-${idx}`))}
+                  {results.map((r, idx) =>
+                    renderResultCard(r, `${r.email}-${idx}`),
+                  )}
                 </div>
               )}
 
@@ -1420,14 +1435,22 @@ const SingleValidator = () => {
                         <div className="log-line muted">No logs yet.</div>
                       )}
                       {logs.map((l, idx) => (
-                        <div key={idx} className={`log-line ${l.level || "info"}`}>
+                        <div
+                          key={idx}
+                          className={`log-line ${l.level || "info"}`}
+                        >
                           <span className="log-time">
                             {new Date(l.at).toLocaleTimeString()}
                           </span>
-                          {l.step && <span className="log-step">[{l.step}]</span>}
+                          {l.step && (
+                            <span className="log-step">[{l.step}]</span>
+                          )}
                           <span className="log-msg">{l.message}</span>
                           {l._local && (
-                            <span className="log-tag" title="Client-side milestone">
+                            <span
+                              className="log-tag"
+                              title="Client-side milestone"
+                            >
                               (client)
                             </span>
                           )}

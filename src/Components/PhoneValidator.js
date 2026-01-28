@@ -5,6 +5,7 @@ import "./PhoneValidator.css";
 import PhoneHistory from "./PhoneHistory"; // keep (history page later)
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import { useCredits } from "../credits/CreditsContext";
 
 import * as FlagIcons from "country-flag-icons/react/3x2";
 
@@ -173,7 +174,7 @@ function cleanCountryLabel(label) {
   const s = String(label || "").trim();
   return s.replace(
     /^([\uD83C\uDDE6-\uD83C\uDDFF]{2}|\p{Extended_Pictographic})\s*/u,
-    ""
+    "",
   );
 }
 
@@ -215,6 +216,26 @@ function stripDialFromInput(inputNumber, dial) {
 export default function PhoneValidator() {
   const username = getUsername();
   const token = getToken();
+  // ✅ Credits refresh (same pattern as Single/Bulk)
+  const { refreshCredits } = useCredits();
+  const creditsRefreshTimerRef = useRef(null);
+
+  const scheduleCreditsRefresh = () => {
+    if (creditsRefreshTimerRef.current)
+      clearTimeout(creditsRefreshTimerRef.current);
+
+    creditsRefreshTimerRef.current = setTimeout(() => {
+      refreshCredits?.();
+    }, 700);
+  };
+
+  // cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (creditsRefreshTimerRef.current)
+        clearTimeout(creditsRefreshTimerRef.current);
+    };
+  }, []);
 
   const [activeTab, setActiveTab] = useState("validate"); // validate | history
 
@@ -313,7 +334,7 @@ export default function PhoneValidator() {
     // Keep your rule: no +country code in input
     if (/^(\+|00)/.test(trimmed)) {
       setErrMsg(
-        "Remove +country code from input. Select the country and type only the local number."
+        "Remove +country code from input. Select the country and type only the local number.",
       );
       return;
     }
@@ -336,12 +357,13 @@ export default function PhoneValidator() {
           phone: trimmed,
           countryCode: String(countryCode).trim().toUpperCase(),
         },
-        { headers: buildHeaders() }
+        { headers: buildHeaders() },
       );
 
       if (res.data?.ok) {
         setPhoneInput("");
         setReloadTick((x) => x + 1);
+        scheduleCreditsRefresh();
       } else {
         setErrMsg(res.data?.message || "Validation failed.");
       }
@@ -454,8 +476,8 @@ export default function PhoneValidator() {
       typeof row?.leadQualityPercentage === "number"
         ? Math.max(0, Math.min(100, row.leadQualityPercentage))
         : typeof row?.leadQualityScore === "number"
-        ? Math.max(0, Math.min(100, row.leadQualityScore))
-        : null;
+          ? Math.max(0, Math.min(100, row.leadQualityScore))
+          : null;
 
     return (
       <div className="ph-resultCard" key={row?._id}>

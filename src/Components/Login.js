@@ -45,6 +45,7 @@ export default function Login({ onLogin }) {
         // keep your existing behavior
         setTimeout(() => {
           onLogin(user.username, perms, credits);
+          navigate("/dashboard", { replace: true });
         }, 800);
       } else {
         setError(res.data?.message || "Invalid email or password.");
