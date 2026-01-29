@@ -392,6 +392,7 @@
   border: 0.0625rem solid rgba(17, 24, 39, 0.12);
   border-radius: 0.5rem;
   padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
 }
 
 .ph-loaderTopLine {
