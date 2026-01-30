@@ -732,6 +732,7 @@
 //   );
 // }
 
+
 // src/Components/PhoneValidator.js
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
@@ -994,7 +995,7 @@ export default function PhoneValidator() {
   const [activeTab, setActiveTab] = useState("validate"); // validate | history
 
   // Left form
-  const [dialCode, setDialCode] = useState("+1");
+  const [dialCode, setDialCode] = useState("");
   const [phoneInput, setPhoneInput] = useState("");
 
   // Validate workflow
@@ -1269,9 +1270,7 @@ export default function PhoneValidator() {
               className="ph-input"
               placeholder="+91"
               value={dialCode}
-              onChange={(e) => {
-                setDialCode(keepPlusPrefix(e.target.value));
-              }}
+              onChange={(e) => setDialCode(e.target.value)}
             />
           </div>
 
