@@ -31,6 +31,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import singleLogo from "../assets/illustrator/single.png";
 
 const apiBase =
   process.env.REACT_APP_API_BASE ||
@@ -128,10 +129,10 @@ export default function SingleValidationHistory({ username, reloadTrigger }) {
           typeof res.data.total === "number"
             ? res.data.total
             : typeof res.data.totalCount === "number"
-            ? res.data.totalCount
-            : Array.isArray(data)
-            ? data.length
-            : 0
+              ? res.data.totalCount
+              : Array.isArray(data)
+                ? data.length
+                : 0,
         );
       } else {
         setHistory([]);
@@ -163,7 +164,7 @@ export default function SingleValidationHistory({ username, reloadTrigger }) {
       await axios.post(
         `${apiBase}/api/single/clear-history`,
         { username },
-        { headers: { "ngrok-skip-browser-warning": "true" } }
+        { headers: { "ngrok-skip-browser-warning": "true" } },
       );
       setExpanded({});
       setPage(0);
@@ -274,25 +275,6 @@ export default function SingleValidationHistory({ username, reloadTrigger }) {
         <div className="svh-cardBody">
           <TableContainer className="svh-tableWrap">
             <Table stickyHeader aria-label="Single validation history">
-              {/* <TableHead>
-                <TableRow>
-                  <TableCell className="svh-th" style={{ width: 320 }}>
-                    Email
-                  </TableCell>
-                  <TableCell className="svh-th" style={{ width: 160 }}>
-                    Status
-                  </TableCell>
-                  <TableCell className="svh-th">Reason</TableCell>
-                  <TableCell className="svh-th" style={{ width: 110 }}>
-                    Score
-                  </TableCell>
-                  <TableCell
-                    className="svh-th"
-                    align="right"
-                    style={{ width: 64 }}
-                  />
-                </TableRow>
-              </TableHead> */}
 
               <TableHead>
                 <TableRow>
@@ -317,8 +299,19 @@ export default function SingleValidationHistory({ username, reloadTrigger }) {
                   </TableRow>
                 ) : totalCount === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="svh-empty">
-                      No validations found.
+                    <TableCell colSpan={5} className="svh-emptyCell">
+                      <div className="svh-emptyState">
+                        <img
+                          src={singleLogo}
+                          alt="Nothing here yet"
+                          className="svh-emptyIllus"
+                          draggable="false"
+                        />
+                        <div className="svh-emptyTitle">Nothing here yet!</div>
+                        <div className="svh-emptySub">
+                          Start your first email validation to see results
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -339,7 +332,7 @@ export default function SingleValidationHistory({ username, reloadTrigger }) {
                       typeof item.confidence === "number"
                         ? Math.max(
                             0,
-                            Math.min(100, Math.round(item.confidence * 100))
+                            Math.min(100, Math.round(item.confidence * 100)),
                           )
                         : null;
 

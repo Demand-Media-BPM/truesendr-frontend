@@ -17,6 +17,7 @@ import { CiCircleCheck } from "react-icons/ci";
 import { CiCircleRemove } from "react-icons/ci";
 import { CiCircleQuestion } from "react-icons/ci";
 import { CiCircleAlert } from "react-icons/ci";
+import DashboardEmpty from "../assets/illustrator/Dashboard.png";
 
 // ---------- config helpers ----------
 function apiBase() {
@@ -280,7 +281,7 @@ export default function Dashboard() {
       params.set("username", username || "");
       const resp = await fetch(
         `${apiBase()}/dashboard/summary?${params.toString()}`,
-        { method: "GET", headers: baseHeaders(username) }
+        { method: "GET", headers: baseHeaders(username) },
       );
       if (!resp.ok) throw new Error((await resp.text()) || "Failed to load");
       const data = await resp.json();
@@ -315,7 +316,7 @@ export default function Dashboard() {
 
       const resp = await fetch(
         `${apiBase()}/dashboard/recent?${params.toString()}`,
-        { method: "GET", headers: baseHeaders(username) }
+        { method: "GET", headers: baseHeaders(username) },
       );
       if (!resp.ok) throw new Error((await resp.text()) || "Failed to load");
       const data = await resp.json();
@@ -345,7 +346,7 @@ export default function Dashboard() {
         unknown: 0,
         requests: 0,
       },
-    [summary]
+    [summary],
   );
 
   const totalsBulk = useMemo(
@@ -358,7 +359,7 @@ export default function Dashboard() {
         unknown: 0,
         requests: 0,
       },
-    [summary]
+    [summary],
   );
 
   const daily = useMemo(() => summary?.daily || [], [summary]);
@@ -387,7 +388,7 @@ export default function Dashboard() {
       },
       { name: "Unknown", value: totalsBulk.unknown, fill: COLORS.unknown },
     ],
-    [totalsBulk]
+    [totalsBulk],
   );
 
   const pieSingle = useMemo(
@@ -405,7 +406,7 @@ export default function Dashboard() {
       },
       { name: "Unknown", value: totalsSingle.unknown, fill: COLORS.unknown },
     ],
-    [totalsSingle]
+    [totalsSingle],
   );
 
   const barsData = useMemo(() => {
@@ -504,7 +505,7 @@ export default function Dashboard() {
             Undeliverable: 0,
             Unknown: 0,
             total: 0,
-          }
+          },
         );
 
         bars.push({
@@ -593,9 +594,35 @@ export default function Dashboard() {
       )}
 
       {allEmpty && !loading && !err && (
-        <div className="empty card">
-          <div className="empty-title">No activity in this period</div>
-          <div className="empty-sub">Try selecting a different range.</div>
+        <div className="dash-empty-wrap">
+          <div className="dash-empty">
+            <img
+              className="dash-empty-illus"
+              src={DashboardEmpty}
+              alt="No activity yet"
+            />
+
+            <div className="dash-empty-title">No activity yet!</div>
+            <div className="dash-empty-sub">
+              Your dashboard will appear here once you validate emails
+            </div>
+
+            <div className="dash-empty-actions">
+              <button
+                className="btn-empty btn-empty-primary"
+                onClick={() => navigate("/single")}
+              >
+                Validate Email
+              </button>
+
+              <button
+                className="btn-empty btn-empty-outline"
+                onClick={() => navigate("/bulk")}
+              >
+                Upload List
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -733,7 +760,7 @@ export default function Dashboard() {
                       {totalsSingle.emails
                         ? Math.round(
                             (totalsSingle.deliverable * 100) /
-                              totalsSingle.emails
+                              totalsSingle.emails,
                           )
                         : 0}
                       %)
@@ -751,7 +778,7 @@ export default function Dashboard() {
                       {totalsSingle.emails
                         ? Math.round(
                             (totalsSingle.undeliverable * 100) /
-                              totalsSingle.emails
+                              totalsSingle.emails,
                           )
                         : 0}
                       %)
@@ -765,7 +792,7 @@ export default function Dashboard() {
                       {fmt(totalsSingle.risky)} (
                       {totalsSingle.emails
                         ? Math.round(
-                            (totalsSingle.risky * 100) / totalsSingle.emails
+                            (totalsSingle.risky * 100) / totalsSingle.emails,
                           )
                         : 0}
                       %)
@@ -779,7 +806,7 @@ export default function Dashboard() {
                       {fmt(totalsSingle.unknown)} (
                       {totalsSingle.emails
                         ? Math.round(
-                            (totalsSingle.unknown * 100) / totalsSingle.emails
+                            (totalsSingle.unknown * 100) / totalsSingle.emails,
                           )
                         : 0}
                       %)
@@ -826,13 +853,6 @@ export default function Dashboard() {
                         {pieBulk.map((e, i) => (
                           <Cell key={`b-${i}`} fill={e.fill} />
                         ))}
-                        {/* <Label
-                          position="center"
-                          content={CenterLabel({
-                            value: fmt(totalsBulk.emails),
-                            sub: "Total Emails",
-                          })}
-                        /> */}
                       </Pie>
                       <RTooltip formatter={(val, n) => [fmt(val), n]} />
                     </PieChart>
@@ -852,7 +872,7 @@ export default function Dashboard() {
                       {fmt(totalsBulk.deliverable)} (
                       {totalsBulk.emails
                         ? Math.round(
-                            (totalsBulk.deliverable * 100) / totalsBulk.emails
+                            (totalsBulk.deliverable * 100) / totalsBulk.emails,
                           )
                         : 0}
                       %)
@@ -869,7 +889,8 @@ export default function Dashboard() {
                       {fmt(totalsBulk.undeliverable)} (
                       {totalsBulk.emails
                         ? Math.round(
-                            (totalsBulk.undeliverable * 100) / totalsBulk.emails
+                            (totalsBulk.undeliverable * 100) /
+                              totalsBulk.emails,
                           )
                         : 0}
                       %)
@@ -883,7 +904,7 @@ export default function Dashboard() {
                       {fmt(totalsBulk.risky)} (
                       {totalsBulk.emails
                         ? Math.round(
-                            (totalsBulk.risky * 100) / totalsBulk.emails
+                            (totalsBulk.risky * 100) / totalsBulk.emails,
                           )
                         : 0}
                       %)
@@ -897,7 +918,7 @@ export default function Dashboard() {
                       {fmt(totalsBulk.unknown)} (
                       {totalsBulk.emails
                         ? Math.round(
-                            (totalsBulk.unknown * 100) / totalsBulk.emails
+                            (totalsBulk.unknown * 100) / totalsBulk.emails,
                           )
                         : 0}
                       %)
@@ -964,8 +985,8 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
 
                   <XAxis
-                    dataKey="dateLabel" 
-                    interval={0} 
+                    dataKey="dateLabel"
+                    interval={0}
                     tickLine={false}
                     axisLine={false}
                     height={chartCfg.xHeight}
@@ -1105,7 +1126,7 @@ export default function Dashboard() {
                                 <td className="status-cell">
                                   <span
                                     className={`status-dot status-dot-${getStatusCategory(
-                                      row.status
+                                      row.status,
                                     )}`}
                                   />
                                   <span className="status-label">
@@ -1126,8 +1147,8 @@ export default function Dashboard() {
                                               0,
                                               Math.min(
                                                 100,
-                                                Number(row.confidence)
-                                              )
+                                                Number(row.confidence),
+                                              ),
                                             )}%`,
                                           }}
                                         />
@@ -1155,7 +1176,7 @@ export default function Dashboard() {
                                 <td className="status-cell">
                                   <span
                                     className={`status-dot status-dot-${getBulkStatusCategory(
-                                      row.status
+                                      row.status,
                                     )}`}
                                   />
                                   <span className="status-label">

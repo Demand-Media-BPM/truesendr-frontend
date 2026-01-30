@@ -360,11 +360,42 @@
   background: var(--bkh-card);
 }
 
-/* empty */
-.bkh-empty {
-  color: var(--bkh-muted);
+/* empty states with centered logo */
+.bkh-emptyCell {
+  padding: 0 !important;
+  border-bottom: 0 !important;
+}
+
+.bkh-emptyState {
+  width: 100%;
+  min-height: 22rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.bkh-emptyLogo {
+  width: clamp(100px, 10vw, 160px); /* ✅ your global rule */
+  height: auto;
+  display: block;
+  margin-bottom: 0.75rem;
+  user-select: none;
+}
+
+.bkh-emptyTitle {
   font-weight: 600;
-  padding: 1.125rem !important; /* 18px */
+  color: #111827;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.bkh-emptySub {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #667085;
 }
 
 /* Confirm dialog */
@@ -425,13 +456,13 @@
   /* force the 5 cards to stay in a single line */
   .bkh-statGrid {
     grid-template-columns: repeat(5, minmax(10rem, 1fr));
-    width: max-content;        /* makes it wider than screen so it scrolls */
-    min-width: 100%;           /* still looks fine on larger tablets */
+    width: max-content; /* makes it wider than screen so it scrolls */
+    min-width: 100%; /* still looks fine on larger tablets */
   }
 
   /* prevent each card from shrinking too small */
   .bkh-statCard {
-    min-width: 10rem;          /* same as your minmax */
+    min-width: 10rem; /* same as your minmax */
   }
 
   /* show scrollbar (don’t hide it here) */
@@ -446,7 +477,6 @@
     background: transparent;
   }
 }
-
 
 /* ✅ <= 900px: enable horizontal scrolling like SingleHistory
    - table stays table

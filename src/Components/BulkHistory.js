@@ -25,6 +25,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import bulkLogo from "../assets/illustrator/bulk.png";
 
 // MUI Icons
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -32,34 +33,6 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
-
-// /** Endpoint + headers copied from BulkValidator for consistency */
-// const DEFAULT_API_PORT = 5000;
-// const isBrowser = typeof window !== "undefined";
-// const loc = isBrowser
-//   ? window.location
-//   : { protocol: "http:", hostname: "localhost", host: "localhost" };
-// const isLocalHost = /^(localhost|127\.0\.0\.1)$/i.test(loc?.hostname || "");
-
-// const envApi =
-//   (typeof process !== "undefined" &&
-//     process.env &&
-//     process.env.REACT_APP_API_BASE) ||
-//   "";
-
-// const API_BASE =
-//   envApi ||
-//   (isLocalHost
-//     ? `http://localhost:${DEFAULT_API_PORT}`
-//     : `${loc.protocol}//${loc.host}`);
-
-// const BASIC_AUTH_B64 =
-//   (typeof process !== "undefined" &&
-//     process.env &&
-//     process.env.REACT_APP_BULK_AUTH_B64) ||
-//   "";
-
-/** ───────────────── Endpoint resolution (HARDCODED FOR DEBUG) ───────────────── */
 
 // ⚠️ TEMP: force backend to production domain only (bypasses env + localhost logic)
 const API_BASE = process.env.REACT_APP_API_BASE;
@@ -72,7 +45,6 @@ const BASIC_AUTH_B64 =
     process.env &&
     process.env.REACT_APP_BULK_AUTH_B64) ||
   "";
-
 
 const getUser = () =>
   typeof localStorage !== "undefined"
@@ -246,7 +218,7 @@ export default function BulkHistory({ refreshKey = 0 }) {
       URL.revokeObjectURL(url);
     } catch (e) {
       toast.error(
-        `❌ Download original failed: ${e?.response?.data || e.message}`
+        `❌ Download original failed: ${e?.response?.data || e.message}`,
       );
     }
   };
@@ -298,7 +270,6 @@ export default function BulkHistory({ refreshKey = 0 }) {
       .trim()
       .toLowerCase();
     return (rows || []).filter((r) => {
-
       const statusOk =
         status === "all" ? true : String(r.status).toLowerCase() === status;
 
@@ -399,14 +370,36 @@ export default function BulkHistory({ refreshKey = 0 }) {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="bkh-empty">
-                      Loading history...
+                    <TableCell colSpan={5} className="bkh-emptyCell">
+                      <div className="bkh-emptyState">
+                        <img
+                          src={bulkLogo}
+                          alt="Loading bulk history"
+                          className="bkh-emptyLogo"
+                          draggable="false"
+                        />
+                        <div className="bkh-emptyTitle">Loading history...</div>
+                        <div className="bkh-emptySub">
+                          Fetching your bulk jobs
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : totalCount === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="bkh-empty">
-                      No history yet.
+                    <TableCell colSpan={5} className="bkh-emptyCell">
+                      <div className="bkh-emptyState">
+                        <img
+                          src={bulkLogo}
+                          alt="No history yet"
+                          className="bkh-emptyLogo"
+                          draggable="false"
+                        />
+                        <div className="bkh-emptyTitle">No history yet!</div>
+                        <div className="bkh-emptySub">
+                          Upload and validate a file to see it here.
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -435,7 +428,7 @@ export default function BulkHistory({ refreshKey = 0 }) {
                               onClick={() =>
                                 downloadOriginal(
                                   r.bulkId,
-                                  r.name || "uploaded.xlsx"
+                                  r.name || "uploaded.xlsx",
                                 )
                               }
                               title="Download original file"
@@ -525,7 +518,11 @@ export default function BulkHistory({ refreshKey = 0 }) {
 
                         {/* Expand row (stats cards like screenshot) */}
                         <TableRow className={`bkh-expandRow ${zebraClass}`}>
-                          <TableCell colSpan={5} className="bkh-expandCell" data-label="Details">
+                          <TableCell
+                            colSpan={5}
+                            className="bkh-expandCell"
+                            data-label="Details"
+                          >
                             <Collapse in={isOpen} timeout="auto" unmountOnExit>
                               <Box className="bkh-details">
                                 <div className="bkh-statGrid">

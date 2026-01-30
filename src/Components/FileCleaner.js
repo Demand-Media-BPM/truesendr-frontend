@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import "./FileCleaner.css";
+import cleanerLogo from "../assets/illustrator/cleaner.png";
 
 /** ---------- API base helper (same pattern as Dashboard/Deliverability) ---------- */
 function apiBase() {
@@ -69,12 +70,7 @@ function UploadIcon() {
 }
 
 export default function FileCleaner() {
-  /**
-   * step:
-   *  - "upload"  : show upload box
-   *  - "picked"  : show file pill + Next button
-   *  - "rules"   : show back + rules + Clean button
-   */
+
   const [step, setStep] = useState("upload");
 
   const [file, setFile] = useState(null);
@@ -162,12 +158,6 @@ export default function FileCleaner() {
     setStep("picked");
   };
 
-  function downloadClick(e, type) {
-    e.preventDefault();
-    e.stopPropagation();
-    handleDownload(type);
-  }
-
   const goBackFromResults = () => {
     // for mobile/tablet back on right side
     setStats(null);
@@ -217,62 +207,6 @@ export default function FileCleaner() {
     } finally {
       setLoading(false);
     }
-  }
-
-  // async function handleDownload(type) {
-  //   if (!jobId) {
-  //     toast.warn("No cleaned job found yet. Please clean a file first.");
-  //     return;
-  //   }
-
-  //   const url = `${apiBase()}/file-cleaner/download/${jobId}?type=${encodeURIComponent(
-  //     type
-  //   )}`;
-
-  //   try {
-  //     const res = await axios.get(url, { responseType: "blob" });
-
-  //     // Extract filename if backend sends it
-  //     const cd = res.headers?.["content-disposition"] || "";
-  //     const match = cd.match(/filename="([^"]+)"/i);
-  //     const filename = match?.[1] || `file-cleaner-${type}.xlsx`;
-
-  //     const blobUrl = window.URL.createObjectURL(res.data);
-  //     const a = document.createElement("a");
-  //     a.href = blobUrl;
-  //     a.download = filename;
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     a.remove();
-  //     window.URL.revokeObjectURL(blobUrl);
-  //   } catch (err) {
-  //     console.error(err);
-  //     toast.error("Download failed.");
-  //   }
-  // }
-
-  function downloadViaIframe(url) {
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = url;
-    document.body.appendChild(iframe);
-
-    // cleanup
-    setTimeout(() => {
-      try {
-        iframe.remove();
-      } catch {}
-    }, 10_000);
-  }
-
-  function triggerDownload(url) {
-    const a = document.createElement("a");
-    a.href = url;
-    a.setAttribute("download", ""); // hint, backend still controls filename via Content-Disposition
-    a.style.display = "none";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
   }
 
   async function handleDownload(type) {
@@ -566,10 +500,13 @@ export default function FileCleaner() {
 
             {!hasStats ? (
               <div className="fcui-empty">
-                <div className="fcui-emptyIcon" aria-hidden>
-                  <div className="fcui-iconDoc" />
-                  <div className="fcui-iconPencil" />
-                </div>
+                <img
+                  src={cleanerLogo}
+                  alt="File Cleaner"
+                  className="fcui-emptyImg"
+                  loading="lazy"
+                />
+
                 <div className="fcui-emptyTitle">No uploads yet!</div>
                 <div className="fcui-emptySub">
                   Upload a CSV or Excel file to clean your <br />

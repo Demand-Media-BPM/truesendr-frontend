@@ -22,6 +22,24 @@ import {
 
 import SearchIcon from "@mui/icons-material/Search";
 import InfoOutlineIcon from "@mui/icons-material/InfoOutline";
+import deliverabilityLogo from "../assets/illustrator/deliverability.png";
+
+function DeliverabilityHistoryEmpty() {
+  return (
+    <div className="delivH-empty">
+      <img
+        src={deliverabilityLogo}
+        alt="Deliverability"
+        className="delivH-emptyLogo"
+        loading="lazy"
+      />
+      <div className="delivH-emptyTitle">Nothing here yet!</div>
+      <div className="delivH-emptySub">
+        Create a deliverability test to see results here
+      </div>
+    </div>
+  );
+}
 
 export default function DeliverabilityHistory({
   username,
@@ -76,7 +94,7 @@ export default function DeliverabilityHistory({
     return list.filter((t) =>
       String(t.name || "")
         .toLowerCase()
-        .includes(s)
+        .includes(s),
     );
   }, [tests, searchTerm]);
 
@@ -127,7 +145,7 @@ export default function DeliverabilityHistory({
       a.href = downloadUrl;
       a.setAttribute(
         "download",
-        `deliverability-${safeName}-${createdStr}.csv`
+        `deliverability-${safeName}-${createdStr}.csv`,
       );
       document.body.appendChild(a);
       a.click();
@@ -137,7 +155,7 @@ export default function DeliverabilityHistory({
       setError(
         err?.response?.data?.message ||
           err?.message ||
-          "Failed to download report."
+          "Failed to download report.",
       );
     }
   };
@@ -192,7 +210,7 @@ export default function DeliverabilityHistory({
     } catch (err) {
       setError(
         err?.response?.data?.message ||
-          "Clear History endpoint is not available on backend yet."
+          "Clear History endpoint is not available on backend yet.",
       );
     } finally {
       setClearing(false);
@@ -252,6 +270,8 @@ export default function DeliverabilityHistory({
       <Paper className="deliv-history-card" elevation={0}>
         {loadingTests ? (
           <div className="deliv-loading">Loading...</div>
+        ) : filteredTests.length === 0 ? (
+          <DeliverabilityHistoryEmpty />
         ) : (
           <>
             <TableContainer className="deliv-history-tableWrap deliv-scroll">
@@ -282,13 +302,17 @@ export default function DeliverabilityHistory({
                     const providers =
                       t.totalMailboxes ??
                       (Array.isArray(t.mailboxes) ? t.mailboxes.length : 0);
+
                     const created = t.createdAt
                       ? new Date(t.createdAt).toLocaleString()
                       : "-";
 
                     return (
                       <TableRow key={t._id} hover className="deliv-history-row">
-                        <TableCell className="col-test" sx={{ fontWeight: 500 }}>
+                        <TableCell
+                          className="col-test"
+                          sx={{ fontWeight: 500 }}
+                        >
                           {t.name || "-"}
                         </TableCell>
 
@@ -328,14 +352,6 @@ export default function DeliverabilityHistory({
                       </TableRow>
                     );
                   })}
-
-                  {pagedRows.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={7} align="center">
-                        <span className="deliv-empty-row">No tests found.</span>
-                      </TableCell>
-                    </TableRow>
-                  ) : null}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -439,42 +455,42 @@ export default function DeliverabilityHistory({
               <div>Error</div>
             </div>
 
-            {(Array.isArray(modalTest?.mailboxes) ? modalTest.mailboxes : []).map(
-              (m, idx) => {
-                const providerKey = m.provider;
-                const providerLabel =
-                  providerLabelMap.get(providerKey) || providerKey;
-                const stLabel = statusLabelForMailbox(m.status);
-                const dotClass = statusDotClassForMailbox(m.status);
+            {(Array.isArray(modalTest?.mailboxes)
+              ? modalTest.mailboxes
+              : []
+            ).map((m, idx) => {
+              const providerKey = m.provider;
+              const providerLabel =
+                providerLabelMap.get(providerKey) || providerKey;
+              const stLabel = statusLabelForMailbox(m.status);
+              const dotClass = statusDotClassForMailbox(m.status);
 
-                return (
-                  <div
-                    className="delivReportTableRow"
-                    key={`${m.email}-${idx}`}
-                  >
-                    <div className="cell-provider">
-                      <div className="prov-mini">{providerBadge(providerKey)}</div>
-                      <div className="prov-mini-name">{providerLabel}</div>
+              return (
+                <div className="delivReportTableRow" key={`${m.email}-${idx}`}>
+                  <div className="cell-provider">
+                    <div className="prov-mini">
+                      {providerBadge(providerKey)}
                     </div>
-
-                    <div className="cell-status">
-                      <span className={`dot ${dotClass}`} />
-                      <span className="status-text">{stLabel}</span>
-                    </div>
-
-                    <div className="cell-muted">{m.folder || "-"}</div>
-
-                    <div className="cell-muted">
-                      {m.lastCheckedAt
-                        ? new Date(m.lastCheckedAt).toLocaleString()
-                        : "-"}
-                    </div>
-
-                    <div className="cell-error">{m.error || "-"}</div>
+                    <div className="prov-mini-name">{providerLabel}</div>
                   </div>
-                );
-              }
-            )}
+
+                  <div className="cell-status">
+                    <span className={`dot ${dotClass}`} />
+                    <span className="status-text">{stLabel}</span>
+                  </div>
+
+                  <div className="cell-muted">{m.folder || "-"}</div>
+
+                  <div className="cell-muted">
+                    {m.lastCheckedAt
+                      ? new Date(m.lastCheckedAt).toLocaleString()
+                      : "-"}
+                  </div>
+
+                  <div className="cell-error">{m.error || "-"}</div>
+                </div>
+              );
+            })}
           </div>
 
           <div className="delivReportFooter">

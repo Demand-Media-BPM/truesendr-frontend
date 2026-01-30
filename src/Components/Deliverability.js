@@ -17,6 +17,8 @@ import logoGmx from "../assets/provider-logos/GMX.png";
 import logoAol from "../assets/provider-logos/Aol.png";
 import logoZoho from "../assets/provider-logos/Zoho-logo.png";
 import { useCredits } from "../credits/CreditsContext";
+import deliverabilityLogo from "../assets/illustrator/deliverability.png";
+
 
 
 const PROVIDER_LOGOS = {
@@ -138,13 +140,20 @@ function IconDownload({ size = 14 }) {
 function EmptyIllustration() {
   return (
     <div className="deliv-empty">
+      <img
+        src={deliverabilityLogo}
+        alt="Deliverability"
+        className="deliv-emptyLogo"
+        loading="lazy"
+      />
       <div className="deliv-empty-title">Nothing here yet!</div>
       <div className="deliv-empty-sub">
-        Create a deliverability test to see results here{" "}
+        Create a deliverability test to see results here
       </div>
     </div>
   );
 }
+
 
 /** ---------- statuses ---------- */
 function normalizeMailboxStatus(s) {

@@ -1276,8 +1276,6 @@
 
 // export default BulkValidator;
 
-
-
 // BulkValidator.jsx (MULTI-CARD FLOW UI — matches screenshots + persistence fixes)
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
@@ -1286,6 +1284,7 @@ import { v4 as uuidv4 } from "uuid";
 import "./BulkValidator.css";
 import BulkHistory from "./BulkHistory";
 import { useCredits } from "../credits/CreditsContext";
+import bulkLogo from "../assets/illustrator/bulk.png";
 
 const API_BASE = process.env.REACT_APP_API_BASE;
 const WS_URL = process.env.REACT_APP_WS_URL;
@@ -1782,7 +1781,7 @@ const BulkValidator = () => {
           } catch {}
         }),
       );
-    }, 1200); 
+    }, 1200);
     return () => clearInterval(t);
   }, [jobs]);
 
@@ -2121,7 +2120,7 @@ const BulkValidator = () => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("sessionId", sessionIdRef.current);
-    formData.append("bulkId", bulkId); 
+    formData.append("bulkId", bulkId);
 
     try {
       setUploading(true);
@@ -2308,11 +2307,13 @@ const BulkValidator = () => {
   const rightContent = useMemo(() => {
     if (!jobs.length) {
       return (
-        <div className="bv-empty">
-          <div className="bv-emptyIcon" aria-hidden>
-            <div className="bv-iconDoc" />
-            <div className="bv-iconSheet" />
-          </div>
+        <div className="bv-emptyState">
+          <img
+            src={bulkLogo}
+            alt="No uploads yet"
+            className="bv-emptyIllus"
+            draggable="false"
+          />
           <div className="bv-emptyTitle">No uploads yet!</div>
           <div className="bv-emptySub">
             Upload a CSV or Excel file to start your bulk <br />
@@ -2582,7 +2583,6 @@ function JobCard({
   const showReport = job.stage === "report";
   const showNeedsFix = job.stage === "needs_fix";
   const showReady = job.stage === "ready";
-  const showFinalizing = job.stage === "finalizing";
   const showCompactStage = showAnalyzing || showCleaning || showValidating;
   const showHeaderMeta = showCompleted;
 
@@ -2656,7 +2656,6 @@ function JobCard({
           <div className="bv-figmaTrack is-indeterminate">
             <div className="bv-figmaBar indeterminate" />
           </div>
-
         </div>
       )}
 

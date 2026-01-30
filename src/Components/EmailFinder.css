@@ -165,6 +165,14 @@
   gap: 0.75rem;
 }
 
+.ef-emptyLogo{
+  width: clamp(160px, 22vw, 260px);
+  height: auto;
+  display: block;
+  margin: 0 auto 0.75rem auto;
+}
+
+
 /* Empty center state */
 .ef-rightEmpty {
   display: flex;

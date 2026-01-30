@@ -325,6 +325,7 @@ import axios from "axios";
 import "./EmailFinder.css";
 import EmailFinderHistory from "./EmailFinderHistory";
 import { useCredits } from "../credits/CreditsContext";
+import finderLogo from "../assets/illustrator/finder.png";
 
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 
@@ -693,46 +694,6 @@ export default function EmailFinder() {
     }
   }
 
-  function EmptyIllustration() {
-    return (
-      <svg
-        className="ef-emptySvg"
-        viewBox="0 0 220 160"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <path
-          d="M70 110c-18-28-6-66 30-80 32-12 68 4 80 34 13 32-1 70-34 82-28 10-59-1-76-23z"
-          fill="#fff"
-          opacity="0.75"
-        />
-        <path
-          d="M86 60h60c8 0 14 6 14 14v30c0 8-6 14-14 14H86c-8 0-14-6-14-14V74c0-8 6-14 14-14z"
-          fill="#FF7A1A"
-          opacity="0.9"
-        />
-        <path
-          d="M78 76l41 28 41-28"
-          stroke="#fff"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-          opacity="0.9"
-        />
-        <circle cx="165" cy="110" r="22" fill="#FFB37A" opacity="0.55" />
-        <path
-          d="M158 111l5 5 11-12"
-          stroke="#FF7A1A"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-        />
-      </svg>
-    );
-  }
-
   /** TOP Running loader (exact Figma) */
   function RunningTopCard({ c }) {
     return (
@@ -833,7 +794,7 @@ export default function EmailFinder() {
       return (
         <div className="ef-right ef-rightEmpty">
           <div className="ef-emptyWrap">
-            <EmptyIllustration />
+            <img src={finderLogo} alt="Finder" className="ef-emptyLogo" />
             <div className="ef-emptyTitle">Nothing here yet!</div>
             <div className="ef-emptySub">
               Find an email address to see results here

@@ -289,6 +289,35 @@
   font-weight: 600;
 }
 
+.phh-emptyWrap{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 0;
+  text-align: center;
+}
+
+.phh-emptyLogo{
+  width: clamp(100px, 10vw, 160px);
+  height: auto;
+  display: block;
+  margin: 0 auto 0.75rem auto;
+}
+
+.phh-emptyTitle{
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.phh-emptySub{
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+
 /* Sticky pagination footer */
 .phh-pagination {
   position: sticky;

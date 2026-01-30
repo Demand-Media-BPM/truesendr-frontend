@@ -471,12 +471,42 @@
   flex: 1 1 auto;
 }
 
-/* empty */
-.svh-empty {
-  color: var(--svh-muted);
-  font-weight: 600;
-  padding: 1.125rem !important; /* 18px */
+/* Empty state inside table */
+.svh-emptyCell {
+  padding: 0 !important;
+  border-bottom: none !important;
+  background: #fff !important;
 }
+
+.svh-emptyState {
+  min-height: clamp(22rem, 45vh, 32rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.svh-emptyIllus {
+  width: clamp(100px, 10vw, 160px);
+  height: auto;
+  display: block;
+  margin-bottom: 0.9rem;
+}
+
+.svh-emptyTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.svh-emptySub {
+  font-size: 0.85rem;
+  color: #667085;
+}
+
 
 /* ─────────────────────────────────────────────
    RESPONSIVE BREAKPOINTS

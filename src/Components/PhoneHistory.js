@@ -556,6 +556,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import phoneLogo from "../assets/illustrator/phone.png";
 
 import { default as InfoOutlinedIcon } from "@mui/icons-material/InfoOutlined";
 
@@ -866,8 +867,7 @@ export default function PhoneHistory({ username, token, apiBase }) {
     <div className="phh-wrap">
       {/* Toolbar row */}
       <div className="phh-toolbar">
-        {/* ✅ make dropdown match SingleValidator history by styling MUI Select */}
-        {/* ✅ dropdown wrapper exactly like SingleValidationHistory */}
+
         <div className="phh-controlBox">
           <FormControl
             size="small"
@@ -1057,7 +1057,17 @@ export default function PhoneHistory({ username, token, apiBase }) {
                 {!visible.length && (
                   <TableRow>
                     <TableCell colSpan={7} className="phh-empty">
-                      No phone history found.
+                      <div className="phh-emptyWrap">
+                        <img
+                          src={phoneLogo}
+                          alt="Phone"
+                          className="phh-emptyLogo"
+                        />
+                        <div className="phh-emptyTitle">Nothing here yet!</div>
+                        <div className="phh-emptySub">
+                          Validate a phone number to see results
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

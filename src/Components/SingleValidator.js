@@ -652,12 +652,13 @@ import { v4 as uuidv4 } from "uuid";
 import "./SingleValidator.css";
 import SingleValidationHistory from "./SingleValidationHistory";
 import { useCredits } from "../credits/CreditsContext";
-
+ 
 // MUI icons for status pills
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import singleLogo from "../assets/illustrator/single.png";
 
 /** ───────────────── Config ───────────────── */
 const DEFAULT_API_PORT = 5000;
@@ -1106,21 +1107,17 @@ const SingleValidator = () => {
       } catch {}
       stopAllStabilizers();
       stopHintTimers();
-      if (creditRefreshTimerRef.current) clearTimeout(creditRefreshTimerRef.current);
-
+      if (creditRefreshTimerRef.current)
+        clearTimeout(creditRefreshTimerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /** ───────────────── Tab behavior ───────────────── */
   useEffect(() => {
-    // DO NOT load history into Validate tab.
-    // On switching to Validate, just keep current session state.
     if (activeTab !== "validate") {
-      // optional: stop hints while user is on history tab
       stopHintTimers();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   /** ───────────────── Final status rendering ───────────────── */
@@ -1412,9 +1409,16 @@ const SingleValidator = () => {
 
               {pendingEmails.length === 0 && results.length === 0 && (
                 <div className="single-empty-state">
-                  <div className="single-empty-icon" />
-                  <h3>Nothing here yet!</h3>
-                  <p>Start your first email validation to see results</p>
+                  <img
+                    className="single-empty-illus"
+                    src={singleLogo}
+                    alt="Nothing here yet"
+                    draggable="false"
+                  />
+                  <div className="svh-emptyTitle">Nothing here yet!</div>
+                        <div className="svh-emptySub">
+                          Start your first email validation to see results
+                        </div>
                 </div>
               )}
 

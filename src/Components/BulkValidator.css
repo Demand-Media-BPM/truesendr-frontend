@@ -1,7 +1,7 @@
 :root {
   --bulk-bg: #ffffff;
   --bulk-border: #ececec;
-  --bulk-soft: #fff4ee;
+  --bulk-soft: #ffece0;
   --bulk-accent: #ff6d00;
   --bulk-accent-soft: rgba(255, 109, 0, 0.14);
   --bulk-text: #111827;
@@ -304,46 +304,42 @@
   border-radius: 62.4375rem;
 }
 
-/* empty state */
-.bv-empty {
+/* Empty state (matches screenshot) */
+.bv-emptyState {
+  width: 100%;
+  min-height: calc(100% - 1rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  color: var(--bulk-muted);
-  max-width: 26.25rem; /* 420px */
-  margin: 2.5rem auto 0; /* 40px */
+  padding: 2rem 1rem;
 }
 
-.bv-emptyIcon {
-  width: 8.125rem; /* 130px */
-  height: 6.875rem; /* 110px */
-  margin: 0 auto 0.875rem; /* 14px */
-  position: relative;
-}
-
-.bv-iconDoc,
-.bv-iconSheet {
-  position: absolute;
-  border-radius: 0.625rem; /* 10px */
-  background: rgba(255, 109, 0, 0.18);
-  border: 0.0625rem solid rgba(255, 109, 0, 0.28);
-}
-
-.bv-iconDoc {
-  width: 5.125rem; /* 82px */
-  height: 5.75rem; /* 92px */
-  left: 1.625rem; /* 26px */
-  top: 0.625rem; /* 10px */
-}
-
-.bv-iconSheet {
-  width: 4rem; /* 64px */
-  height: 4.625rem; /* 74px */
-  left: 3.375rem; /* 54px */
-  top: 1.5rem; /* 24px */
-  background: rgba(255, 109, 0, 0.28);
+.bv-emptyIllus {
+  width: clamp(160px, 22vw, 260px);
+  height: auto;
+  display: block;
+  margin-bottom: 0.85rem;
+  user-select: none;
 }
 
 .bv-emptyTitle {
-  font-weight: 900;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.35rem;
+  font-size: 0.95rem;
+}
+
+.bv-emptySub {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #667085;
+}
+
+
+.bv-emptyTitle {
+  font-weight: 600;
   color: #111827;
   margin-bottom: 0.375rem; /* 6px */
 }

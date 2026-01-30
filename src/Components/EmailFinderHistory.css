@@ -227,12 +227,43 @@
   width: 14rem;
 }
 
-.efh-empty {
-  text-align: center !important;
-  padding: 2rem 1rem !important;
-  color: var(--muted) !important;
-  font-weight: 600;
+
+/* Empty screen (like your screenshot) */
+.efh-emptyCard{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 0;
+  text-align: center;
+  height: calc(100vh - 13.125rem);
 }
+
+.efh-emptyState{
+  text-align: center;
+  max-width: 22rem;
+  padding: 1rem;
+}
+
+.efh-emptyLogo{
+  width: clamp(100px, 10vw, 160px);
+  height: auto;
+  display: block;
+  margin: 0 auto 0.75rem auto;
+}
+
+.efh-emptyTitle{
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.efh-emptySub{
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 
 /* Sticky pagination footer */
 .efh-pagination {

@@ -27,6 +27,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
+import finderLogo from "../assets/illustrator/finder.png";
 
 import { default as InfoOutlinedIcon } from "@mui/icons-material/InfoOutlined";
 
@@ -88,14 +89,14 @@ export default function EmailFinderHistory({ username, token, apiBase }) {
       const items = Array.isArray(res.data?.items)
         ? res.data.items
         : Array.isArray(res.data?.history)
-        ? res.data.history
-        : [];
+          ? res.data.history
+          : [];
 
       setRows(items);
     } catch (e) {
       console.error(
         "finder history fetch failed",
-        e?.response?.data || e?.message
+        e?.response?.data || e?.message,
       );
       setRows([]);
     }
@@ -132,7 +133,7 @@ export default function EmailFinderHistory({ username, token, apiBase }) {
       if (!query) return statusOk;
 
       const fullName = String(
-        r?.fullName || r?.nameInput || r?.inputName || ""
+        r?.fullName || r?.nameInput || r?.inputName || "",
       ).toLowerCase();
       const domain = String(r?.domain || "").toLowerCase();
       const email = String(r?.email || "").toLowerCase();
@@ -172,12 +173,24 @@ export default function EmailFinderHistory({ username, token, apiBase }) {
     } catch (e) {
       console.error(
         "❌ Clear finder history failed:",
-        e?.response?.data || e?.message
+        e?.response?.data || e?.message,
       );
       await fetchHistory();
     } finally {
       setClearing(false);
     }
+  }
+
+  function EmptyState() {
+    return (
+      <div className="efh-emptyState">
+        <img src={finderLogo} alt="Finder" className="efh-emptyLogo" />
+        <div className="efh-emptyTitle">Nothing here yet!</div>
+        <div className="efh-emptySub">
+          Find an email address to see results here
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -345,7 +358,7 @@ export default function EmailFinderHistory({ username, token, apiBase }) {
       </Dialog>
 
       {/* Table card */}
-      <Paper className="efh-tableCard" elevation={0}>
+      {/* <Paper className="efh-tableCard" elevation={0}>
         <div className="efh-cardBody">
           <TableContainer className="efh-tableWrap">
             <Table stickyHeader size="small" className="efh-table">
@@ -406,7 +419,6 @@ export default function EmailFinderHistory({ username, token, apiBase }) {
             </Table>
           </TableContainer>
 
-          {/* Sticky pagination */}
           <Box className="efh-pagination">
             <TablePagination
               component="div"
@@ -422,7 +434,92 @@ export default function EmailFinderHistory({ username, token, apiBase }) {
             />
           </Box>
         </div>
-      </Paper>
+      </Paper> */}
+
+      {/* ✅ Empty screen when no history exists */}
+      {rows.length === 0 ? (
+        <Paper className="efh-tableCard efh-emptyCard" elevation={0}>
+          <EmptyState />
+        </Paper>
+      ) : (
+        <Paper className="efh-tableCard" elevation={0}>
+          <div className="efh-cardBody">
+            <TableContainer className="efh-tableWrap">
+              <Table stickyHeader size="small" className="efh-table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell className="efh-th efh-col-name">Name</TableCell>
+                    <TableCell className="efh-th efh-col-domain">
+                      Domain
+                    </TableCell>
+                    <TableCell className="efh-th efh-col-email">
+                      Email
+                    </TableCell>
+                    <TableCell className="efh-th efh-col-date">
+                      Verified On
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {visible.map((r, idx) => {
+                    const isEven = idx % 2 === 0;
+                    const rowClass = isEven
+                      ? "efh-row is-even"
+                      : "efh-row is-odd";
+
+                    const fullName =
+                      r?.fullName || r?.nameInput || r?.inputName || "—";
+                    const domain = r?.domain || "—";
+                    const email = r?.email || "—";
+
+                    return (
+                      <TableRow key={r?._id || `${idx}`} className={rowClass}>
+                        <TableCell className="efh-td efh-col-name">
+                          {fullName}
+                        </TableCell>
+                        <TableCell className="efh-td efh-col-domain">
+                          {domain}
+                        </TableCell>
+                        <TableCell className="efh-td efh-col-email">
+                          {email}
+                        </TableCell>
+                        <TableCell className="efh-td efh-col-date">
+                          {fmtDate(r?.createdAt || r?.updatedAt)}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+
+                  {/* ✅ If history exists but filters/search return none */}
+                  {!visible.length && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="efh-empty">
+                        No matching records.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <Box className="efh-pagination">
+              <TablePagination
+                component="div"
+                count={filtered.length}
+                page={page}
+                onPageChange={(_, p) => setPage(p)}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={(e) => {
+                  setRowsPerPage(parseInt(e.target.value, 10));
+                  setPage(0);
+                }}
+                rowsPerPageOptions={[5, 10, 25, 50]}
+              />
+            </Box>
+          </div>
+        </Paper>
+      )}
     </div>
   );
 }

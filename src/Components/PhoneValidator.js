@@ -732,7 +732,6 @@
 //   );
 // }
 
-
 // src/Components/PhoneValidator.js
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
@@ -741,6 +740,7 @@ import PhoneHistory from "./PhoneHistory"; // keep (history page later)
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import { useCredits } from "../credits/CreditsContext";
+import phoneLogo from "../assets/illustrator/phone.png";
 
 import * as FlagIcons from "country-flag-icons/react/3x2";
 
@@ -771,7 +771,6 @@ function getToken() {
   ).trim();
 }
 
-// Your list (keep as-is; shortened here would break you). Use your full COUNTRY_OPTIONS.
 export const COUNTRY_OPTIONS = [
   { code: "AF", label: "🇦🇫 Afghanistan (+93)" },
   { code: "AL", label: "🇦🇱 Albania (+355)" },
@@ -908,12 +907,6 @@ function extractDial(label) {
   // returns "+44" (not "(+44)")
   const m = String(label || "").match(/\(\+(\d+)\)/);
   return m ? `+${m[1]}` : "";
-}
-
-function keepPlusPrefix(raw) {
-  const s = String(raw ?? "");
-  const digits = s.replace(/[^\d]/g, "");
-  return `+${digits}`;
 }
 
 const ALLOWED_DIAL_SET = new Set(
@@ -1101,46 +1094,6 @@ export default function PhoneValidator() {
     }
   }
 
-  function EmptyIllustration() {
-    return (
-      <svg
-        className="ph-emptySvg"
-        viewBox="0 0 220 160"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <path
-          d="M70 110c-18-28-6-66 30-80 32-12 68 4 80 34 13 32-1 70-34 82-28 10-59-1-76-23z"
-          fill="#fff"
-          opacity="0.75"
-        />
-        <path
-          d="M110 60c8-8 21-8 29 0l8 8c3 3 3 8 0 11l-8 8c-8 8-21 8-29 0l-8-8c-3-3-3-8 0-11l8-8z"
-          fill="#FF7A1A"
-          opacity="0.9"
-        />
-        <circle cx="152" cy="102" r="22" fill="#FFB37A" opacity="0.55" />
-        <path
-          d="M145 103l5 5 11-12"
-          stroke="#FF7A1A"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-        />
-        <path
-          d="M176 52c22 16 30 42 21 69"
-          stroke="#FF7A1A"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          fill="none"
-          strokeDasharray="6 6"
-          opacity="0.75"
-        />
-      </svg>
-    );
-  }
-
   function LoaderCard() {
     const local = String(phoneInput || "").trim();
     const showNumber = local ? local : "—";
@@ -1306,7 +1259,8 @@ export default function PhoneValidator() {
       return (
         <div className="ph-right ph-rightEmpty">
           <div className="ph-emptyWrap">
-            <EmptyIllustration />
+            <img src={phoneLogo} alt="Phone" className="ph-emptyLogo" />
+
             <div className="ph-emptyTitle">Nothing here yet!</div>
             <div className="ph-emptySub">
               Validate a phone number to see results

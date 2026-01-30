@@ -221,13 +221,24 @@
   color: var(--muted);
 }
 
-.single-empty-icon {
-  width: 5.625rem; /* 90px */
-  height: 4.375rem; /* 70px */
-  border-radius: 1rem;
-  background: linear-gradient(135deg, #ffb46a, #ff7a1a);
-  opacity: 0.17;
-  margin-bottom: 0.75rem; /* 12px */
+/* NEW: SVG illustration */
+.single-empty-illus {
+  width: clamp(160px, 22vw, 260px);
+  height: auto;
+  display: block;
+  /* margin-bottom: 0.75rem;  */
+}
+
+.svh-emptyTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.svh-emptySub {
+  font-size: 0.85rem;
+  color: #667085;
 }
 
 /* Slim loader card */
