@@ -23,6 +23,13 @@ import EmailFinder from "./Components/EmailFinder";
 import PhoneValidator from "./Components/PhoneValidator";
 import Deliverability from "./Components/Deliverability";
 import FileCleaner from "./Components/FileCleaner";
+import Settings from "./Components/settings";
+import Refer from "./Components/Refer";
+import Support from "./Components/Support";
+import Terms from "./Components/Terms";
+import Privacy from "./Components/Privacy";
+import BuyCredits from "./Components/BuyCredits"
+
 import logo from "./assets/TrueSendr Temp logo-02.png";
 
 import { ToastContainer } from "react-toastify";
@@ -61,6 +68,7 @@ const App = () => {
   );
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const displayName = localStorage.getItem("userFullName") || loggedInUser;
 
   const openMobileSidebar = () => setMobileSidebarOpen(true);
   const closeMobileSidebar = () => setMobileSidebarOpen(false);
@@ -264,8 +272,8 @@ const App = () => {
               <div className="topbar-row">
                 <HeaderBar
                   onLogout={handleLogout}
-                  username={loggedInUser}
-                  // credits={credits}
+                  username={displayName}
+                  email={localStorage.getItem("userEmail")}
                 />
 
                 <button
@@ -293,6 +301,13 @@ const App = () => {
                   <Route path="/phone" element={<PhoneValidator />} />
                   <Route path="/Deliverability" element={<Deliverability />} />
                   <Route path="/Cleaner" element={<FileCleaner />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/refer" element={<Refer />} />
+                  <Route path="/support" element={<Support />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/buy-credits" element={<BuyCredits />} />
+
                 </Routes>
               </main>
             </div>

@@ -6,7 +6,7 @@
   --hb-border: #e5e7eb;
   --hb-shadow: 0 0.35rem 1.1rem rgba(15, 23, 42, 0.06);
 
-  --hb-accent: #ff7a00; /* orange credits number */
+  --hb-accent: #ff7a00;
 }
 
 /* Header container */
@@ -28,7 +28,7 @@
   z-index: 20;
 }
 
-/* Empty left area (kept on purpose) */
+/* Empty left area */
 .hb-left {
   flex: 1;
   min-width: 0;
@@ -42,7 +42,7 @@
   position: relative;
 }
 
-/* Credits: NO bg, NO border (like design) */
+/* Credits */
 .hb-credits {
   display: flex;
   align-items: baseline;
@@ -64,7 +64,35 @@
   color: var(--hb-muted);
 }
 
-/* Avatar */
+/* Buy Credits button */
+.hb-buy {
+  border: none;
+  background: var(--hb-accent);
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 0.58rem 0.95rem;
+  border-radius: 0.4375rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+
+.hb-buy:hover {
+  box-shadow: 0 0.6rem 1.4rem rgba(255, 122, 0, 0.22);
+}
+
+.hb-buy:active {
+  transform: scale(0.98);
+}
+
+.hb-buy:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+/* Avatar button (top right circle) */
 .hb-avatar {
   width: 2.5rem;
   height: 2.5rem;
@@ -77,7 +105,7 @@
   place-items: center;
 
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--hb-text);
 
   cursor: pointer;
@@ -98,36 +126,71 @@
   border-color: rgba(255, 122, 0, 0.55);
 }
 
-/* Dropdown */
+/* Dropdown menu (MATCH screenshot) */
 .hb-menu {
   position: absolute;
   top: calc(100% + 0.55rem);
   right: 0;
 
-  width: 14.5rem;
+  width: 16.2rem;
   background: #ffffff;
+
   border: 0.0625rem solid rgba(15, 23, 42, 0.12);
   border-radius: 0.9rem;
   box-shadow: 0 1rem 2.4rem rgba(15, 23, 42, 0.12);
 
   overflow: hidden;
-  padding: 0.35rem;
+  padding: 0.4rem;
 }
 
-.hb-menu-top {
-  padding: 0.65rem 0.75rem 0.55rem;
-  border-bottom: 0.0625rem solid rgba(15, 23, 42, 0.08);
+/* Profile top section */
+.hb-menu-profile {
+  padding: 0.95rem 0.9rem 0.75rem;
+  text-align: center;
 }
 
-.hb-menu-user {
-  font-size: 0.95rem;
+.hb-menu-avatar {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999rem;
+
+  margin: 0 auto 0.55rem;
+
+  background: #ffffff;
+  border: 0.085rem solid rgba(15, 23, 42, 0.25);
+
+  display: grid;
+  place-items: center;
+
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--hb-text);
+}
+
+.hb-menu-name {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--hb-text);
+  line-height: 1.15;
+}
+
+.hb-menu-email {
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--hb-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.hb-menu-divider {
+  height: 0.0625rem;
+  background: rgba(15, 23, 42, 0.08);
+  margin: 0.2rem 0.4rem;
+}
+
+/* Menu items */
 .hb-menu-item {
   width: 100%;
   border: none;
@@ -135,8 +198,9 @@
 
   display: flex;
   align-items: center;
+  gap: 0.65rem;
 
-  padding: 0.7rem 0.75rem;
+  padding: 0.72rem 0.8rem;
   border-radius: 0.75rem;
 
   font-size: 0.92rem;
@@ -145,30 +209,34 @@
 
   cursor: pointer;
   transition: background 0.12s ease, transform 0.12s ease;
+  text-align: left;
 }
 
+
 .hb-menu-item:hover {
-  background: rgba(15, 23, 42, 0.06);
+  background: #ffe9d9;
 }
 
 .hb-menu-item:active {
   transform: scale(0.99);
 }
 
-.hb-menu-item.danger {
-  color: #ef4444;
+.hb-mi-ico {
+  font-size: 1.15rem !important;
+  color: rgba(15, 23, 42, 0.65);
 }
 
-.hb-menu-item.danger:hover {
-  background: rgba(239, 68, 68, 0.08);
+.hb-menu-item.danger {
+  color: #0f172a;
+}
+
+.hb-menu-item.danger .hb-mi-ico {
+  color: rgba(15, 23, 42, 0.65);
 }
 
 /* -----------------------------
-   BREAKPOINTS (rem)
-   1024, 768, 425, 1440, 2560
+   BREAKPOINTS
 ------------------------------ */
-
-/* ✅ 1024 and below */
 @media (max-width: 64rem) {
   .hb {
     padding: 0 1.1rem;
@@ -176,9 +244,13 @@
   .hb-right {
     gap: 0.9rem;
   }
+
+  .hb-buy {
+    font-size: 0.84rem;
+    padding: 0.46rem 0.78rem;
+  }
 }
 
-/* ✅ 768 and below */
 @media (max-width: 48rem) {
   .hb {
     padding: 0 1rem;
@@ -194,11 +266,15 @@
   }
 
   .hb-menu {
-    width: 13.75rem;
+    width: 15.4rem;
+  }
+
+  .hb-buy {
+    font-size: 0.82rem;
+    padding: 0.42rem 0.7rem;
   }
 }
 
-/* ✅ 425 and below */
 @media (max-width: 26.5625rem) {
   .hb {
     padding: 0 0.9rem;
@@ -218,11 +294,15 @@
   }
 
   .hb-menu {
-    width: 13.25rem;
+    width: 15rem;
+  }
+
+  .hb-buy {
+    font-size: 0.78rem;
+    padding: 0.38rem 0.6rem;
   }
 }
 
-/* ✅ 1440+ */
 @media (min-width: 90rem) {
   .hb {
     height: 3.35rem;
@@ -238,9 +318,13 @@
     height: 2.1rem;
     font-size: 0.82rem;
   }
+
+  .hb-buy {
+    font-size: 0.88rem;
+    padding: 0.5rem 0.92rem;
+  }
 }
 
-/* ✅ 2560+ */
 @media (min-width: 160rem) {
   .hb {
     height: 3.5rem;
@@ -259,5 +343,10 @@
     width: 2.2rem;
     height: 2.2rem;
     font-size: 0.86rem;
+  }
+
+  .hb-buy {
+    font-size: 0.92rem;
+    padding: 0.55rem 1.05rem;
   }
 }
