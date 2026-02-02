@@ -556,7 +556,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import phoneLogo from "../assets/illustrator/phone.png";
+import phoneLogo from "../assets/illustrator/phone-orange.png";
 
 import { default as InfoOutlinedIcon } from "@mui/icons-material/InfoOutlined";
 

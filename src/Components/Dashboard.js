@@ -17,7 +17,7 @@ import { CiCircleCheck } from "react-icons/ci";
 import { CiCircleRemove } from "react-icons/ci";
 import { CiCircleQuestion } from "react-icons/ci";
 import { CiCircleAlert } from "react-icons/ci";
-import DashboardEmpty from "../assets/illustrator/Dashboard.png";
+import DashboardEmpty from "../assets/illustrator/Dashboard-orange.png";
 
 // ---------- config helpers ----------
 function apiBase() {

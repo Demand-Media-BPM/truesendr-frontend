@@ -27,7 +27,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
-import finderLogo from "../assets/illustrator/finder.png";
+import finderLogo from "../assets/illustrator/finder-orange.png";
 
 import { default as InfoOutlinedIcon } from "@mui/icons-material/InfoOutlined";
 

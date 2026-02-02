@@ -31,7 +31,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import singleLogo from "../assets/illustrator/single.png";
+import singleLogo from "../assets/illustrator/single-orange.png";
 
 const apiBase =
   process.env.REACT_APP_API_BASE ||

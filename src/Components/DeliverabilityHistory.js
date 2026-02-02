@@ -22,7 +22,7 @@ import {
 
 import SearchIcon from "@mui/icons-material/Search";
 import InfoOutlineIcon from "@mui/icons-material/InfoOutline";
-import deliverabilityLogo from "../assets/illustrator/deliverability.png";
+import deliverabilityLogo from "../assets/illustrator/deliverability-orange.png";
 
 function DeliverabilityHistoryEmpty() {
   return (
