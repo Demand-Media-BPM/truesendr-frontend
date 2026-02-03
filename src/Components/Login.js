@@ -37,36 +37,20 @@ export default function Login({ onLogin }) {
 
     try {
       const res = await api.post("/auth/login", { email, password, remember });
-      // if (res.data?.success) {
-      //   const user = res.data.user || {};
-      //   const perms = user.permissions || [];
-      //   const credits = user.credits || 0;
-
-      //   // keep your existing behavior
-      //   setTimeout(() => {
-      //     onLogin(user.username, perms, credits);
-      //     navigate("/dashboard", { replace: true });
-      //   }, 800);
-      // }
       if (res.data?.success) {
         const user = res.data.user || {};
-        const perms = user.permissions || [];
-        const credits = user.credits || 0;
 
         // ✅ build full name
         const fullName =
           `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
         // ✅ store for profile tray
-        localStorage.setItem("loggedInUser", user.username || "");
+        // ✅ store for profile tray only (session & username handled by App.jsx)
         localStorage.setItem("userEmail", user.email || "");
-
-        if (fullName) {
-          localStorage.setItem("userFullName", fullName);
-        }
+        if (fullName) localStorage.setItem("userFullName", fullName);
 
         setTimeout(() => {
-          onLogin(user.username, perms, credits);
+          onLogin(user.username);
           navigate("/dashboard", { replace: true });
         }, 800);
       } else {
