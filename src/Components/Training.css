@@ -1,0 +1,115 @@
+.dt-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+  color: #000;
+}
+
+.dt-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #000;
+}
+
+.dt-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.upload-card h2,
+.stats-card h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.dt-subtext {
+  color: #000;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.dt-upload-form {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.dt-file-input {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.dt-upload-btn {
+  background: #1d72f2;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.dt-upload-btn:hover {
+  background: #0f5cd7;
+}
+
+.dt-message {
+  margin-top: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+.dt-table-wrapper {
+  overflow-x: auto;
+  margin-top: 15px;
+}
+
+.dt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.dt-table th {
+  background: #f5f6f8;
+  padding: 10px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.dt-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.dt-empty {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+}
+
+.dt-valid {
+  color: #0aa80a;
+  font-weight: 600;
+}
+
+.dt-invalid {
+  color: #d21f1f;
+  font-weight: 600;
+}
+
+.dt-risky {
+  color: #e0a800;
+  font-weight: 600;
+}
+
+.dt-unknown {
+  color: #6c757d;
+  font-weight: 600;
+}
