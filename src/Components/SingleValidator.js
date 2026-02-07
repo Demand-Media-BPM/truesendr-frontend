@@ -652,7 +652,7 @@ import { v4 as uuidv4 } from "uuid";
 import "./SingleValidator.css";
 import SingleValidationHistory from "./SingleValidationHistory";
 import { useCredits } from "../credits/CreditsContext";
- 
+
 // MUI icons for status pills
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
@@ -694,7 +694,7 @@ const categoryFromStatus = (status = "") => {
 
 const isDefinitive = (status = "") => {
   const cat = categoryFromStatus(status);
-  return cat === "valid" || cat === "invalid" || cat === "risky";
+  return cat === "valid" || cat === "invalid";
 };
 
 /** ───────────────── Spinner keyframes (for small loaders) ───────────────── */
@@ -1416,9 +1416,9 @@ const SingleValidator = () => {
                     draggable="false"
                   />
                   <div className="svh-emptyTitle">Nothing here yet!</div>
-                        <div className="svh-emptySub">
-                          Start your first email validation to see results
-                        </div>
+                  <div className="svh-emptySub">
+                    Start your first email validation to see results
+                  </div>
                 </div>
               )}
 
