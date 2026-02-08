@@ -364,7 +364,7 @@ const App = () => {
                 <div className="sidebar-section">
                   <div className="sidebar-section-title">EMAIL TOOLS</div>
 
-                  <NavLink
+                  {/* <NavLink
                     to="/finder"
                     onClick={closeMobileSidebar}
                     className={({ isActive }) =>
@@ -375,7 +375,7 @@ const App = () => {
                       <SearchOutlinedIcon />
                     </span>
                     <span className="nav-link-label">Finder</span>
-                  </NavLink>
+                  </NavLink> */}
 
                   <NavLink
                     to="/Deliverability"
@@ -411,6 +411,18 @@ const App = () => {
                   {isAdmin && (
                     <div className="sidebar-section">
                       <div className="sidebar-section-title">Admin</div>
+                      <NavLink
+                        to="/finder"
+                        onClick={closeMobileSidebar}
+                        className={({ isActive }) =>
+                          isActive ? "nav-link active" : "nav-link"
+                        }
+                      >
+                        <span className="nav-link-icon">
+                          <SearchOutlinedIcon />
+                        </span>
+                        <span className="nav-link-label">Finder</span>
+                      </NavLink>
                       <NavLink
                         to="/training"
                         onClick={closeMobileSidebar}
