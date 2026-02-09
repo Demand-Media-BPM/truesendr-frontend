@@ -975,10 +975,51 @@ const SingleValidator = () => {
         } catch {}
       };
 
+      // ws.onmessage = (event) => {
+      //   try {
+      //     const data = JSON.parse(event.data);
+
+      //     if (SHOW_DEBUG && data?.type === "log") {
+      //       setLogs((prev) => [...prev, data]);
+
+      //       if (data.step === "probe") {
+      //         const metaSender =
+      //           data?.meta?.sender ||
+      //           (typeof data.message === "string"
+      //             ? (data.message.match(/Using probe sender:\s*([^\s]+)/i) ||
+      //                 [])[1]
+      //             : "");
+      //         if (metaSender) setProbeUsed(metaSender);
+      //       }
+      //       if (data.step === "mx_try") {
+      //         const metaMx =
+      //           data?.meta?.mx ||
+      //           (typeof data.message === "string"
+      //             ? (data.message.match(/Probing (?:mx|host):\s*([^\s]+)/i) ||
+      //                 [])[1]
+      //             : "");
+      //         if (metaMx) setMxHost(metaMx);
+      //       }
+      //       return;
+      //     }
+
+      //     if (data?.type === "status") {
+      //       // IMPORTANT: finalize based on data.email (so concurrent emails work)
+      //       if (
+      //         isDefinitive(String(data.status || "")) ||
+      //         data.inProgress === false
+      //       ) {
+      //         finalize(data);
+      //       }
+      //     }
+      //   } catch {}
+      // };
+
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
 
+          // ───────────── Debug logs (keep as-is) ─────────────
           if (SHOW_DEBUG && data?.type === "log") {
             setLogs((prev) => [...prev, data]);
 
@@ -991,6 +1032,7 @@ const SingleValidator = () => {
                   : "");
               if (metaSender) setProbeUsed(metaSender);
             }
+
             if (data.step === "mx_try") {
               const metaMx =
                 data?.meta?.mx ||
@@ -1003,7 +1045,20 @@ const SingleValidator = () => {
             return;
           }
 
+          // ───────────── Status updates ─────────────
           if (data?.type === "status") {
+            // ✅ FIX: Ignore BULK (or any non-single) statuses so they don't render in SingleValidator
+            const sec = String(data?.section || "")
+              .trim()
+              .toLowerCase();
+            if (sec && sec !== "single") return;
+
+            // (optional) extra safety: if you ever add "module" instead of section
+            const mod = String(data?.module || "")
+              .trim()
+              .toLowerCase();
+            if (mod && mod !== "single") return;
+
             // IMPORTANT: finalize based on data.email (so concurrent emails work)
             if (
               isDefinitive(String(data.status || "")) ||
