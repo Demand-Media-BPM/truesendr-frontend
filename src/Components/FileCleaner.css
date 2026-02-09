@@ -326,13 +326,12 @@
 }
 
 /* empty state */
-.fcui-emptyImg{
+.fcui-emptyImg {
   width: clamp(180px, 22vw, 300px);
   height: auto;
   display: block;
   margin: 0 auto 0.875rem;
 }
-
 
 .fcui-empty {
   text-align: center;
@@ -400,41 +399,103 @@
   color: #111827;
 }
 
-/* downloads */
+/* =========================================================
+   ✅ DOWNLOAD BUTTONS (FINAL)
+   - Mobile: vertical
+   - Tablet+Desktop: single line 3 buttons
+   - Text+icon always centered & same line
+   - No overflow outside card
+   ========================================================= */
 .fcui-downloadRow {
   margin-top: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+
   display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  flex-wrap: wrap;
+  flex-direction: column; /* ✅ mobile default */
+  gap: 0.625rem;
+  align-items: stretch;
 }
-.fcui-downloadPrimary {
+
+.fcui-downloadPrimary,
+.fcui-downloadLink {
+  width: 100%;
+  box-sizing: border-box;
+
   border: 0;
-  background: var(--fc-accent);
-  color: #fff;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0.5rem 1.6rem;
   border-radius: 0.5rem;
   font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  height: 2.5rem;          /* ✅ consistent height */
+  padding: 0 1rem;         /* ✅ controlled padding */
+  line-height: 1;
+
+  display: inline-flex;    /* ✅ center content perfectly */
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  white-space: nowrap;     /* ✅ keep text+icon in one line */
+  overflow: hidden;        /* ✅ never go outside */
+  min-width: 0;
 }
+
+.fcui-downloadPrimary {
+  background: var(--fc-accent);
+  color: #fff;
+}
+
+.fcui-downloadLink {
+  background: #ffe9d9;
+  color: var(--fc-accent);
+}
+
 .fcui-downloadPrimary:disabled,
 .fcui-downloadLink:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
-.fcui-downloadLink {
-  border: 0;
-  background: #ffe9d9;
-  color: var(--fc-accent);
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0.5rem 1.6rem;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
+
+/* icon + text helpers */
+.fcui-btnText {
+  display: inline-block;
 }
-.fcui-downloadLink:hover {
-  text-decoration: none;
+.fcui-btnIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+/* spinner */
+.fcui-spinner {
+  animation: fcspin 0.9s linear infinite;
+  display: inline-block;
+}
+@keyframes fcspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ✅ Tablet and up (>= 768px): 3 buttons ONE horizontal line */
+@media (min-width: 48em) { /* 768px+ */
+  .fcui-downloadRow {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.75rem;
+  }
+
+  .fcui-downloadPrimary,
+  .fcui-downloadLink {
+    flex: 1 1 0;     /* equal widths */
+    min-width: 0;    /* allow shrink without overflow */
+    padding: 0 0.75rem; /* slightly tighter so 3 always fit */
+  }
 }
 
 /* ==============================
@@ -444,7 +505,6 @@
 
 /* Tablet & below (<= 1024px) */
 @media (max-width: 64em) {
-  /* default: hide RIGHT panel when no stats (start/picked/rules) */
   .fcui-noStats .fcui-grid {
     grid-template-columns: 1fr;
   }
@@ -452,7 +512,6 @@
     display: none;
   }
 
-  /* after Clean (stats exists): show only RIGHT, hide LEFT */
   .fcui-hasStats .fcui-grid {
     grid-template-columns: 1fr;
   }
@@ -460,23 +519,20 @@
     display: none;
   }
 
-  /* show right back icon only on tablet/mobile */
   .fcui-hasStats .fcui-rightTopBack {
     display: block;
   }
 
-  /* right panel padding stays nice */
   .fcui-right {
     border-top: 0.0625rem solid #e5e7eb;
   }
 
-  /* stats grid adapt */
   .fcui-statGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* phone small refinements */
+/* Phone (<= 425px): buttons vertical already (default), keep other tweaks */
 @media (max-width: 26.5625em) {
   .fcui-nextBtn,
   .fcui-cleanBtn {
@@ -484,8 +540,5 @@
   }
   .fcui-statGrid {
     grid-template-columns: 1fr;
-  }
-  .fcui-downloadRow {
-    gap: 0.625rem;
   }
 }
