@@ -1276,6 +1276,8 @@
 
 // export default BulkValidator;
 
+
+
 // BulkValidator.jsx (MULTI-CARD FLOW UI — matches screenshots + persistence fixes)
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
@@ -1390,6 +1392,7 @@ const bulkItemToJob = (item) => {
 
     completedAt: item.finishedAt ? new Date(item.finishedAt).getTime() : null,
     error: "",
+    downloadingResult: false,
   };
 };
 
@@ -1406,6 +1409,34 @@ const pct = (n, d) => {
   const dd = Math.max(1, d || 0);
   return Math.max(0, Math.min(100, Math.round((n * 100) / dd)));
 };
+
+function SpinnerIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className="bv-spinner"
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="9"
+        stroke="currentColor"
+        strokeWidth="2"
+        opacity="0.25"
+      />
+      <path
+        d="M21 12a9 9 0 0 0-9-9"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 function UploadIcon() {
   return (
@@ -2043,6 +2074,7 @@ const BulkValidator = () => {
         creditsUsed: 0,
         state: "analyzing",
         error: "",
+        downloadingResult: false,
       },
       ...prev,
     ]);
@@ -2113,6 +2145,7 @@ const BulkValidator = () => {
         creditsUsed: 0,
         state: "analyzing",
         error: "",
+        downloadingResult: false,
       },
       ...prev,
     ]);
@@ -2276,8 +2309,41 @@ const BulkValidator = () => {
   };
 
   // download result file (Result ⬇)
+  // const downloadResult = async (job) => {
+  //   if (!job?.bulkId) return;
+  //   try {
+  //     const resp = await axios.get(`${API_BASE}/api/bulk/result`, {
+  //       headers: apiHeaders(),
+  //       params: { bulkId: job.bulkId, username: getUser() },
+  //       responseType: "blob",
+  //     });
+
+  //     const ct = resp.headers["content-type"] || "application/octet-stream";
+  //     const blob = new Blob([resp.data], { type: ct });
+  //     const url = URL.createObjectURL(blob);
+
+  //     const a = document.createElement("a");
+  //     a.href = url;
+  //     a.download = `validated_${job.fileName || "emails"}.xlsx`;
+  //     a.click();
+
+  //     URL.revokeObjectURL(url);
+  //     scheduleCreditsRefresh();
+  //   } catch (e) {
+  //     toast.error(
+  //       `❌ Result download failed: ${e?.response?.data || e.message}`,
+  //     );
+  //   }
+  // };
+
   const downloadResult = async (job) => {
     if (!job?.bulkId) return;
+
+    // prevent double-click spam
+    if (job.downloadingResult) return;
+
+    updateJob(job.uiId, { downloadingResult: true });
+
     try {
       const resp = await axios.get(`${API_BASE}/api/bulk/result`, {
         headers: apiHeaders(),
@@ -2300,6 +2366,8 @@ const BulkValidator = () => {
       toast.error(
         `❌ Result download failed: ${e?.response?.data || e.message}`,
       );
+    } finally {
+      updateJob(job.uiId, { downloadingResult: false });
     }
   };
 
@@ -2788,10 +2856,24 @@ function JobCard({
               </span>
             </div>
 
-            <button className="bv-result" onClick={onDownloadResult}>
+            {/* <button className="bv-result" onClick={onDownloadResult}>
               Result{" "}
               <span className="bv-resultIcon">
                 <DownloadIcon />
+              </span>
+            </button> */}
+            <button
+              className="bv-result"
+              onClick={onDownloadResult}
+              disabled={!!job.downloadingResult}
+              aria-busy={!!job.downloadingResult}
+              title={
+                job.downloadingResult ? "Downloading..." : "Download result"
+              }
+            >
+              Result{" "}
+              <span className="bv-resultIcon">
+                {job.downloadingResult ? <SpinnerIcon /> : <DownloadIcon />}
               </span>
             </button>
           </div>

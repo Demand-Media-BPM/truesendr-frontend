@@ -103,7 +103,17 @@
 }
 
 /* ───────────────────────── Main shell ───────────────────────── */
+.bv-spinner {
+  animation: bvspin 0.9s linear infinite;
+  display: inline-block;
+}
 
+@keyframes bvspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+ 
 .bulkui-shell {
   background: #fff;
   border-radius: 0.75rem; /* 12px */
