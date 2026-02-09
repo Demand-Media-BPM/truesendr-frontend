@@ -188,11 +188,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 0.25rem 0.75rem;
+  /* padding: 0.5rem 0.20rem 0.75rem; */
 }
 
 .sidebar-logo {
-  width: 11.5rem;
+  width: 13.5rem;
   height: auto;
   display: block;
   object-fit: contain;
@@ -407,7 +407,7 @@ body {
   }
 
   .sidebar-logo {
-    width: 10.5rem;
+    width: 11.5rem;
   }
 
   /* ✅ Touch devices: show scrollbar (thin) */
@@ -459,7 +459,7 @@ body {
   }
 
   .sidebar-logo {
-    width: 9.75rem;
+    width: 12.75rem;
   }
 }
 
