@@ -19,6 +19,44 @@ const api = axios.create({
 
 const OTP_LEN = 6;
 
+// Block free-mail providers (extend this list anytime)
+const FREE_EMAIL_DOMAINS = new Set([
+  "gmail.com",
+  "googlemail.com",
+  "yahoo.com",
+  "yahoo.in",
+  "yahoo.co.in",
+  "outlook.com",
+  "hotmail.com",
+  "live.com",
+  "msn.com",
+  "icloud.com",
+  "me.com",
+  "aol.com",
+  "proton.me",
+  "protonmail.com",
+  "zoho.com", // optional: some people use zoho as personal
+  "yandex.com",
+  "yandex.ru",
+  "gmx.com",
+  "mail.com",
+  "rediffmail.com",
+]);
+
+function getEmailDomain(email) {
+  const e = (email || "").trim().toLowerCase();
+  const at = e.lastIndexOf("@");
+  if (at === -1) return "";
+  return e.slice(at + 1);
+}
+
+function isBusinessEmail(email) {
+  const domain = getEmailDomain(email);
+  if (!domain) return false;
+  // optional: block disposable subdomains separately if you want
+  return !FREE_EMAIL_DOMAINS.has(domain);
+}
+
 function EyeIcon({ open }) {
   return (
     <svg
@@ -102,19 +140,25 @@ export default function Signup() {
   const passDigitOK = useMemo(() => /\d/.test(password), [password]);
   const passSpecialOK = useMemo(
     () => /[!@#$%^&*()\-_=+[{\]}\\|;:'",<.>/?`~]/.test(password),
-    [password]
+    [password],
   );
   const allPassOK = passLenOK && passUpperOK && passDigitOK && passSpecialOK;
 
   const validEmail = useMemo(
     () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
-    [email]
+    [email],
   );
+
+  const isBizEmail = useMemo(() => {
+    if (!validEmail) return false;
+    return isBusinessEmail(email);
+  }, [email, validEmail]);
 
   const validForm =
     firstName.trim() &&
     lastName.trim() &&
     validEmail &&
+    isBizEmail && // ✅ NEW: blocks gmail/outlook/etc
     password === confirm &&
     allPassOK &&
     agree &&
@@ -157,6 +201,7 @@ export default function Signup() {
   /* SIGNUP */
   const handleSignup = async () => {
     if (!validForm) return;
+
     setLoading(true);
     setError("");
 
@@ -173,7 +218,7 @@ export default function Signup() {
         setStep("verify");
         resetOtp();
         const cooldown = Number(
-          res.data?.resendCooldownSec || RESEND_COOLDOWN_SEC
+          res.data?.resendCooldownSec || RESEND_COOLDOWN_SEC,
         );
         startResendTimer(cooldown);
       } else {
@@ -185,7 +230,7 @@ export default function Signup() {
 
       if (status === 410 && apiCode === "SIGNUP_EXPIRED") {
         setError(
-          e?.response?.data?.message || "OTP expired. Please sign up again."
+          e?.response?.data?.message || "OTP expired. Please sign up again.",
         );
         setTimeout(() => {
           goBackToSignup();
@@ -270,7 +315,7 @@ export default function Signup() {
         resetOtp();
 
         const cooldown = Number(
-          res.data?.resendCooldownSec || RESEND_COOLDOWN_SEC
+          res.data?.resendCooldownSec || RESEND_COOLDOWN_SEC,
         );
         startResendTimer(cooldown);
       } else {
@@ -333,6 +378,12 @@ export default function Signup() {
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
               />
+
+              {email && validEmail && !isBizEmail && (
+                <div className="error-box" style={{ marginTop: 10 }}>
+                  Please use your bussiness email
+                </div>
+              )}
 
               {/* password with eye */}
               <div className="input-eye">
