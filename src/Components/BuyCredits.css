@@ -1,0 +1,457 @@
+:root {
+  --ts-orange: #ff6a00;
+  --ts-orange-dark: #f45f00;
+
+  --ts-bg: #f6f8fc;
+  --ts-card: #ffffff;
+  --ts-border: #e7edf6;
+  --ts-text: #0f172a;
+  --ts-muted: #6b7280;
+
+  --ts-peach: #fff3ea; /* summary background */
+  --ts-track: #e9eef6; /* slider grey track */
+
+  --r-xl: 1rem;
+  --r-lg: 0.85rem;
+
+  --shadow: 0 0.9rem 2.6rem rgba(16, 24, 40, 0.08);
+  --shadow-soft: 0 0.6rem 1.6rem rgba(16, 24, 40, 0.06);
+  --slider-thumb: 0.9rem;
+}
+
+.bc-page {
+  min-height: 100vh;
+  background: var(--ts-bg);
+  padding: 1rem 1rem;
+  color: var(--ts-text);
+}
+
+/* FULL WIDTH FEEL */
+.bc-container {
+  width: 100%;
+  max-width: 92rem; /* wide */
+  margin: 0 auto;
+}
+
+.bc-header {
+  margin-bottom: 0.9rem;
+}
+
+.bc-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--bulk-text);
+  margin: 0;
+}
+
+/* CONNECTED MAIN CARD */
+.bc-connected {
+  width: 100%;
+  display: flex;
+  background: var(--ts-card);
+  border: 0.0625rem solid var(--ts-border);
+  border-radius: var(--r-xl);
+  overflow: hidden; /* ✅ makes left+right feel connected */
+  box-shadow: var(--shadow-soft);
+  align-items: stretch;
+}
+
+/* LEFT 70% */
+.bc-left {
+  flex: 1 1 70%;
+  padding: 1.25rem;
+  background: var(--ts-card);
+}
+
+/* RIGHT 30% */
+.bc-right {
+  flex: 0 0 30%;
+  background: var(--ts-peach);
+  border-left: 0.0625rem solid rgba(15, 23, 42, 0.08);
+  padding: 1.25rem;
+
+  display: flex; /* ✅ */
+  flex-direction: column; /* ✅ */
+  min-height: 100%; /* ✅ */
+}
+
+/* LEFT CONTENT */
+.bc-leftTop {
+  border: 0.0625rem solid rgba(15, 23, 42, 0.06);
+  border-radius: var(--r-lg);
+  padding: 1.1rem;
+  background: #fff;
+}
+
+.bc-centerTitle {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.bc-centerSub {
+  text-align: center;
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--ts-muted);
+}
+
+.bc-inputWrap {
+  margin-top: 0.85rem;
+  display: flex;
+  justify-content: center;
+}
+
+.bc-input {
+  width: min(17rem, 100%);
+  padding: 0.8rem 1rem;
+  border-radius: 0.55rem;
+  border: 0.0625rem solid var(--ts-border);
+  font-weight: 600;
+  text-align: center;
+  font-size: 1.05rem;
+  outline: none;
+}
+
+.bc-input:focus {
+  border-color: rgba(255, 106, 0, 0.45);
+  box-shadow: 0 0 0 0.22rem rgba(255, 106, 0, 0.12);
+}
+
+.bc-minText {
+  margin-top: 0.55rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--ts-muted);
+}
+
+/* dotted divider + or text */
+.bc-dottedDivider {
+  margin: 1rem auto 1rem;
+  border-top: 0.0625rem dashed rgba(15, 23, 42, 0.18);
+  width: 100%;
+}
+
+.bc-orText {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--ts-muted);
+  margin-bottom: 0.8rem;
+}
+
+/* SLIDER */
+.bc-sliderArea {
+  margin-top: 0.1rem;
+}
+
+.bc-slider {
+  width: 100%;
+  height: 0.22rem;
+  border-radius: 999rem;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ✅ slider + labels must share exact same inset */
+.bc-sliderTrack{
+  padding-left: calc(var(--slider-thumb) / 2);
+  padding-right: calc(var(--slider-thumb) / 2);
+}
+
+
+/* thumb */
+.bc-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 999rem;
+  background: var(--ts-orange);
+  border: 0.2rem solid #fff;
+  box-shadow: 0 0.55rem 1.3rem rgba(255, 106, 0, 0.28);
+  cursor: pointer;
+}
+
+.bc-slider::-moz-range-thumb {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 999rem;
+  background: var(--ts-orange);
+  border: 0.2rem solid #fff;
+  box-shadow: 0 0.55rem 1.3rem rgba(255, 106, 0, 0.28);
+  cursor: pointer;
+}
+
+/* ✅ MARKS: perfect alignment with slider stops */
+.bc-marksRow{
+  margin-top: 0.65rem;
+
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  align-items: center;
+
+  padding: 0;          /* ✅ remove inset from labels row */
+  height: 1.2rem;
+}
+
+.bc-mark{
+  justify-self: center;
+  text-align: center;
+
+  font-size: 0.72rem;
+  color: #94a3b8;
+  user-select: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+
+
+.bc-mark.active{
+  color: var(--ts-orange);
+  font-weight: 700;
+}
+
+
+/* pill below slider */
+.bc-pill {
+  margin-top: 0.85rem;
+  background: #f1f5fb;
+  border-radius: 999rem;
+  padding: 0.9rem 1rem;
+  text-align: center;
+}
+
+.bc-pillText {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ts-orange);
+}
+
+.bc-pillPrice {
+  margin-left: 0.5rem;
+  color: var(--ts-orange);
+}
+
+/* ENTERPRISE */
+.bc-enterprise {
+  margin-top: 0.9rem;
+  border: 0.0625rem solid rgba(15, 23, 42, 0.06);
+  border-radius: var(--r-lg);
+  background: #fff;
+  padding: 1rem 1.1rem;
+}
+
+.bc-enterpriseTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.bc-enterpriseSub {
+  margin-top: 0.2rem;
+  color: var(--ts-muted);
+  font-size: 0.78rem;
+}
+
+.bc-enterpriseLink {
+  margin-top: 0.9rem;
+  border: none;
+  background: transparent;
+  color: var(--ts-orange);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* SUMMARY RIGHT */
+.bc-summaryTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.9rem;
+}
+
+.bc-summaryGrid {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* ✅ take remaining height inside bc-right */
+  min-height: 0; /* ✅ IMPORTANT: allows inner overflow to work */
+  gap: 0.65rem;
+}
+
+.bc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+}
+
+/* ✅ main block stays on top */
+.bc-summaryMain {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.bc-label {
+  color: #1f2937;
+  font-weight: 400;
+}
+
+.bc-value {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.bc-rowTax {
+  align-items: flex-start; /* ✅ amount stays aligned top */
+}
+
+.bc-taxLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bc-gstLine {
+  font-size: 0.75rem;
+  color: var(--ts-muted);
+  font-weight: 600;
+}
+
+.bc-gst {
+  margin-left: 0.35rem;
+  color: var(--ts-muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.bc-hr {
+  height: 0;
+  border-top: 0.0625rem dashed rgba(15, 23, 42, 0.18); /* ✅ dashed */
+  margin: 0.35rem 0;
+}
+
+.bc-totalRow {
+  margin-top: 0.1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.bc-totalLabel {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.bc-totalValue {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.bc-buyBtn {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: none;
+  border-radius: 0.55rem;
+  background: var(--ts-orange);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  box-shadow: 0 0.75rem 1.6rem rgba(255, 106, 0, 0.22);
+}
+
+.bc-buyBtn:hover {
+  background: var(--ts-orange-dark);
+}
+
+.bc-foot {
+  margin-top: auto; /* ✅ pins footer at bottom */
+  font-size: 0.72rem;
+  color: var(--ts-muted);
+  display: grid;
+  gap: 0.25rem;
+}
+
+.bc-footDivider {
+  margin: 0.5rem 0 0.35rem;
+}
+
+.bc-footSmall {
+  margin-top: 0.15rem;
+  line-height: 1.35;
+  word-break: break-word; /* ✅ */
+  overflow-wrap: anywhere; /* ✅ */
+}
+
+.bc-link {
+  color: var(--ts-orange);
+  font-weight: 700;
+}
+
+.bc-spacer {
+  height: 1rem;
+}
+
+/* ===========================
+   RESPONSIVE BREAKPOINTS
+   2560, 1440, 1024, 768, 425
+   =========================== */
+
+/* 2560+ */
+@media (min-width: 160rem) {
+  .bc-container {
+    max-width: 118rem;
+  }
+  .bc-title {
+    font-size: 1.6rem;
+  }
+}
+
+/* 1440 */
+@media (max-width: 90rem) {
+  .bc-container {
+    max-width: 92rem;
+  }
+}
+
+/* 1024 */
+@media (max-width: 64rem) {
+  .bc-right {
+    flex-basis: 34%;
+  }
+}
+
+/* 768 (STACK: left top, summary below) */
+@media (max-width: 48rem) {
+  .bc-connected {
+    flex-direction: column;
+  }
+
+  .bc-right {
+    border-left: none;
+    border-top: 0.0625rem solid rgba(15, 23, 42, 0.08);
+  }
+}
+
+/* 425 */
+@media (max-width: 26.5625rem) {
+  .bc-page {
+    padding: 1.1rem 0.75rem;
+  }
+  .bc-title {
+    font-size: 1.25rem;
+  }
+  .bc-left,
+  .bc-right {
+    padding: 1rem;
+  }
+  .bc-pill {
+    padding: 0.8rem 0.9rem;
+  }
+  .bc-mark {
+    font-size: 0.66rem;
+  }
+}
