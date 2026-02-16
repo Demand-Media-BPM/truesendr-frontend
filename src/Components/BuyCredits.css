@@ -144,79 +144,15 @@
   margin-top: 0.1rem;
 }
 
-.bc-slider {
+/* ✅ ONLY NEW: wrapper spacing for MUI slider */
+.bc-muiSliderWrap {
   width: 100%;
-  height: 0.22rem;
-  border-radius: 999rem;
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
+  margin-top: 0.15rem;
 }
-
-/* ✅ slider + labels must share exact same inset */
-.bc-sliderTrack{
-  padding-left: calc(var(--slider-thumb) / 2);
-  padding-right: calc(var(--slider-thumb) / 2);
-}
-
-
-/* thumb */
-.bc-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 0.9rem;
-  height: 0.9rem;
-  border-radius: 999rem;
-  background: var(--ts-orange);
-  border: 0.2rem solid #fff;
-  box-shadow: 0 0.55rem 1.3rem rgba(255, 106, 0, 0.28);
-  cursor: pointer;
-}
-
-.bc-slider::-moz-range-thumb {
-  width: 0.9rem;
-  height: 0.9rem;
-  border-radius: 999rem;
-  background: var(--ts-orange);
-  border: 0.2rem solid #fff;
-  box-shadow: 0 0.55rem 1.3rem rgba(255, 106, 0, 0.28);
-  cursor: pointer;
-}
-
-/* ✅ MARKS: perfect alignment with slider stops */
-.bc-marksRow{
-  margin-top: 0.65rem;
-
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  align-items: center;
-
-  padding: 0;          /* ✅ remove inset from labels row */
-  height: 1.2rem;
-}
-
-.bc-mark{
-  justify-self: center;
-  text-align: center;
-
-  font-size: 0.72rem;
-  color: #94a3b8;
-  user-select: none;
-  white-space: nowrap;
-  line-height: 1;
-}
-
-
-
-.bc-mark.active{
-  color: var(--ts-orange);
-  font-weight: 700;
-}
-
 
 /* pill below slider */
 .bc-pill {
-  margin-top: 0.85rem;
+  margin-top: 3rem;
   background: #f1f5fb;
   border-radius: 999rem;
   padding: 0.9rem 1rem;
@@ -450,8 +386,5 @@
   }
   .bc-pill {
     padding: 0.8rem 0.9rem;
-  }
-  .bc-mark {
-    font-size: 0.66rem;
   }
 }

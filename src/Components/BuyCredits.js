@@ -1,5 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {useMemo, useState } from "react";
 import "./BuyCredits.css";
+
+// ✅ MUI imports (only for slider)
+import Box from "@mui/material/Box";
+import Slider from "@mui/material/Slider";
 
 function BuyCredits() {
   const PRICE_PER_CREDIT = 0.009;
@@ -31,10 +35,6 @@ function BuyCredits() {
     [],
   );
 
-  const clampCredits = (n) => {
-    if (!Number.isFinite(n)) return 1000;
-    return Math.max(1000, Math.min(1000000, Math.floor(n)));
-  };
 
   const nearestStepIndex = (value) => {
     let best = 0;
@@ -49,13 +49,10 @@ function BuyCredits() {
     return best;
   };
 
-  const [credits, setCredits] = useState(1000);
-  const [idx, setIdx] = useState(0);
-
-  useEffect(() => {
-    setIdx(nearestStepIndex(credits));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [credits]);
+  const [credits, setCredits] = useState(1000); // real numeric used for pricing
+  const [idx, setIdx] = useState(0); // slider index
+  const [creditText, setCreditText] = useState("1000"); // what user types (can be "")
+  const [inputError, setInputError] = useState(""); // optional message
 
   const money = (n) =>
     new Intl.NumberFormat("en-US", {
@@ -65,34 +62,87 @@ function BuyCredits() {
       maximumFractionDigits: 2,
     }).format(n);
 
-  const creditsPretty = new Intl.NumberFormat("en-US").format(credits);
+  const creditsPretty =
+    creditText === ""
+      ? ""
+      : new Intl.NumberFormat("en-US").format(Number(creditText));
 
   const subTotal = useMemo(() => credits * PRICE_PER_CREDIT, [credits]);
   const tax = useMemo(() => subTotal * GST_RATE, [subTotal]);
   const total = useMemo(() => subTotal + tax, [subTotal, tax]);
 
-  const fillPct = useMemo(() => {
-    const max = STEPS.length - 1;
-    return max === 0 ? 0 : (idx / max) * 100;
-  }, [idx, STEPS.length]);
-
-  const sliderStyle = useMemo(
-    () => ({
-      background: `linear-gradient(to right, var(--ts-orange) 0%, var(--ts-orange) ${fillPct}%, var(--ts-track) ${fillPct}%, var(--ts-track) 100%)`,
-    }),
-    [fillPct],
-  );
-
   const onInput = (e) => {
-    const raw = e.target.value.replace(/[^0-9]/g, "");
-    const num = raw ? Number(raw) : 0;
-    setCredits(clampCredits(num));
+    const raw = e.target.value.replace(/[^0-9]/g, ""); // keep only digits
+    setCreditText(raw); // ✅ allow empty
+
+    if (raw === "") {
+      setInputError("Minimum purchase is 1000 credits");
+      return; // don't update slider/pricing yet
+    }
+
+    const typed = Number(raw);
+
+    if (!Number.isFinite(typed)) return;
+
+    // ✅ Allow any number in input, but show warning if below min
+    if (typed < 1000) {
+      setInputError("Minimum purchase is 1000 credits");
+    } else {
+      setInputError("");
+    }
+
+    // ✅ For calculations + slider: clamp to [1000..1,000,000]
+    const nextCredits = Math.max(1000, Math.min(1000000, Math.floor(typed)));
+    setCredits(nextCredits);
+
+    // ✅ slider thumb moves to nearest step but does not overwrite typed value
+    const nextIdx = nearestStepIndex(nextCredits);
+    setIdx(nextIdx);
   };
 
-  const onSlider = (e) => {
-    const next = Number(e.target.value);
-    setIdx(next);
-    setCredits(STEPS[next]);
+  const onInputBlur = () => {
+    if (creditText === "") {
+      setCreditText("1000");
+      setCredits(1000);
+      setIdx(0);
+      setInputError("");
+      return;
+    }
+
+    const typed = Number(creditText || "0");
+
+    if (!Number.isFinite(typed) || typed < 1000) {
+      setCreditText("1000");
+      setCredits(1000);
+      setIdx(0);
+      setInputError("");
+      return;
+    }
+
+    // if user typed > 1,000,000 clamp
+    if (typed > 1000000) {
+      setCreditText("1000000");
+      setCredits(1000000);
+      setIdx(STEPS.length - 1);
+      setInputError("");
+    }
+  };
+
+  // ✅ MUI marks (value is index, label is your MARKS)
+  const muiMarks = useMemo(
+    () => MARKS.map((label, i) => ({ value: i, label })),
+    [MARKS],
+  );
+
+  // ✅ MUI slider change handler (keeps your idx + credits logic)
+  const onMuiSliderChange = (_e, newValue) => {
+    const nextIdx = Array.isArray(newValue) ? newValue[0] : newValue;
+    setIdx(nextIdx);
+
+    const stepCredits = STEPS[nextIdx];
+    setCredits(stepCredits);
+    setCreditText(String(stepCredits)); // ✅ keep input in sync with slider
+    setInputError("");
   };
 
   return (
@@ -115,6 +165,7 @@ function BuyCredits() {
                   className="bc-input"
                   value={creditsPretty}
                   onChange={onInput}
+                  onBlur={onInputBlur}
                   inputMode="numeric"
                 />
               </div>
@@ -124,30 +175,80 @@ function BuyCredits() {
               <div className="bc-dottedDivider" />
               <div className="bc-orText">or select credits</div>
 
+              {/* ✅ ONLY THIS SLIDER PART CHANGED */}
               <div className="bc-sliderArea">
-                <div className="bc-sliderTrack">
-                  <input
-                    className="bc-slider"
-                    type="range"
+                <Box className="bc-muiSliderWrap">
+                  <Slider
+                    aria-label="Credits"
+                    value={idx}
                     min={0}
                     max={STEPS.length - 1}
                     step={1}
-                    value={idx}
-                    onChange={onSlider}
-                    style={sliderStyle}
-                  />
-                </div>
+                    marks={muiMarks}
+                    onChange={onMuiSliderChange}
+                    // matches the “marks” behavior from MUI example
+                    sx={{
+                      // base
+                      color: "var(--ts-orange)",
+                      padding: "0",
+                      margin: "0",
+                      width: "100%",
 
-                <div className="bc-marksRow">
-                  {MARKS.map((m, i) => (
-                    <div
-                      key={m}
-                      className={`bc-mark ${i === idx ? "active" : ""}`}
-                    >
-                      {m}
-                    </div>
-                  ))}
-                </div>
+                      // rail + track
+                      "& .MuiSlider-rail": {
+                        opacity: 1,
+                        height: "0.22rem",
+                        borderRadius: "999rem",
+                        backgroundColor: "var(--ts-track)",
+                      },
+                      "& .MuiSlider-track": {
+                        height: "0.22rem",
+                        border: "none",
+                        borderRadius: "999rem",
+                      },
+
+                      // thumb
+                      "& .MuiSlider-thumb": {
+                        width: "0.9rem",
+                        height: "0.9rem",
+                        backgroundColor: "var(--ts-orange)",
+                        border: "0.2rem solid #fff",
+                        boxShadow: "0 0.55rem 1.3rem rgba(255, 106, 0, 0.28)",
+                      },
+                      "& .MuiSlider-thumb:before": { display: "none" },
+                      "& .MuiSlider-thumb:hover": {
+                        boxShadow: "0 0.55rem 1.3rem rgba(255, 106, 0, 0.28)",
+                      },
+                      "& .MuiSlider-thumb.Mui-focusVisible": {
+                        boxShadow: "0 0.55rem 1.3rem rgba(255, 106, 0, 0.28)",
+                      },
+                      "& .MuiSlider-thumb.Mui-active": {
+                        boxShadow: "0 0.55rem 1.3rem rgba(255, 106, 0, 0.28)",
+                      },
+
+                      // hide default mark dots (Figma has labels only)
+                      "& .MuiSlider-mark": {
+                        width: 0,
+                        height: 0,
+                        backgroundColor: "transparent",
+                      },
+
+                      // labels under track
+                      "& .MuiSlider-markLabel": {
+                        fontSize: "0.72rem",
+                        color: "#94a3b8",
+                        whiteSpace: "nowrap",
+                        top: "1.15rem", // ✅ pushes labels nicely below the line like Figma
+                      },
+
+                      // ✅ active label color (matches your orange highlight)
+                      [`& .MuiSlider-markLabel[data-index="${idx}"]`]: {
+                        color: "var(--ts-orange)",
+                        fontWeight: 700,
+                      },
+                    }}
+                  />
+                </Box>
 
                 <div className="bc-pill">
                   <span className="bc-pillText">
@@ -199,10 +300,9 @@ function BuyCredits() {
                 <div className="bc-row">
                   <span className="bc-label">Tax</span>
                 </div>
-                  
+
                 <div className="bc-row bc-rowTax">
                   <span className="bc-label bc-taxLabel">
-                    
                     <span className="bc-gstLine">
                       GST {Math.round(GST_RATE * 100)}%
                     </span>
