@@ -1,0 +1,380 @@
+/* ========= Settings (Figma-matching) ========= */
+
+:root {
+  --ts-orange: #ff6a00;
+  --ts-orange-dark: #f45f00;
+
+  --ts-bg: #f6f8fc;
+  --ts-card: #ffffff;
+  --ts-border: #e7edf6;
+
+  --ts-text: #0f172a;
+  --ts-muted: #6b7280;
+
+  --ts-danger: #ef4444;
+
+  --r-xl: 1rem;
+  --r-lg: 0.875rem;
+  --r-md: 0.75rem;
+
+  --shadow-card: 0 0.75rem 2rem rgba(15, 23, 42, 0.06);
+}
+
+/* Page wrapper */
+.ts-settings {
+  width: 100%;
+  height: 82vh; /* ✅ same as SingleValidator */
+  padding: 0.9375rem; /* ✅ same as SingleValidator */
+  box-sizing: border-box; /* ✅ same as SingleValidator */
+  display: flex; /* ✅ same layout behavior */
+  flex-direction: column; /* ✅ stack header + body */
+  background: var(--ts-bg);
+  color: var(--ts-text);
+}
+
+/* Header area */
+.ts-settings__header {
+  width: 100%;
+  margin-bottom: 0.75rem; /* ✅ same as SingleValidator header spacing */
+}
+
+.ts-settings__body {
+  width: 100%;
+  margin-top: 0;
+  display: grid;
+  gap: 1.25rem;
+  flex: 1; /* ✅ body takes remaining height like SingleValidator */
+  overflow: auto; /* ✅ if content grows, scroll inside page */
+}
+
+.ts-settings__title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--ts-text);
+  margin: 0 0 1rem 0;
+}
+
+/* Tabs */
+.ts-tabs {
+  display: inline-flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.25rem;
+  border-radius: 0.4375rem;
+  background: transparent;
+}
+
+.ts-tab {
+  appearance: none;
+  border: 0.0625rem solid transparent;
+  background: #ffffff;
+  color: black;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.55rem 1rem;
+  border-radius: 0.4375rem;
+  cursor: pointer;
+  box-shadow: 0 0.25rem 0.9rem rgba(15, 23, 42, 0.05);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.ts-tab:hover {
+  transform: translateY(-0.0625rem);
+  box-shadow: 0 0.35rem 1.05rem rgba(15, 23, 42, 0.08);
+}
+
+.ts-tab.is-active {
+  border-color: rgba(255, 106, 0, 0.9);
+  color: #000000;
+  background: #ffdabf;
+}
+
+/* Card */
+.ts-card {
+  background: var(--ts-card);
+  border: 0.0625rem solid var(--ts-border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem 1.25rem;
+}
+
+.ts-card__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 1rem;
+}
+
+/* Overview layout */
+.ts-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.ts-overview__col {
+  display: grid;
+  gap: 1.1rem;
+}
+
+/* Key/Value */
+.ts-kv {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.ts-kv__k {
+  font-size: 0.85rem;
+  color: var(--ts-muted);
+  font-weight: 500;
+}
+
+.ts-kv__v {
+  font-size: 0.95rem;
+  color: var(--ts-text);
+  font-weight: 500;
+}
+
+.ts-kv--credits {
+  margin-top: 0.25rem;
+}
+
+/* Credits progress */
+.ts-credits {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.1rem;
+}
+
+.ts-credits__track {
+  width: 100%;
+  height: 0.45rem;
+  background: #e9eef6;
+  border-radius: 999rem;
+  overflow: hidden;
+}
+
+.ts-credits__fill {
+  height: 100%;
+  background: var(--ts-orange);
+  border-radius: 999rem;
+}
+
+.ts-credits__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--ts-muted);
+  font-weight: 600;
+}
+
+.ts-credits__used {
+  color: #475569;
+}
+
+.ts-credits__total {
+  color: #64748b;
+}
+
+/* Danger card */
+.ts-card--danger .ts-card__title {
+  margin-bottom: 0.65rem;
+}
+
+.ts-danger__text {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.ts-danger__action {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: #ef4444;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.ts-danger__action:hover {
+  text-decoration: underline;
+}
+
+/* Form */
+.ts-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 30rem;
+}
+
+.ts-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.ts-label {
+  font-size: 0.9rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.ts-input {
+  width: 100%;
+  height: 2.65rem;
+  border-radius: 0.6rem;
+  border: 0.0625rem solid var(--ts-border);
+  background: #ffffff;
+  padding: 0 0.9rem;
+  font-size: 0.95rem;
+  color: var(--ts-text);
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.ts-input::placeholder {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.ts-input:focus {
+  border-color: rgba(255, 106, 0, 0.65);
+  box-shadow: 0 0 0 0.2rem rgba(255, 106, 0, 0.12);
+}
+
+.ts-btn {
+  width: fit-content;
+  height: 2.6rem;
+  padding: 0 1.2rem;
+  border-radius: 0.65rem;
+  border: none;
+  background: var(--ts-orange);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+  box-shadow: 0 0.5rem 1.2rem rgba(255, 106, 0, 0.25);
+}
+
+.ts-btn:hover {
+  background: var(--ts-orange-dark);
+  transform: translateY(-0.0625rem);
+}
+
+.ts-inline-error {
+  font-size: 0.85rem;
+  color: #ef4444;
+  font-weight: 700;
+  margin-top: -0.35rem;
+}
+
+/* Placeholder cards */
+.ts-card--placeholder .ts-placeholder__text {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ========= Responsive Breakpoints ========= */
+
+/* <= 425px */
+@media (max-width: 26.5625rem) {
+  .ts-settings {
+    padding: 0.75rem; /* ✅ same vibe as your smallest phone tweaks */
+  }
+  .ts-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .ts-tab {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.92rem;
+  }
+
+  .ts-overview {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .ts-form {
+    max-width: 100%;
+  }
+}
+
+/* >= 768px */
+@media (min-width: 48rem) {
+  .ts-settings {
+    height: 82vh;
+    min-height: 82vh;
+    padding: 0.875rem; /* ✅ same as SingleValidator */
+  }
+}
+
+/* >= 1024px */
+@media (min-width: 64rem) {
+}
+
+/* >= 1440px */
+@media (min-width: 90rem) {
+  .ts-settings {
+    padding: 1.125rem; /* ✅ same as SingleValidator */
+  }
+
+  .ts-settings__title { 
+    font-size: 1.45rem;
+  }
+
+  .ts-card {
+    padding: 1.35rem 1.4rem;
+  }
+}
+
+/* >= 2560px */
+@media (min-width: 160rem) {
+  .ts-settings {
+    padding: 1.625rem; /* ✅ same as SingleValidator */
+  }
+  
+  .ts-settings__title {
+    font-size: 1.65rem;
+  }
+
+  .ts-tab {
+    font-size: 1.05rem;
+    padding: 0.65rem 1.15rem;
+  }
+
+  .ts-card__title {
+    font-size: 1.1rem;
+  }
+
+  .ts-kv__v {
+    font-size: 1.05rem;
+  }
+
+  .ts-input {
+    height: 2.9rem;
+    font-size: 1.02rem;
+  }
+
+  .ts-btn {
+    height: 2.85rem;
+    font-size: 1.02rem;
+  }
+}

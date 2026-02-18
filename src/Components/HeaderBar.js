@@ -10,6 +10,7 @@ import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import PolicyOutlinedIcon from "@mui/icons-material/PolicyOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import { Dialog } from "@mui/material";
 
 function toTitleCase(name) {
   return String(name || "")
@@ -55,6 +56,7 @@ const HeaderBar = ({ onLogout, username, email }) => {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const wrapRef = useRef(null);
 
   const displayName = useMemo(() => {
@@ -113,7 +115,14 @@ const HeaderBar = ({ onLogout, username, email }) => {
   };
 
   const handleLogout = () => {
-    setOpen(false);
+    setOpen(false); // close dropdown
+    setLogoutOpen(true); // open confirmation dialog
+  };
+
+  const closeLogoutDialog = () => setLogoutOpen(false);
+
+  const confirmLogout = () => {
+    setLogoutOpen(false);
     onLogout?.();
   };
 
@@ -225,6 +234,38 @@ const HeaderBar = ({ onLogout, username, email }) => {
           </div>
         )}
       </div>
+      {/* LOGOUT CONFIRM DIALOG */}
+      <Dialog
+        open={logoutOpen}
+        onClose={closeLogoutDialog}
+        fullWidth
+        maxWidth={false}
+        slotProps={{
+          paper: { className: "hbLogoutPaper" },
+        }}
+      >
+        <div className="hbLogoutTitle">Log out?</div>
+
+        <div className="hbLogoutBody">Are you sure you want to log out?</div>
+
+        <div className="hbLogoutActions">
+          <button
+            type="button"
+            className="hbLogoutCancel"
+            onClick={closeLogoutDialog}
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            className="hbLogoutConfirm"
+            onClick={confirmLogout}
+          >
+            Log out
+          </button>
+        </div>
+      </Dialog>
     </header>
   );
 };

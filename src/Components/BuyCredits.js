@@ -1,5 +1,8 @@
-import React, {useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import "./BuyCredits.css";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useCredits } from "../credits/CreditsContext";
 
 // ✅ MUI imports (only for slider)
 import Box from "@mui/material/Box";
@@ -35,7 +38,6 @@ function BuyCredits() {
     [],
   );
 
-
   const nearestStepIndex = (value) => {
     let best = 0;
     let diff = Infinity;
@@ -55,9 +57,9 @@ function BuyCredits() {
   const [inputError, setInputError] = useState(""); // optional message
 
   const money = (n) =>
-    new Intl.NumberFormat("en-US", {
+    new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(n);
@@ -65,7 +67,7 @@ function BuyCredits() {
   const creditsPretty =
     creditText === ""
       ? ""
-      : new Intl.NumberFormat("en-US").format(Number(creditText));
+      : new Intl.NumberFormat("en-IN").format(Number(creditText));
 
   const subTotal = useMemo(() => credits * PRICE_PER_CREDIT, [credits]);
   const tax = useMemo(() => subTotal * GST_RATE, [subTotal]);
@@ -143,6 +145,149 @@ function BuyCredits() {
     setCredits(stepCredits);
     setCreditText(String(stepCredits)); // ✅ keep input in sync with slider
     setInputError("");
+  };
+
+  const { refreshCredits } = useCredits();
+
+  function getApiBase() {
+    const env = process.env.REACT_APP_API_BASE;
+    if (env) return env.replace(/\/+$/, "");
+    return window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : `${window.location.protocol}//${window.location.host}`;
+  }
+
+  function getUsernameFromStorage() {
+    // best-effort (matches your app style)
+    const u0 = (localStorage.getItem("loggedInUser") || "").trim();
+    if (u0) return u0;
+    const u1 = (
+      localStorage.getItem("username") ||
+      localStorage.getItem("user") ||
+      ""
+    ).trim();
+    if (u1) return u1;
+    try {
+      const u2 = JSON.parse(localStorage.getItem("auth") || "{}")?.username;
+      if (u2) return String(u2).trim();
+    } catch {}
+    return "";
+  }
+
+  function loadRazorpay() {
+    return new Promise((resolve) => {
+      if (window.Razorpay) return resolve(true);
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  }
+
+  const [paying, setPaying] = useState(false);
+
+  const onBuyCredits = async () => {
+    try {
+      const username = String(getUsernameFromStorage() || "").trim();
+      if (!username) {
+        toast.error("Please login again (username not found).");
+        return;
+      }
+      if (credits < 1000) {
+        toast.error("Minimum purchase is 1000 credits");
+        return;
+      }
+
+      setPaying(true);
+
+      const ok = await loadRazorpay();
+      if (!ok) {
+        toast.error("Razorpay SDK failed to load");
+        return;
+      }
+
+      // 1) create order
+      const api = getApiBase();
+      const { data } = await axios.post(
+        `${api}/api/payment/razorpay/create-order`,
+        { username, credits },
+        { headers: { "ngrok-skip-browser-warning": "true" } },
+      );
+
+      if (!data?.ok) {
+        toast.error(data?.message || "Could not create order");
+        return;
+      }
+
+      const { key_id, order } = data;
+
+      // 2) open Razorpay
+      const options = {
+        key: key_id,
+        amount: order.amount,
+        currency: order.currency,
+        name: "TrueSendr",
+        description: `Buy ${credits} credits`,
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            // 3) verify + credit
+            const vr = await axios.post(
+              `${api}/api/payment/razorpay/verify`,
+              {
+                username,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              },
+              { headers: { "ngrok-skip-browser-warning": "true" } },
+            );
+
+            if (vr.data?.ok) {
+              toast.success("Payment successful! Credits added.");
+              await refreshCredits();
+            } else {
+              toast.error(vr.data?.message || "Payment verification failed");
+            }
+          } catch (e) {
+            toast.error("Payment verification failed");
+            console.error(e);
+          }
+        },
+        modal: {
+          ondismiss: async () => {
+            toast.info("Payment cancelled");
+
+            try {
+              await axios.post(
+                `${api}/api/payment/razorpay/cancel`,
+                {
+                  username,
+                  razorpay_order_id: order.id, // ✅ cancel the exact order we created
+                },
+                { headers: { "ngrok-skip-browser-warning": "true" } },
+              );
+            } catch (e) {
+              console.warn(
+                "cancel notify failed:",
+                e?.response?.data || e?.message || e,
+              );
+            }
+          },
+        },
+
+        theme: { color: "#ff6a00" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || "Payment failed");
+    } finally {
+      setPaying(false);
+    }
   };
 
   return (
@@ -317,8 +462,13 @@ function BuyCredits() {
                   <span className="bc-totalValue">{money(total)}</span>
                 </div>
 
-                <button className="bc-buyBtn" type="button">
-                  Buy Credits
+                <button
+                  className="bc-buyBtn"
+                  type="button"
+                  onClick={onBuyCredits}
+                  disabled={paying}
+                >
+                  {paying ? "Processing..." : "Buy Credits"}
                 </button>
               </div>
 
