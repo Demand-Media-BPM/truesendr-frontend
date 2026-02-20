@@ -9,7 +9,7 @@ import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 
 function BuyCredits() {
-  const PRICE_PER_CREDIT = 0.009;
+  const PRICE_PER_CREDIT = 0.008;
   const GST_RATE = 0.18;
 
   const STEPS = useMemo(
@@ -56,18 +56,26 @@ function BuyCredits() {
   const [creditText, setCreditText] = useState("1000"); // what user types (can be "")
   const [inputError, setInputError] = useState(""); // optional message
 
-  const money = (n) =>
-    new Intl.NumberFormat("en-IN", {
+  const money2 = (n) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "INR",
+      currency: "USD",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
+    }).format(n);
+
+  const money3 = (n) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 3,
+      maximumFractionDigits: 3,
     }).format(n);
 
   const creditsPretty =
     creditText === ""
       ? ""
-      : new Intl.NumberFormat("en-IN").format(Number(creditText));
+      : new Intl.NumberFormat("en-US").format(Number(creditText));
 
   const subTotal = useMemo(() => credits * PRICE_PER_CREDIT, [credits]);
   const tax = useMemo(() => subTotal * GST_RATE, [subTotal]);
@@ -398,7 +406,7 @@ function BuyCredits() {
                 <div className="bc-pill">
                   <span className="bc-pillText">
                     {MARKS[idx]} Credits{" "}
-                    <span className="bc-pillPrice">{money(subTotal)}</span>
+                    <span className="bc-pillPrice">{money2(subTotal)}</span>
                   </span>
                 </div>
               </div>
@@ -432,14 +440,14 @@ function BuyCredits() {
 
                 <div className="bc-row">
                   <span className="bc-label">Price Per Credit</span>
-                  <span className="bc-value">{money(PRICE_PER_CREDIT)}</span>
+                  <span className="bc-value">{money3(PRICE_PER_CREDIT)}</span>
                 </div>
 
                 <div className="bc-hr" />
 
                 <div className="bc-row">
                   <span className="bc-label">Sub Total</span>
-                  <span className="bc-value">{money(subTotal)}</span>
+                  <span className="bc-value">{money2(subTotal)}</span>
                 </div>
 
                 <div className="bc-row">
@@ -452,14 +460,14 @@ function BuyCredits() {
                       GST {Math.round(GST_RATE * 100)}%
                     </span>
                   </span>
-                  <span className="bc-value">{money(tax)}</span>
+                  <span className="bc-value">{money2(tax)}</span>
                 </div>
 
                 <div className="bc-hr" />
 
                 <div className="bc-totalRow">
                   <span className="bc-totalLabel">Your Total</span>
-                  <span className="bc-totalValue">{money(total)}</span>
+                  <span className="bc-totalValue">{money2(total)}</span>
                 </div>
 
                 <button
