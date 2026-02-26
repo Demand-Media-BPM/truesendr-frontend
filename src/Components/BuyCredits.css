@@ -1,3 +1,11 @@
+/* ==========================================================================
+   BuyCredits.css (Clean + Responsive + Enterprise Modal Fixed)
+   Breakpoints: 425, 768, 1024, 1440, 2560
+   ========================================================================== */
+
+/* =========================
+   TOKENS
+   ========================= */
 :root {
   --ts-orange: #ff6a00;
   --ts-orange-dark: #f45f00;
@@ -14,22 +22,22 @@
   --r-xl: 1rem;
   --r-lg: 0.85rem;
 
-  --shadow: 0 0.9rem 2.6rem rgba(16, 24, 40, 0.08);
   --shadow-soft: 0 0.6rem 1.6rem rgba(16, 24, 40, 0.06);
-  --slider-thumb: 0.9rem;
 }
 
+/* =========================
+   PAGE
+   ========================= */
 .bc-page {
   min-height: 100vh;
   background: var(--ts-bg);
-  padding: 1rem 1rem;
+  padding: 1rem;
   color: var(--ts-text);
 }
 
-/* FULL WIDTH FEEL */
 .bc-container {
   width: 100%;
-  max-width: 92rem; /* wide */
+  max-width: 92rem;
   margin: 0 auto;
 }
 
@@ -40,42 +48,46 @@
 .bc-title {
   font-size: 1.4rem;
   font-weight: 600;
-  color: var(--bulk-text);
+  color: var(--ts-text); /* ✅ removed unknown var(--bulk-text) */
   margin: 0;
 }
 
-/* CONNECTED MAIN CARD */
+/* =========================
+   CONNECTED MAIN CARD
+   ========================= */
 .bc-connected {
   width: 100%;
   display: flex;
   background: var(--ts-card);
   border: 0.0625rem solid var(--ts-border);
   border-radius: var(--r-xl);
-  overflow: hidden; /* ✅ makes left+right feel connected */
+  overflow: hidden;
   box-shadow: var(--shadow-soft);
   align-items: stretch;
 }
 
-/* LEFT 70% */
+/* LEFT */
 .bc-left {
   flex: 1 1 70%;
   padding: 1.25rem;
   background: var(--ts-card);
 }
 
-/* RIGHT 30% */
+/* RIGHT */
 .bc-right {
   flex: 0 0 30%;
   background: var(--ts-peach);
   border-left: 0.0625rem solid rgba(15, 23, 42, 0.08);
   padding: 1.25rem;
 
-  display: flex; /* ✅ */
-  flex-direction: column; /* ✅ */
-  min-height: 100%; /* ✅ */
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
-/* LEFT CONTENT */
+/* =========================
+   LEFT CONTENT
+   ========================= */
 .bc-leftTop {
   border: 0.0625rem solid rgba(15, 23, 42, 0.06);
   border-radius: var(--r-lg);
@@ -111,6 +123,7 @@
   text-align: center;
   font-size: 1.05rem;
   outline: none;
+  background: #fff;
 }
 
 .bc-input:focus {
@@ -125,9 +138,8 @@
   color: var(--ts-muted);
 }
 
-/* dotted divider + or text */
 .bc-dottedDivider {
-  margin: 1rem auto 1rem;
+  margin: 1rem auto;
   border-top: 0.0625rem dashed rgba(15, 23, 42, 0.18);
   width: 100%;
 }
@@ -139,18 +151,17 @@
   margin-bottom: 0.8rem;
 }
 
-/* SLIDER */
+/* Slider area wrapper */
 .bc-sliderArea {
   margin-top: 0.1rem;
 }
 
-/* ✅ ONLY NEW: wrapper spacing for MUI slider */
 .bc-muiSliderWrap {
   width: 100%;
   margin-top: 0.15rem;
 }
 
-/* pill below slider */
+/* Pill below slider */
 .bc-pill {
   margin-top: 3rem;
   background: #f1f5fb;
@@ -170,7 +181,7 @@
   color: var(--ts-orange);
 }
 
-/* ENTERPRISE */
+/* Enterprise block under left */
 .bc-enterprise {
   margin-top: 0.9rem;
   border: 0.0625rem solid rgba(15, 23, 42, 0.06);
@@ -201,7 +212,9 @@
   cursor: pointer;
 }
 
-/* SUMMARY RIGHT */
+/* =========================
+   RIGHT SUMMARY
+   ========================= */
 .bc-summaryTitle {
   font-size: 0.95rem;
   font-weight: 600;
@@ -211,8 +224,13 @@
 .bc-summaryGrid {
   display: flex;
   flex-direction: column;
-  flex: 1; /* ✅ take remaining height inside bc-right */
-  min-height: 0; /* ✅ IMPORTANT: allows inner overflow to work */
+  flex: 1;
+  min-height: 0;
+  gap: 0.65rem;
+}
+
+.bc-summaryMain {
+  display: grid;
   gap: 0.65rem;
 }
 
@@ -221,12 +239,6 @@
   align-items: center;
   justify-content: space-between;
   font-size: 0.82rem;
-}
-
-/* ✅ main block stays on top */
-.bc-summaryMain {
-  display: grid;
-  gap: 0.65rem;
 }
 
 .bc-label {
@@ -240,7 +252,7 @@
 }
 
 .bc-rowTax {
-  align-items: flex-start; /* ✅ amount stays aligned top */
+  align-items: flex-start;
 }
 
 .bc-taxLabel {
@@ -255,16 +267,9 @@
   font-weight: 600;
 }
 
-.bc-gst {
-  margin-left: 0.35rem;
-  color: var(--ts-muted);
-  font-weight: 600;
-  font-size: 0.75rem;
-}
-
 .bc-hr {
   height: 0;
-  border-top: 0.0625rem dashed rgba(15, 23, 42, 0.18); /* ✅ dashed */
+  border-top: 0.0625rem dashed rgba(15, 23, 42, 0.18);
   margin: 0.35rem 0;
 }
 
@@ -303,8 +308,14 @@
   background: var(--ts-orange-dark);
 }
 
+.bc-buyBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Footer pinned */
 .bc-foot {
-  margin-top: auto; /* ✅ pins footer at bottom */
+  margin-top: auto;
   font-size: 0.72rem;
   color: var(--ts-muted);
   display: grid;
@@ -318,8 +329,8 @@
 .bc-footSmall {
   margin-top: 0.15rem;
   line-height: 1.35;
-  word-break: break-word; /* ✅ */
-  overflow-wrap: anywhere; /* ✅ */
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .bc-link {
@@ -331,10 +342,315 @@
   height: 1rem;
 }
 
-/* ===========================
+/* =========================
+   ENTERPRISE MODAL (Responsive + Scroll)
+   ========================= */
+.bc-modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  z-index: 9999;
+}
+
+/* ✅ Modal scrolls inside on small screens */
+.bc-modal {
+  width: min(55rem, 100%);
+  background: #fff;
+  border-radius: 0.9rem;
+  border: 0.0625rem solid rgba(15, 23, 42, 0.10);
+  box-shadow: 0 1.1rem 3.2rem rgba(15, 23, 42, 0.18);
+  position: relative;
+
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  padding-bottom: 1.25rem;
+}
+
+.bc-modalHeader {
+  padding: 1rem 1.1rem 0.6rem;
+}
+
+.bc-modalTitle {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.bc-modalSub {
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.bc-modalBody {
+  display: grid;
+  grid-template-columns: 0.33fr 0.67fr;
+  gap: 0.8rem;
+  padding: 0.9rem 1.1rem 1.1rem;
+}
+
+/* Left benefits */
+.bc-modalLeft {
+  background: var(--ts-peach);
+  border-radius: 0.65rem;
+  padding: 1rem;
+  border: 0.0625rem solid rgba(15, 23, 42, 0.06);
+}
+
+.bc-benefitsTitle {
+  font-weight: 500;
+  font-size: 0.85rem;
+  margin-bottom: 0.65rem;
+}
+
+.bc-benefitsList {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+/* Right form panel */
+.bc-modalRight {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 0.0625rem solid rgba(15, 23, 42, 0.06);
+  border-radius: 0.65rem;
+  padding: 1rem;
+}
+
+.bc-formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem 1rem;
+}
+
+.bc-fieldWide {
+  grid-column: 1 / -1;
+}
+
+.bc-label2 {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 0.35rem;
+}
+
+.bc-input2 {
+  width: 100%;
+  border: 0.0625rem solid var(--ts-border);
+  border-radius: 0.5rem;
+  padding: 0.7rem 0.75rem;
+  font-size: 0.78rem;
+  outline: none;
+  background: #fff;
+}
+
+.bc-input2:focus {
+  border-color: rgba(255, 106, 0, 0.45);
+  box-shadow: 0 0 0 0.22rem rgba(255, 106, 0, 0.12);
+}
+
+.bc-hint2 {
+  margin-top: 0.45rem;
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.bc-quoteBtn {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.85rem 0.9rem;
+  border: none;
+  border-radius: 0.55rem;
+  background: var(--ts-orange);
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.78rem;
+  cursor: pointer;
+  box-shadow: 0 0.75rem 1.6rem rgba(255, 106, 0, 0.22);
+}
+
+.bc-quoteBtn:hover {
+  background: var(--ts-orange-dark);
+}
+
+.bc-modalFootNote {
+  margin-top: 0.65rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Close (desktop: bottom-right) */
+.bc-modalClose {
+  position: absolute;
+  right: 1.1rem;
+  bottom: 1rem;
+  border: none;
+  background: transparent;
+  font-size: 0.85rem;
+  color: black;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.bc-modalClose:hover {
+  opacity: 1;
+}
+
+/* =========================
+   FLAG ICON
+   ========================= */
+.bc-flagIcon {
+  width: 1.15rem;
+  height: 0.85rem;
+  display: block;
+  overflow: hidden;
+  box-shadow: 0 0.25rem 0.75rem rgba(15, 23, 42, 0.10);
+}
+
+/* =========================
+   COUNTRY DROPDOWN (PhoneValidator style)
+   ========================= */
+.bc-countryDd {
+  position: relative;
+}
+
+.bc-countryToggle {
+  width: 100%;
+  border: 0.0625rem solid var(--ts-border);
+  border-radius: 0.5rem;
+  padding: 0.7rem 0.75rem;
+  background: #fff;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.bc-countryToggle:focus {
+  outline: none;
+  border-color: rgba(255, 106, 0, 0.45);
+  box-shadow: 0 0 0 0.22rem rgba(255, 106, 0, 0.12);
+}
+
+.bc-countryToggleLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.bc-countryToggleText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.bc-caret {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.bc-countryMenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: 100%;
+  z-index: 99999;
+  background: #fff;
+  border: 0.0625rem solid rgba(15, 23, 42, 0.12);
+  border-radius: 0.5rem;
+  box-shadow: 0 1.1rem 3.2rem rgba(15, 23, 42, 0.18);
+  overflow: hidden;
+}
+
+.bc-searchRow {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 0.0625rem solid #eef2f7;
+}
+
+.bc-countrySearch {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 0.85rem;
+  color: #0f172a;
+}
+
+.bc-countryList {
+  max-height: 14rem;
+  overflow-y: auto;
+}
+
+.bc-countryItem {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0.6rem 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.bc-countryItem:hover {
+  background: #f7f8fb;
+}
+
+.bc-countryItem.active {
+  background: rgba(255, 106, 0, 0.12);
+}
+
+.bc-countryItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.bc-countryItemText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  color: #0f172a;
+}
+
+.bc-check {
+  font-weight: 800;
+  color: var(--ts-orange);
+}
+
+.bc-countryEmpty {
+  padding: 0.75rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #667085;
+}
+
+/* =========================
    RESPONSIVE BREAKPOINTS
    2560, 1440, 1024, 768, 425
-   =========================== */
+   ========================= */
 
 /* 2560+ */
 @media (min-width: 160rem) {
@@ -358,10 +674,20 @@
   .bc-right {
     flex-basis: 34%;
   }
+
+  .bc-modal {
+    width: min(52rem, 100%);
+  }
+
+  .bc-modalBody {
+    grid-template-columns: 0.38fr 0.62fr;
+    gap: 0.75rem;
+  }
 }
 
-/* 768 (STACK: left top, summary below) */
+/* 768 */
 @media (max-width: 48rem) {
+  /* Main card stacks */
   .bc-connected {
     flex-direction: column;
   }
@@ -370,6 +696,43 @@
     border-left: none;
     border-top: 0.0625rem solid rgba(15, 23, 42, 0.08);
   }
+
+  /* Modal stacks */
+  .bc-modalOverlay {
+    padding: 0.75rem;
+  }
+
+  .bc-modal {
+    border-radius: 0.85rem;
+    max-height: calc(100dvh - 1.5rem);
+  }
+
+  .bc-modalHeader {
+    padding: 0.9rem 0.9rem 0.55rem;
+  }
+
+  .bc-modalBody {
+    grid-template-columns: 1fr;
+    padding: 0.75rem 0.9rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .bc-modalLeft,
+  .bc-modalRight {
+    padding: 0.9rem;
+  }
+
+  .bc-formGrid {
+    grid-template-columns: 1fr; /* ✅ single column */
+    gap: 0.75rem;
+  }
+
+  /* Close moves to top-right on small screens */
+  .bc-modalClose {
+    top: 0.85rem;
+    right: 0.9rem;
+    bottom: auto;
+  }
 }
 
 /* 425 */
@@ -377,14 +740,53 @@
   .bc-page {
     padding: 1.1rem 0.75rem;
   }
+
   .bc-title {
     font-size: 1.25rem;
   }
+
   .bc-left,
   .bc-right {
     padding: 1rem;
   }
+
   .bc-pill {
     padding: 0.8rem 0.9rem;
+  }
+
+  /* Modal tighter */
+  .bc-modalOverlay {
+    padding: 0.6rem;
+  }
+
+  .bc-modal {
+    border-radius: 0.75rem;
+    max-height: calc(100dvh - 1.2rem);
+  }
+
+  .bc-modalHeader {
+    padding: 0.85rem 0.85rem 0.5rem;
+  }
+
+  .bc-modalTitle {
+    font-size: 0.9rem;
+  }
+
+  .bc-modalSub {
+    font-size: 0.74rem;
+  }
+
+  .bc-modalBody {
+    padding: 0.7rem 0.85rem 0.95rem;
+    gap: 0.65rem;
+  }
+
+  .bc-input2 {
+    padding: 0.65rem 0.7rem;
+  }
+
+  .bc-quoteBtn {
+    padding: 0.8rem 0.85rem;
+    font-size: 0.76rem;
   }
 }
