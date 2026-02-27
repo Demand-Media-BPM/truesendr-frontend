@@ -22,6 +22,7 @@ function BuyCredits() {
 
   // Enterprise modal
   const [showEnterprise, setShowEnterprise] = useState(false);
+  const [sendingQuote, setSendingQuote] = useState(false);
 
   // form state (frontend-only for now)
   const [entForm, setEntForm] = useState({
@@ -41,11 +42,66 @@ function BuyCredits() {
     setEntForm((p) => ({ ...p, [key]: e.target.value }));
   };
 
-  const onRequestQuote = (e) => {
+  const onRequestQuote = async (e) => {
     e.preventDefault();
-    // frontend only for now
-    toast.info("Quote request captured (backend next).");
-    closeEnterprise();
+
+    try {
+      setSendingQuote(true);
+
+      // basic front-end validation (minimal)
+      if (!entForm.name?.trim() || !entForm.email?.trim()) {
+        toast.error("Please enter Name and Company Email.");
+        return;
+      }
+
+      const api = getApiBase();
+      const username = String(getUsernameFromStorage() || "").trim();
+
+      const payload = {
+        username, // optional (helps you identify user if logged-in)
+        name: entForm.name,
+        email: entForm.email,
+        jobTitle: entForm.jobTitle,
+        companyName: entForm.companyName,
+        countryCode: selectedCountry?.code,
+        countryName: selectedCountry?.name,
+        dialCode: selectedCountry?.dial,
+        phone: entForm.phone,
+        volume: entForm.volume,
+        page: "BuyCredits Enterprise Modal",
+      };
+
+      const { data } = await axios.post(
+        `${api}/api/payment/razorpay/enterprise-lead`,
+        payload,
+        { headers: { "ngrok-skip-browser-warning": "true" } },
+      );
+
+      if (data?.ok) {
+        toast.success("Request sent! Our team will contact you shortly.");
+        closeEnterprise();
+
+        // optional: reset the form
+        setEntForm({
+          name: "",
+          email: "",
+          jobTitle: "",
+          companyName: "",
+          countryCode: "US",
+          phone: "",
+          volume: "1000000",
+        });
+      } else {
+        toast.error(
+          data?.message || "Could not send request. Please try again.",
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || "Could not send request.");
+    } finally {
+      setSendingQuote(false);
+    }
   };
 
   // ESC close
@@ -873,8 +929,12 @@ function BuyCredits() {
                     </div>
                   </div>
 
-                  <button className="bc-quoteBtn" type="submit">
-                    Request Custom Quote
+                  <button
+                    className="bc-quoteBtn"
+                    type="submit"
+                    disabled={sendingQuote}
+                  >
+                    {sendingQuote ? "Sending..." : "Request Custom Quote"}
                   </button>
 
                   <div className="bc-modalFootNote">
