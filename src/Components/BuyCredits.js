@@ -2,7 +2,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import "./BuyCredits.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import {
+  toastSuccess,
+  toastError,
+  toastInfo,
+} from "./showAppToast";
 import { useCredits } from "../credits/CreditsContext";
 import * as FlagIcons from "country-flag-icons/react/3x2";
 import PaymentResultScreen from "./PaymentResultScreen";
@@ -53,7 +57,7 @@ function BuyCredits() {
 
       // basic front-end validation (minimal)
       if (!entForm.name?.trim() || !entForm.email?.trim()) {
-        toast.error("Please enter Name and Company Email.");
+        toastError("Please enter Name and Company Email.");
         return;
       }
 
@@ -81,7 +85,7 @@ function BuyCredits() {
       );
 
       if (data?.ok) {
-        toast.success("Request sent! Our team will contact you shortly.");
+        toastSuccess("Request sent! Our team will contact you shortly.");
         closeEnterprise();
 
         // optional: reset the form
@@ -95,13 +99,11 @@ function BuyCredits() {
           volume: "1000000",
         });
       } else {
-        toast.error(
-          data?.message || "Could not send request. Please try again.",
-        );
+        toastError(data?.message || "Could not send request. Please try again.");
       }
     } catch (err) {
       console.error(err);
-      toast.error(err?.response?.data?.message || "Could not send request.");
+      toastError(err?.response?.data?.message || "Could not send request.");
     } finally {
       setSendingQuote(false);
     }
@@ -535,11 +537,11 @@ function BuyCredits() {
     try {
       const username = String(getUsernameFromStorage() || "").trim();
       if (!username) {
-        toast.error("Please login again (username not found).");
+        toastError("Please login again (username not found).");
         return;
       }
       if (credits < 1000) {
-        toast.error("Minimum purchase is 1000 credits");
+        toastError("Minimum purchase is 1000 credits");
         return;
       }
 
@@ -547,7 +549,7 @@ function BuyCredits() {
 
       const ok = await loadRazorpay();
       if (!ok) {
-        toast.error("Razorpay SDK failed to load");
+        toastError("Razorpay SDK failed to load");
         return;
       }
 
@@ -560,7 +562,7 @@ function BuyCredits() {
       );
 
       if (!data?.ok) {
-        toast.error(data?.message || "Could not create order");
+        toastError(data?.message || "Could not create order");
         return;
       }
 
@@ -666,7 +668,7 @@ function BuyCredits() {
         },
         modal: {
           ondismiss: async () => {
-            toast.info("Payment cancelled");
+            toastInfo("Payment cancelled");
 
             try {
               await axios.post(
@@ -704,7 +706,7 @@ function BuyCredits() {
       rzp.open();
     } catch (err) {
       console.error(err);
-      toast.error(err?.response?.data?.message || "Payment failed");
+      toastError(err?.response?.data?.message || "Payment failed");
     } finally {
       setPaying(false);
     }

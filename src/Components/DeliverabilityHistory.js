@@ -1,6 +1,7 @@
 // src/Components/DeliverabilityHistory.js
 import React, { useMemo, useState } from "react";
 import axios from "axios";
+import { toastSuccess, toastError } from "./showAppToast";
 import "./DeliverabilityHistory.css";
 
 // MUI (same vibe as Single/Bulk history)
@@ -151,12 +152,14 @@ export default function DeliverabilityHistory({
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(downloadUrl);
+      toastSuccess("Report downloaded successfully.");
     } catch (err) {
-      setError(
+      const msg =
         err?.response?.data?.message ||
-          err?.message ||
-          "Failed to download report.",
-      );
+        err?.message ||
+        "Failed to download report.";
+      setError(msg);
+      toastError(msg);
     }
   };
 
@@ -190,7 +193,12 @@ export default function DeliverabilityHistory({
 
   const handleConfirmClearHistory = async () => {
     setError("");
-    if (!username) return setError("User not found. Please log in again.");
+    if (!username) {
+      const msg = "User not found. Please log in again.";
+      setError(msg);
+      toastError(msg);
+      return;
+    }
 
     try {
       setClearing(true);
@@ -207,11 +215,13 @@ export default function DeliverabilityHistory({
 
       setClearOpen(false);
       await fetchHistoryOnce();
+      toastSuccess("History cleared successfully.");
     } catch (err) {
-      setError(
+      const msg =
         err?.response?.data?.message ||
-          "Clear History endpoint is not available on backend yet.",
-      );
+        "Clear History endpoint is not available on backend yet.";
+      setError(msg);
+      toastError(msg);
     } finally {
       setClearing(false);
     }

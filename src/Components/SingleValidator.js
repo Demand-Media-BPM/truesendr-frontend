@@ -1,6 +1,6 @@
 // SingleValidator.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { toast } from "react-toastify";
+import { toastError, toastWarning, toastInfo } from "./showAppToast";
 import { v4 as uuidv4 } from "uuid";
 import "./SingleValidator.css";
 import SingleValidationHistory from "./SingleValidationHistory";
@@ -530,11 +530,11 @@ const SingleValidator = () => {
   const validateEmail = async () => {
     const trimmed = (email || "").trim();
     if (!trimmed) {
-      toast.warn("⚠️ Please enter an email");
+      toastWarning("Please enter an email");
       return;
     }
     if (!EMAIL_REGEX.test(trimmed)) {
-      toast.warn("⚠️ That doesn’t look like a valid email shape");
+      toastWarning("That doesn’t look like a valid email shape");
       return;
     }
 
@@ -542,7 +542,7 @@ const SingleValidator = () => {
 
     // if same email already pending, don't duplicate
     if (pendingEmails.some((p) => p.email.toLowerCase() === key)) {
-      toast.info("⏳ This email is already being verified.");
+      toastInfo("This email is already being verified.");
       return;
     }
 
@@ -588,7 +588,7 @@ const SingleValidator = () => {
           prev.filter((p) => p.email.toLowerCase() !== key),
         );
         stopStabilizerFor(trimmed);
-        toast.error(prelim.error);
+        toastError(prelim.error);
         return;
       }
 
@@ -606,7 +606,7 @@ const SingleValidator = () => {
         prev.filter((p) => p.email.toLowerCase() !== key),
       );
       stopStabilizerFor(trimmed);
-      toast.error("❌ Error: " + error.message);
+      toastError("Error: " + error.message);
     }
   };
 

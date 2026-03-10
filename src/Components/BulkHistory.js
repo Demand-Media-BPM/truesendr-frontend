@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toastSuccess, toastError } from "./showAppToast";
 import "./BulkHistory.css";
 
 // MUI
@@ -195,7 +195,7 @@ export default function BulkHistory({ refreshKey = 0 }) {
       })
       .catch((e) => {
         if (e?.name === "CanceledError" || e?.message === "canceled") return;
-        toast.error(`❌ History failed: ${e?.response?.data || e.message}`);
+        toastError(`History failed: ${e?.response?.data || e.message}`);
       })
       .finally(() => {
         if (!mounted) return;
@@ -239,7 +239,7 @@ export default function BulkHistory({ refreshKey = 0 }) {
       a.click();
       URL.revokeObjectURL(url);
     } catch (e) {
-      toast.error(`❌ Download failed: ${e?.response?.data || e.message}`);
+      toastError(`Download failed: ${e?.response?.data || e.message}`);
     } finally {
       setDownloadingBulkId(null);
     }
@@ -261,9 +261,7 @@ export default function BulkHistory({ refreshKey = 0 }) {
       a.click();
       URL.revokeObjectURL(url);
     } catch (e) {
-      toast.error(
-        `❌ Download original failed: ${e?.response?.data || e.message}`,
-      );
+      toastError(`Download original failed: ${e?.response?.data || e.message}`);
     }
   };
 
@@ -292,7 +290,7 @@ export default function BulkHistory({ refreshKey = 0 }) {
         headers: apiHeaders(),
         params: { username: getUser(), hard: "true" },
       });
-      toast.success("🗑 Deleted");
+      toastSuccess("Deleted successfully");
       setRows((prev) => prev.filter((r) => r.bulkId !== bulkId));
       setExpanded((prev) => {
         const copy = { ...prev };
@@ -300,7 +298,7 @@ export default function BulkHistory({ refreshKey = 0 }) {
         return copy;
       });
     } catch (e) {
-      toast.error(`❌ Delete failed: ${e?.response?.data || e.message}`);
+      toastError(`Delete failed: ${e?.response?.data || e.message}`);
     }
   };
 

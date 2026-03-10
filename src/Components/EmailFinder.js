@@ -322,6 +322,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { toastSuccess, toastError, toastInfo } from "./showAppToast";
 import "./EmailFinder.css";
 import EmailFinderHistory from "./EmailFinderHistory";
 import { useCredits } from "../credits/CreditsContext";
@@ -667,6 +668,7 @@ export default function EmailFinder() {
       // clear inputs so user can submit again (parallel)
       setFullName("");
       setDomain("");
+      toastInfo("Email finding started.");
     } catch (err) {
       const msg =
         err?.response?.data?.error ||
@@ -681,16 +683,22 @@ export default function EmailFinder() {
 
   async function copyEmail(email) {
     if (!email) return;
+
     try {
       await navigator.clipboard.writeText(email);
+      toastSuccess("Email copied successfully.");
     } catch {
-      // fallback
-      const ta = document.createElement("textarea");
-      ta.value = email;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = email;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        toastSuccess("Email copied successfully.");
+      } catch {
+        toastError("Unable to copy email. Please copy manually.");
+      }
     }
   }
 
