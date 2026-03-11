@@ -17,12 +17,14 @@ import logoGmail from "../assets/provider-logos/gmail.png";
 import logoGmx from "../assets/provider-logos/GMX.png";
 import logoAol from "../assets/provider-logos/Aol.png";
 import logoZoho from "../assets/provider-logos/Zoho-logo.png";
+import logoMicrosoftBusiness from "../assets/provider-logos/microsoft-business.png";
 import { useCredits } from "../credits/CreditsContext";
 import deliverabilityLogo from "../assets/illustrator/deliverability.png";
 
 const PROVIDER_LOGOS = {
   gmail: logoGmail,
   google_business: logoGoogleBiz,
+  microsoft_business: logoMicrosoftBusiness,
   yandex: logoYandex,
   seznam: logoSeznam,
   zoho: logoZoho,
@@ -94,6 +96,7 @@ const DELIV_CREDITS_PER_MAILBOX = 1;
 const PROVIDER_OPTIONS = [
   { key: "gmail", label: "Gmail" },
   { key: "google_business", label: "Google Business" },
+  { key: "microsoft_business", label: "Microsoft Business" },
   { key: "yandex", label: "Yandex" },
   { key: "seznam", label: "Seznam" },
   { key: "zoho", label: "Zoho" },
@@ -105,6 +108,7 @@ const PROVIDER_OPTIONS = [
 const DEFAULT_SELECTED_PROVIDERS = [
   "gmail",
   "google_business",
+  "microsoft_business",
   "yandex",
   "seznam",
   "zoho",
