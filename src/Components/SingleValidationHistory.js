@@ -32,6 +32,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import singleLogo from "../assets/illustrator/single-orange.png";
+import { showAppToast } from "./showAppToast";
 
 const apiBase =
   process.env.REACT_APP_API_BASE ||
@@ -140,6 +141,12 @@ export default function SingleValidationHistory({ username, reloadTrigger }) {
     } catch (err) {
       console.error("Failed to fetch validation history:", err?.message || err);
       setHistory([]);
+
+      showAppToast({
+        type: "error",
+        title: "History Load Failed",
+        message: "Unable to fetch single validation history.",
+      });
     } finally {
       setLoading(false);
     }
@@ -169,8 +176,20 @@ export default function SingleValidationHistory({ username, reloadTrigger }) {
       setExpanded({});
       setPage(0);
       await fetchHistory();
+
+      showAppToast({
+        type: "success",
+        title: "History Cleared",
+        message: "Single validation history was cleared successfully.",
+      });
     } catch (err) {
       console.error("Failed to clear history:", err?.message || err);
+
+      showAppToast({
+        type: "error",
+        title: "Clear Failed",
+        message: "Unable to clear single validation history.",
+      });
     } finally {
       setClearing(false);
     }
@@ -275,7 +294,6 @@ export default function SingleValidationHistory({ username, reloadTrigger }) {
         <div className="svh-cardBody">
           <TableContainer className="svh-tableWrap">
             <Table stickyHeader aria-label="Single validation history">
-
               <TableHead>
                 <TableRow>
                   <TableCell className="svh-th svh-col-email">Email</TableCell>

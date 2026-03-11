@@ -1,6 +1,7 @@
 // src/Components/Deliverability.js
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
+import { toastSuccess, toastError, toastInfo } from "./showAppToast";
 import "./Deliverability.css";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
@@ -16,14 +17,14 @@ import logoGmail from "../assets/provider-logos/gmail.png";
 import logoGmx from "../assets/provider-logos/GMX.png";
 import logoAol from "../assets/provider-logos/Aol.png";
 import logoZoho from "../assets/provider-logos/Zoho-logo.png";
+import logoMicrosoftBusiness from "../assets/provider-logos/microsoft-business.png";
 import { useCredits } from "../credits/CreditsContext";
 import deliverabilityLogo from "../assets/illustrator/deliverability.png";
-
-
 
 const PROVIDER_LOGOS = {
   gmail: logoGmail,
   google_business: logoGoogleBiz,
+  microsoft_business: logoMicrosoftBusiness,
   yandex: logoYandex,
   seznam: logoSeznam,
   zoho: logoZoho,
@@ -70,7 +71,7 @@ function wsBase() {
   const isHttps = httpOrigin.startsWith("https://");
   const wsOrigin = httpOrigin.replace(
     isHttps ? "https://" : "http://",
-    isHttps ? "wss://" : "ws://"
+    isHttps ? "wss://" : "ws://",
   );
 
   return wsOrigin.replace(/\/+$/, "");
@@ -95,6 +96,7 @@ const DELIV_CREDITS_PER_MAILBOX = 1;
 const PROVIDER_OPTIONS = [
   { key: "gmail", label: "Gmail" },
   { key: "google_business", label: "Google Business" },
+  { key: "microsoft_business", label: "Microsoft Business" },
   { key: "yandex", label: "Yandex" },
   { key: "seznam", label: "Seznam" },
   { key: "zoho", label: "Zoho" },
@@ -106,6 +108,7 @@ const PROVIDER_OPTIONS = [
 const DEFAULT_SELECTED_PROVIDERS = [
   "gmail",
   "google_business",
+  "microsoft_business",
   "yandex",
   "seznam",
   "zoho",
@@ -153,7 +156,6 @@ function EmptyIllustration() {
     </div>
   );
 }
-
 
 /** ---------- statuses ---------- */
 function normalizeMailboxStatus(s) {
@@ -240,18 +242,22 @@ function donutBackground({ inbox = 0, spam = 0, providers = 0 }) {
 
 export default function Deliverability() {
   const username = getUsername();
-    const { refreshCredits } = useCredits();
+  const { refreshCredits } = useCredits();
 
   // avoids timing issues (backend writes credits, then you fetch)
   const creditsTimerRef = useRef(null);
 
   const refreshCreditsSafe = () => {
-    try { refreshCredits?.(); } catch {}
+    try {
+      refreshCredits?.();
+    } catch {}
 
     // second refresh after a short delay to handle DB latency
     if (creditsTimerRef.current) clearTimeout(creditsTimerRef.current);
     creditsTimerRef.current = setTimeout(() => {
-      try { refreshCredits?.(); } catch {}
+      try {
+        refreshCredits?.();
+      } catch {}
     }, 1200);
   };
 
@@ -260,7 +266,6 @@ export default function Deliverability() {
       if (creditsTimerRef.current) clearTimeout(creditsTimerRef.current);
     };
   }, []);
-
 
   // ✅ Tabs stay here (like Single/Bulk)
   const [activeTab, setActiveTab] = useState("create"); // create | history
@@ -273,7 +278,7 @@ export default function Deliverability() {
   // create form
   const [testName, setTestName] = useState("");
   const [selectedProviders, setSelectedProviders] = useState(
-    DEFAULT_SELECTED_PROVIDERS
+    DEFAULT_SELECTED_PROVIDERS,
   );
   const [creating, setCreating] = useState(false);
 
@@ -305,7 +310,7 @@ export default function Deliverability() {
 
   const providerLabelMap = useMemo(
     () => new Map(PROVIDER_OPTIONS.map((p) => [p.key, p.label])),
-    []
+    [],
   );
 
   const selectedMailboxCount = selectedProviders.length;
@@ -340,7 +345,7 @@ export default function Deliverability() {
 
   const toggleProvider = (key) => {
     setSelectedProviders((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
     );
   };
 
@@ -369,7 +374,7 @@ export default function Deliverability() {
       setError(
         err?.response?.data?.message ||
           err?.message ||
-          "Failed to load deliverability tests."
+          "Failed to load deliverability tests.",
       );
     }
   };
@@ -401,7 +406,7 @@ export default function Deliverability() {
     setTests((prev) => {
       const list = Array.isArray(prev) ? prev : [];
       const idx = list.findIndex(
-        (x) => String(x?._id) === String(freshTest._id)
+        (x) => String(x?._id) === String(freshTest._id),
       );
       if (idx === -1) return [freshTest, ...list];
       const copy = [...list];
@@ -494,7 +499,7 @@ export default function Deliverability() {
                   status: data.status || t.status,
                   counts: { ...counts, inbox, spam },
                 };
-              })
+              }),
             );
 
             return;
@@ -555,7 +560,7 @@ export default function Deliverability() {
       await fetchHistoryOnce();
       historyDelayRef.current = Math.min(
         historyDelayRef.current * 2,
-        MAX_POLL_MS
+        MAX_POLL_MS,
       );
       setTimeout(loop, historyDelayRef.current);
     };
@@ -600,7 +605,7 @@ export default function Deliverability() {
 
       reportDelayRef.current = Math.min(
         reportDelayRef.current * 2,
-        MAX_POLL_MS
+        MAX_POLL_MS,
       );
       setTimeout(loop, reportDelayRef.current);
     };
@@ -652,7 +657,7 @@ export default function Deliverability() {
       const res = await axios.post(
         url,
         { name: testName.trim(), providers: selectedProviders, username },
-        { headers: baseHeaders(username) }
+        { headers: baseHeaders(username) },
       );
 
       const apiTest = res?.data?.test || null;
@@ -679,13 +684,13 @@ export default function Deliverability() {
         const required = data.requiredCredits ?? estimatedCreditsRequired;
         const available = data.availableCredits ?? 0;
         setError(
-          `You have insufficient credit balance for this test. Required: ${required}, Available: ${available}.`
+          `You have insufficient credit balance for this test. Required: ${required}, Available: ${available}.`,
         );
       } else {
         setError(
           data?.message ||
             err?.message ||
-            "Failed to create deliverability test."
+            "Failed to create deliverability test.",
         );
       }
     } finally {
@@ -697,9 +702,11 @@ export default function Deliverability() {
     try {
       await navigator.clipboard.writeText(emailsText || "");
       setCopyMessage("Email addresses copied!");
+      toastSuccess("Email addresses copied!");
       setTimeout(() => setCopyMessage(""), 1600);
     } catch {
       setCopyMessage("Unable to copy. Please copy manually.");
+      toastError("Unable to copy. Please copy manually.");
       setTimeout(() => setCopyMessage(""), 2200);
     }
   };
@@ -722,16 +729,16 @@ export default function Deliverability() {
       await axios.post(
         url,
         { subject: finalSubject, username },
-        { headers: baseHeaders(username) }
+        { headers: baseHeaders(username) },
       );
-      refreshCreditsSafe(); 
-
+      refreshCreditsSafe();
 
       const now = new Date();
       setLastRunRequestedAt(now);
       setCheckStartedMsg(
-        "Check started. Results will update automatically as providers are checked."
+        "Check started. Results will update automatically as providers are checked.",
       );
+      toastInfo("Check started. Results will update automatically.");
 
       const fresh = await fetchTestById(draftTest._id);
       if (fresh) {
@@ -745,7 +752,7 @@ export default function Deliverability() {
       setError(
         err?.response?.data?.message ||
           err?.message ||
-          "Failed to run deliverability check."
+          "Failed to run deliverability check.",
       );
     } finally {
       setChecking(false);
@@ -820,7 +827,9 @@ export default function Deliverability() {
 
       {/* ✅ TEST TAB (unchanged UI) */}
       {activeTab === "create" && (
-        <div className={`deliv-shell ${mobileView === "right" ? "deliv--showRight" : "deliv--showLeft"}`}>
+        <div
+          className={`deliv-shell ${mobileView === "right" ? "deliv--showRight" : "deliv--showLeft"}`}
+        >
           <div className="deliv-shell-inner">
             {/* LEFT */}
             <div className="deliv-left">
@@ -969,8 +978,8 @@ export default function Deliverability() {
                       {!!reportTest?._id
                         ? "Check Started"
                         : checking
-                        ? "Starting check..."
-                        : "Continue"}
+                          ? "Starting check..."
+                          : "Continue"}
                     </button>
 
                     <div className="deliv-credits">

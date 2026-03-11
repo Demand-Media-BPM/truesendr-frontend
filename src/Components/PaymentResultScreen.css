@@ -1,0 +1,113 @@
+.prs-page {
+  min-height: 83vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: #f6f8fc;
+}
+
+.prs-card {
+  width: 100%;
+  max-width: 44rem; /* desktop */
+  background: #fff;
+  border: 0.0625rem solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 2.25rem 2rem;
+  text-align: center;
+  box-shadow: 0 1.25rem 2.5rem rgba(15, 23, 42, 0.06);
+}
+
+.prs-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999rem;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fff;
+}
+
+.prs-icon.ok { background: #16a34a; }
+.prs-icon.bad { background: #ef4444; }
+
+.prs-title {
+  margin: 0;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.prs-desc {
+  margin: 0.75rem auto 0;
+  max-width: 34rem;
+  color: #475569;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.prs-credits {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.prs-sub {
+  margin-top: 0.65rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.prs-btn {
+  margin: 1.25rem auto 0;
+  width: min(22.5rem, 100%);
+  padding: 0.9rem 1rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: var(--ts-orange);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.prs-foot {
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+/* ✅ Breakpoints (rem-based) */
+/* ~425px */
+@media (max-width: 26.5625rem) {
+  .prs-card {
+    padding: 1.6rem 1.1rem;
+    border-radius: 0.85rem;
+  }
+  .prs-title { font-size: 1.35rem; }
+  .prs-desc { font-size: 0.9rem; }
+}
+
+/* 768px */
+@media (min-width: 48rem) {
+  .prs-card { padding: 2.5rem 2.3rem; }
+  .prs-title { font-size: 1.75rem; }
+}
+
+/* 1024px */
+@media (min-width: 64rem) {
+  .prs-card { max-width: 46rem; }
+}
+
+/* 1440px */
+@media (min-width: 90rem) {
+  .prs-card { max-width: 52rem; }
+}
+
+/* 2560px */
+@media (min-width: 160rem) {
+  .prs-card { max-width: 58rem; }
+}

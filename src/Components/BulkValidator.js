@@ -1281,7 +1281,12 @@
 // BulkValidator.jsx (MULTI-CARD FLOW UI — matches screenshots + persistence fixes)
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import {
+  toastSuccess,
+  toastError,
+  toastWarning,
+  toastInfo,
+} from "./showAppToast";
 import { v4 as uuidv4 } from "uuid";
 import "./BulkValidator.css";
 import BulkHistory from "./BulkHistory";
@@ -2024,7 +2029,7 @@ const BulkValidator = () => {
     if (droppedFile && droppedFile.name.toLowerCase().endsWith(".xlsx")) {
       setFile(droppedFile);
     } else {
-      toast.error("❌ Please drop a valid .xlsx Excel file");
+      toastWarning("Please paste email addresses");
     }
   };
 
@@ -2049,7 +2054,7 @@ const BulkValidator = () => {
   const handleCopyPasteProceed = async () => {
     const text = (cpText || "").trim();
     if (!text) {
-      toast.warn("⚠️ Please paste email addresses");
+      toastWarning("Please paste email addresses");
       return;
     }
 
@@ -2106,20 +2111,20 @@ const BulkValidator = () => {
       });
 
       setCpOpen(false);
-      toast.success(`✅ ${cpCount} emails detected`);
+      toastSuccess(`${cpCount} emails detected`);
     } catch (e) {
       updateJob(uiId, {
         stage: "failed",
         error: e?.response?.data || e?.message || "Proceed failed",
       });
-      toast.error(`❌ ${e?.response?.data || e?.message || "Proceed failed"}`);
+      toastError(e?.response?.data || e?.message || "Proceed failed");
     }
   };
 
   // 1) VERIFY (preflight) → creates a new card
   const handleVerify = async () => {
     if (!file) {
-      toast.warn("⚠️ Please select an Excel file (.xlsx)");
+      toastWarning("Please select an Excel file (.xlsx)");
       return;
     }
 
@@ -2186,7 +2191,7 @@ const BulkValidator = () => {
         stage: "failed",
         error: e?.response?.data || e?.message || "Verify failed",
       });
-      toast.error(`❌ ${e?.response?.data || e?.message || "Verify failed"}`);
+      toastError(e?.response?.data || e?.message || "Verify failed");
     } finally {
       setUploading(false);
     }
@@ -2222,10 +2227,10 @@ const BulkValidator = () => {
         stage: invalidRemaining > 0 ? "needs_fix" : "ready",
       });
 
-      toast.success("✅ File cleaned");
+     toastSuccess("File cleaned successfully!");
     } catch (e) {
       updateJob(job.uiId, { stage: "report" });
-      toast.error(`❌ Cleanup failed: ${e?.response?.data || e.message}`);
+      toastError(`Cleanup failed: ${e?.response?.data || e.message}`);
     }
   };
 
@@ -2263,9 +2268,9 @@ const BulkValidator = () => {
       );
 
       removeJob(job.uiId);
-      toast.success("✅ File downloaded. Job removed.");
+      toastSuccess("File downloaded. Job removed.");
     } catch (e) {
-      toast.error(`❌ Download failed: ${e?.response?.data || e.message}`);
+      toastError(`Download failed: ${e?.response?.data || e.message}`);
     }
   };
 
@@ -2301,40 +2306,12 @@ const BulkValidator = () => {
         headers: { ...apiHeaders(), "Content-Type": "application/json" },
         timeout: 0,
       });
-      toast.info("▶️ Validation started");
+      toastInfo("Validation started");
     } catch (e) {
       updateJob(job.uiId, { stage: "ready" });
-      toast.error(`❌ Start failed: ${e?.response?.data || e.message}`);
+      toastError(`Start failed: ${e?.response?.data || e.message}`);
     }
   };
-
-  // download result file (Result ⬇)
-  // const downloadResult = async (job) => {
-  //   if (!job?.bulkId) return;
-  //   try {
-  //     const resp = await axios.get(`${API_BASE}/api/bulk/result`, {
-  //       headers: apiHeaders(),
-  //       params: { bulkId: job.bulkId, username: getUser() },
-  //       responseType: "blob",
-  //     });
-
-  //     const ct = resp.headers["content-type"] || "application/octet-stream";
-  //     const blob = new Blob([resp.data], { type: ct });
-  //     const url = URL.createObjectURL(blob);
-
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = `validated_${job.fileName || "emails"}.xlsx`;
-  //     a.click();
-
-  //     URL.revokeObjectURL(url);
-  //     scheduleCreditsRefresh();
-  //   } catch (e) {
-  //     toast.error(
-  //       `❌ Result download failed: ${e?.response?.data || e.message}`,
-  //     );
-  //   }
-  // };
 
   const downloadResult = async (job) => {
     if (!job?.bulkId) return;
@@ -2363,9 +2340,7 @@ const BulkValidator = () => {
       URL.revokeObjectURL(url);
       scheduleCreditsRefresh();
     } catch (e) {
-      toast.error(
-        `❌ Result download failed: ${e?.response?.data || e.message}`,
-      );
+      toastError(`Result download failed: ${e?.response?.data || e.message}`);
     } finally {
       updateJob(job.uiId, { downloadingResult: false });
     }
@@ -2483,9 +2458,7 @@ const BulkValidator = () => {
 
                       URL.revokeObjectURL(url);
                     } catch (e) {
-                      toast.error(
-                        `❌ Template download failed: ${e?.message || "Error"}`,
-                      );
+                      toastError(`Template download failed: ${e?.message || "Error"}`);
                     }
                   }}
                 >

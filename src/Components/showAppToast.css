@@ -1,0 +1,182 @@
+/* src/utils/showAppToast.css */
+
+/* Toastify outer shell reset */
+.Toastify__toast-container {
+  top: 1rem !important;
+  width: auto !important;
+  padding: 0 !important;
+}
+
+.Toastify__toast {
+  background: transparent !important;
+  box-shadow: none !important;
+  min-height: auto !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.Toastify__toast-body {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Custom toast */
+.app-toast {
+  width: 100%;
+  max-width: 17.5rem;
+  min-height: 2.5rem;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.app-toast.is-short {
+  align-items: center;
+  padding-top: 0.6875rem;
+  padding-bottom: 0.6875rem;
+}
+
+.app-toast.is-detailed {
+  align-items: flex-start;
+}
+
+.app-toast__icon {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.0625rem;
+}
+
+.app-toast.is-short .app-toast__icon {
+  margin-top: 0;
+}
+
+.app-toast__icon-svg {
+  font-size: 1rem !important;
+}
+
+.app-toast__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-toast__title {
+  font-size: 0.8125rem;
+  line-height: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1f2937;
+  word-break: break-word;
+}
+
+.app-toast__message {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 400;
+  margin-top: 0.1875rem;
+  color: #374151;
+  word-break: break-word;
+}
+
+.app-toast__close {
+  flex: 0 0 auto;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  width: 1rem;
+  height: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  color: #475467;
+  opacity: 0.9;
+}
+
+.app-toast__close:hover {
+  opacity: 1;
+}
+
+/* Variants */
+.app-toast--success {
+  background-color: #e6f7eb !important;
+  border-color: #b7e4c7 !important;
+}
+
+.app-toast--success .app-toast__icon,
+.app-toast--success .app-toast__icon-svg {
+  color: #16a34a !important;
+}
+
+.app-toast--error {
+  background-color: #ffe3e3 !important;
+  border-color: #f5b5b5 !important;
+}
+
+.app-toast--error .app-toast__icon,
+.app-toast--error .app-toast__icon-svg {
+  color: #dc2626 !important;
+}
+
+.app-toast--warning {
+  background-color: #fff7e6 !important;
+  border-color: #f3cf8e !important;
+}
+
+.app-toast--warning .app-toast__icon,
+.app-toast--warning .app-toast__icon-svg {
+  color: #f59e0b !important;
+}
+
+.app-toast--info {
+  background-color: #e6f4ff !important;
+  border-color: #9ec9f8 !important;
+}
+
+.app-toast--info .app-toast__icon,
+.app-toast--info .app-toast__icon-svg {
+  color: #2563eb !important;
+}
+
+/* 768 */
+@media (max-width: 48rem) {
+  .app-toast {
+    max-width: 16.25rem;
+    padding: 0.6875rem 0.75rem;
+  }
+
+  .app-toast__title {
+    font-size: 0.79rem;
+  }
+
+  .app-toast__message {
+    font-size: 0.72rem;
+  }
+}
+
+/* 425 */
+@media (max-width: 26.5625rem) {
+  .Toastify__toast-container {
+    left: 50% !important;
+    transform: translateX(-50%);
+    width: calc(100vw - 1.25rem) !important;
+  }
+
+  .app-toast {
+    max-width: 100%;
+    width: 100%;
+  }
+}

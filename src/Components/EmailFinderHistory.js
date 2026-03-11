@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import "./EmailFinderHistory.css";
+import { toastSuccess, toastError } from "./showAppToast";
 
 // MUI
 import {
@@ -156,7 +157,13 @@ export default function EmailFinderHistory({ username, token, apiBase }) {
   }, [filtered, page, rowsPerPage]);
 
   async function clearHistory() {
-    if (!username || clearing) return;
+    if (clearing) return;
+
+    if (!username) {
+      toastError("User not found. Please log in again.");
+      return;
+    }
+
     setClearing(true);
     try {
       const res = await axios.delete(apiUrl("/finder/history"), {
@@ -167,14 +174,22 @@ export default function EmailFinderHistory({ username, token, apiBase }) {
       if (res.data?.ok) {
         await fetchHistory();
         setPage(0);
+        toastSuccess("Email finder history cleared successfully.");
       } else {
         await fetchHistory();
+        toastError("Unable to clear email finder history.");
       }
     } catch (e) {
+      const msg =
+        e?.response?.data?.message ||
+        e?.response?.data?.error ||
+        e?.message ||
+        "Failed to clear email finder history.";
       console.error(
         "❌ Clear finder history failed:",
         e?.response?.data || e?.message,
       );
+      toastError(msg);
       await fetchHistory();
     } finally {
       setClearing(false);

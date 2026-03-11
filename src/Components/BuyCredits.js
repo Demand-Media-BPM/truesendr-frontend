@@ -1,12 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./BuyCredits.css";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import {
+  toastSuccess,
+  toastError,
+  toastInfo,
+} from "./showAppToast";
 import { useCredits } from "../credits/CreditsContext";
 import * as FlagIcons from "country-flag-icons/react/3x2";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import Popper from "@mui/material/Popper";
+import PaymentResultScreen from "./PaymentResultScreen";
 
 // ✅ MUI imports (only for slider)
 import Box from "@mui/material/Box";
@@ -14,11 +17,15 @@ import Slider from "@mui/material/Slider";
 
 function BuyCredits() {
   const PRICE_PER_CREDIT = 0.008;
+  const navigate = useNavigate();
 
   // dynamic tax (fetched on page load)
   const [countryName, setCountryName] = useState("—");
   const [taxName, setTaxName] = useState("Tax");
   const [taxRate, setTaxRate] = useState(0);
+  const [localCurrency, setLocalCurrency] = useState("USD");
+  const [usdToLocalRate, setUsdToLocalRate] = useState(1);
+  const [serverPricing, setServerPricing] = useState(null);
 
   // Enterprise modal
   const [showEnterprise, setShowEnterprise] = useState(false);
@@ -50,7 +57,7 @@ function BuyCredits() {
 
       // basic front-end validation (minimal)
       if (!entForm.name?.trim() || !entForm.email?.trim()) {
-        toast.error("Please enter Name and Company Email.");
+        toastError("Please enter Name and Company Email.");
         return;
       }
 
@@ -78,7 +85,7 @@ function BuyCredits() {
       );
 
       if (data?.ok) {
-        toast.success("Request sent! Our team will contact you shortly.");
+        toastSuccess("Request sent! Our team will contact you shortly.");
         closeEnterprise();
 
         // optional: reset the form
@@ -92,13 +99,11 @@ function BuyCredits() {
           volume: "1000000",
         });
       } else {
-        toast.error(
-          data?.message || "Could not send request. Please try again.",
-        );
+        toastError(data?.message || "Could not send request. Please try again.");
       }
     } catch (err) {
       console.error(err);
-      toast.error(err?.response?.data?.message || "Could not send request.");
+      toastError(err?.response?.data?.message || "Could not send request.");
     } finally {
       setSendingQuote(false);
     }
@@ -224,30 +229,85 @@ function BuyCredits() {
   const [countryOpen, setCountryOpen] = useState(false);
   const [countrySearch, setCountrySearch] = useState("");
 
-  const money2 = (n) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(n);
+  // ✅ Currency decimals (for correct display)
+  const CURRENCY_DECIMALS = useMemo(
+    () => ({
+      USD: 2,
+      INR: 2,
+      EUR: 2,
+      GBP: 2,
+      AED: 2,
+      AUD: 2,
+      CAD: 2,
+      SGD: 2,
+      CHF: 2,
+      SEK: 2,
+      NOK: 2,
+      DKK: 2,
+      ZAR: 2,
+      SAR: 2,
+      TRY: 2,
+      BRL: 2,
+      MXN: 2,
 
-  const money3 = (n) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 3,
-      maximumFractionDigits: 3,
-    }).format(n);
+      // zero-decimal currencies
+      JPY: 0,
+      KRW: 0,
+      VND: 0,
+    }),
+    [],
+  );
+
+  const formatMoney = (value, decimalsOverride = null) => {
+    const cur = String(localCurrency || "USD").toUpperCase();
+    const d =
+      typeof decimalsOverride === "number"
+        ? decimalsOverride
+        : (CURRENCY_DECIMALS[cur] ?? 2);
+
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: "currency",
+        currency: cur,
+        minimumFractionDigits: d,
+        maximumFractionDigits: d,
+      }).format(Number(value) || 0);
+    } catch {
+      return `${(Number(value) || 0).toFixed(d)} ${cur}`;
+    }
+  };
 
   const creditsPretty =
     creditText === ""
       ? ""
       : new Intl.NumberFormat("en-US").format(Number(creditText));
 
-  const subTotal = useMemo(() => credits * PRICE_PER_CREDIT, [credits]);
-  const tax = useMemo(() => subTotal * taxRate, [subTotal, taxRate]);
-  const total = useMemo(() => subTotal + tax, [subTotal, tax]);
+  const pricePerCreditLocal = useMemo(
+    () => PRICE_PER_CREDIT * (usdToLocalRate || 1),
+    [usdToLocalRate],
+  );
+
+  const subTotalLocal = useMemo(
+    () => credits * pricePerCreditLocal,
+    [credits, pricePerCreditLocal],
+  );
+
+  const taxLocal = useMemo(
+    () => subTotalLocal * (taxRate || 0),
+    [subTotalLocal, taxRate],
+  );
+
+  const totalLocal = useMemo(
+    () => subTotalLocal + taxLocal,
+    [subTotalLocal, taxLocal],
+  );
+
+  // ✅ NEW: if backend provided pricing, always display that (exact same as Razorpay order)
+  const displayPricePerCreditLocal =
+    serverPricing?.pricePerCreditLocal ?? pricePerCreditLocal;
+  const displaySubTotalLocal = serverPricing?.subTotalLocal ?? subTotalLocal;
+  const displayTaxLocal = serverPricing?.taxLocal ?? taxLocal;
+  const displayTotalLocal = serverPricing?.totalLocal ?? totalLocal;
 
   const onInput = (e) => {
     const raw = e.target.value.replace(/[^0-9]/g, ""); // keep only digits
@@ -255,7 +315,8 @@ function BuyCredits() {
 
     if (raw === "") {
       setInputError("Minimum purchase is 1000 credits");
-      return; // don't update slider/pricing yet
+      setServerPricing(null); // ✅ ADD THIS
+      return;
     }
 
     const typed = Number(raw);
@@ -272,6 +333,7 @@ function BuyCredits() {
     // ✅ For calculations + slider: clamp to [1000..1,000,000]
     const nextCredits = Math.max(1000, Math.min(1000000, Math.floor(typed)));
     setCredits(nextCredits);
+    setServerPricing(null); // ✅ NEW
 
     // ✅ slider thumb moves to nearest step but does not overwrite typed value
     const nextIdx = nearestStepIndex(nextCredits);
@@ -284,6 +346,7 @@ function BuyCredits() {
       setCredits(1000);
       setIdx(0);
       setInputError("");
+      setServerPricing(null); // ✅ NEW
       return;
     }
 
@@ -294,6 +357,7 @@ function BuyCredits() {
       setCredits(1000);
       setIdx(0);
       setInputError("");
+      setServerPricing(null); // ✅ NEW
       return;
     }
 
@@ -303,6 +367,7 @@ function BuyCredits() {
       setCredits(1000000);
       setIdx(STEPS.length - 1);
       setInputError("");
+      setServerPricing(null); // ✅ ADD THIS
     }
   };
 
@@ -319,6 +384,7 @@ function BuyCredits() {
 
     const stepCredits = STEPS[nextIdx];
     setCredits(stepCredits);
+    setServerPricing(null); // ✅ NEW
     setCreditText(String(stepCredits)); // ✅ keep input in sync with slider
     setInputError("");
   };
@@ -331,6 +397,7 @@ function BuyCredits() {
     async function loadTaxInfo() {
       try {
         const api = getApiBase();
+
         const { data } = await axios.get(
           `${api}/api/payment/razorpay/tax-info`,
           {
@@ -344,16 +411,26 @@ function BuyCredits() {
           setCountryName(data?.country?.name || "—");
           setTaxName(data?.tax?.name || "Tax");
           setTaxRate(Number(data?.tax?.rate || 0));
+
+          const cur = data?.currency?.code || "USD";
+          const rate = Number(data?.currency?.usdToLocalRate || 1);
+
+          setLocalCurrency(cur);
+          setUsdToLocalRate(Number.isFinite(rate) && rate > 0 ? rate : 1);
         } else {
           setCountryName("—");
           setTaxName("Tax");
           setTaxRate(0);
+          setLocalCurrency("USD");
+          setUsdToLocalRate(1);
         }
       } catch (e) {
         if (!alive) return;
         setCountryName("—");
         setTaxName("Tax");
         setTaxRate(0);
+        setLocalCurrency("USD");
+        setUsdToLocalRate(1);
       }
     }
 
@@ -416,15 +493,55 @@ function BuyCredits() {
 
   const [paying, setPaying] = useState(false);
 
+  const [paymentScreen, setPaymentScreen] = useState(null);
+  // paymentScreen shape:
+  // { status: "success"|"failed", amountText: string, creditsAdded: number, subText: string }
+
+  const [lastOrderMeta, setLastOrderMeta] = useState(null);
+  // lastOrderMeta shape:
+  // { orderId, username, amountMajor, currency, credits }
+
+  function minorToMajor(amountMinor, currency) {
+    const cur = String(currency || "USD").toUpperCase();
+    const d = CURRENCY_DECIMALS[cur] ?? 2;
+    const factor = Math.pow(10, d);
+    return (Number(amountMinor) || 0) / factor;
+  }
+
+  async function pollUntilFinal({ api, orderId, username, maxMs = 20000 }) {
+    const start = Date.now();
+
+    while (Date.now() - start < maxMs) {
+      const { data } = await axios.get(
+        `${api}/api/payment/razorpay/order-status`,
+        {
+          params: { orderId, username },
+          headers: { "ngrok-skip-browser-warning": "true" },
+        },
+      );
+
+      if (data?.ok) {
+        const st = String(data.status || "");
+        if (st === "credited") return { final: "credited", data };
+        if (st === "failed" || st === "cancelled") return { final: st, data };
+      }
+
+      // wait 900ms between checks
+      await new Promise((r) => setTimeout(r, 900));
+    }
+
+    return { final: "timeout", data: null };
+  }
+
   const onBuyCredits = async () => {
     try {
       const username = String(getUsernameFromStorage() || "").trim();
       if (!username) {
-        toast.error("Please login again (username not found).");
+        toastError("Please login again (username not found).");
         return;
       }
       if (credits < 1000) {
-        toast.error("Minimum purchase is 1000 credits");
+        toastError("Minimum purchase is 1000 credits");
         return;
       }
 
@@ -432,7 +549,7 @@ function BuyCredits() {
 
       const ok = await loadRazorpay();
       if (!ok) {
-        toast.error("Razorpay SDK failed to load");
+        toastError("Razorpay SDK failed to load");
         return;
       }
 
@@ -445,11 +562,24 @@ function BuyCredits() {
       );
 
       if (!data?.ok) {
-        toast.error(data?.message || "Could not create order");
+        toastError(data?.message || "Could not create order");
         return;
       }
 
-      const { key_id, order } = data;
+      const { key_id, order, pricing } = data;
+
+      // ✅ keep backend pricing (so UI matches Razorpay amount exactly)
+      if (pricing) setServerPricing(pricing);
+
+      // ✅ store order meta (used for success/fail screen)
+      const major = minorToMajor(order.amount, order.currency);
+      setLastOrderMeta({
+        orderId: order.id,
+        username,
+        amountMajor: major,
+        currency: order.currency,
+        credits,
+      });
 
       // 2) open Razorpay
       const options = {
@@ -461,7 +591,7 @@ function BuyCredits() {
         order_id: order.id,
         handler: async function (response) {
           try {
-            // 3) verify + credit
+            // 1) verify signature/payment
             const vr = await axios.post(
               `${api}/api/payment/razorpay/verify`,
               {
@@ -473,20 +603,72 @@ function BuyCredits() {
               { headers: { "ngrok-skip-browser-warning": "true" } },
             );
 
-            if (vr.data?.ok) {
-              toast.success("Payment successful! Credits added.");
-              await refreshCredits();
-            } else {
-              toast.error(vr.data?.message || "Payment verification failed");
+            if (!vr.data?.ok) {
+              setPaymentScreen({
+                status: "failed",
+                amountText: formatMoney(displayTotalLocal),
+                creditsAdded: 0,
+                subText:
+                  vr.data?.message || "We were unable to process your payment.",
+              });
+              return;
             }
+
+            // 2) wait until webhook marks order as credited (or failed)
+            const orderId = vr.data?.orderId || response.razorpay_order_id;
+            const result = await pollUntilFinal({ api, orderId, username });
+
+            if (result.final === "credited") {
+              const creditsAdded = Number(
+                result?.data?.credits || credits || 0,
+              );
+
+              setPaymentScreen({
+                status: "success",
+                amountText: formatMoney(displayTotalLocal),
+                creditsAdded,
+                subText: `${creditsAdded} credits are added to your account.`,
+              });
+
+              await refreshCredits();
+              return;
+            }
+
+            if (result.final === "failed" || result.final === "cancelled") {
+              setPaymentScreen({
+                status: "failed",
+                amountText: formatMoney(displayTotalLocal),
+                creditsAdded: 0,
+                subText:
+                  result.final === "cancelled"
+                    ? "Payment was cancelled."
+                    : "Payment failed. No amount has been deducted.",
+              });
+              return;
+            }
+
+            // timeout (rare): show success but “adding credits shortly”
+            setPaymentScreen({
+              status: "success",
+              amountText: formatMoney(displayTotalLocal),
+              creditsAdded: Number(credits || 0),
+              subText:
+                "Payment successful. Credits will reflect in your account shortly.",
+            });
+            await refreshCredits();
           } catch (e) {
-            toast.error("Payment verification failed");
             console.error(e);
+            setPaymentScreen({
+              status: "failed",
+              amountText: formatMoney(displayTotalLocal),
+              creditsAdded: 0,
+              subText: "Payment verification failed.",
+            });
           }
         },
         modal: {
           ondismiss: async () => {
-            toast.info("Payment cancelled");
+            toastInfo("Payment cancelled");
 
             try {
               await axios.post(
@@ -510,14 +692,45 @@ function BuyCredits() {
       };
 
       const rzp = new window.Razorpay(options);
+
+      // ✅ if Razorpay triggers failure event
+      rzp.on("payment.failed", function () {
+        setPaymentScreen({
+          status: "failed",
+          amountText: formatMoney(displayTotalLocal),
+          creditsAdded: 0,
+          subText: "Payment failed. No amount has been deducted.",
+        });
+      });
+
       rzp.open();
     } catch (err) {
       console.error(err);
-      toast.error(err?.response?.data?.message || "Payment failed");
+      toastError(err?.response?.data?.message || "Payment failed");
     } finally {
       setPaying(false);
     }
   };
+
+  // ✅ Full screen payment result UI (matches your screenshots)
+  const goDashboardSmooth = () => {
+    // remove the overlay first, then navigate (smooth, no page reload)
+    setPaymentScreen(null);
+    navigate("/dashboard", { replace: true });
+  };
+
+  if (paymentScreen) {
+    return (
+      <PaymentResultScreen
+        status={paymentScreen.status}
+        amountText={paymentScreen.amountText}
+        creditsAdded={paymentScreen.creditsAdded}
+        subText={paymentScreen.subText}
+        onGoDashboard={goDashboardSmooth}
+        autoRedirectMs={10000}
+      />
+    );
+  }
 
   return (
     <div className="bc-page">
@@ -627,7 +840,9 @@ function BuyCredits() {
                 <div className="bc-pill">
                   <span className="bc-pillText">
                     {MARKS[idx]} Credits{" "}
-                    <span className="bc-pillPrice">{money2(subTotal)}</span>
+                    <span className="bc-pillPrice">
+                      {formatMoney(displaySubTotalLocal)}
+                    </span>
                   </span>
                 </div>
               </div>
@@ -665,14 +880,18 @@ function BuyCredits() {
 
                 <div className="bc-row">
                   <span className="bc-label">Price Per Credit</span>
-                  <span className="bc-value">{money3(PRICE_PER_CREDIT)}</span>
+                  <span className="bc-value">
+                    {formatMoney(displayPricePerCreditLocal, 3)}
+                  </span>
                 </div>
 
                 <div className="bc-hr" />
 
                 <div className="bc-row">
                   <span className="bc-label">Sub Total</span>
-                  <span className="bc-value">{money2(subTotal)}</span>
+                  <span className="bc-value">
+                    {formatMoney(displaySubTotalLocal)}
+                  </span>
                 </div>
 
                 <div className="bc-row">
@@ -693,14 +912,18 @@ function BuyCredits() {
                       {taxName} {Math.round(taxRate * 100)}%
                     </span>
                   </span>
-                  <span className="bc-value">{money2(tax)}</span>
+                  <span className="bc-value">
+                    {formatMoney(displayTaxLocal)}
+                  </span>
                 </div>
 
                 <div className="bc-hr" />
 
                 <div className="bc-totalRow">
                   <span className="bc-totalLabel">Your Total</span>
-                  <span className="bc-totalValue">{money2(total)}</span>
+                  <span className="bc-totalValue">
+                    {formatMoney(displayTotalLocal)}
+                  </span>
                 </div>
 
                 <button
