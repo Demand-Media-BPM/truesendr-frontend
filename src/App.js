@@ -553,6 +553,7 @@ import Terms from "./Components/Terms";
 import Privacy from "./Components/Privacy";
 import BuyCredits from "./Components/BuyCredits";
 import Training from "./Components/Training";
+import SMTPValidatorLive from "./Components/SMTPValidatorLive";
 
 import logo from "./assets/TrueSendr Temp logo-02.png";
 
@@ -569,6 +570,7 @@ import ForwardToInboxOutlinedIcon from "@mui/icons-material/ForwardToInboxOutlin
 import PhoneIphoneOutlinedIcon from "@mui/icons-material/PhoneIphoneOutlined";
 import CleaningServicesOutlinedIcon from "@mui/icons-material/CleaningServicesOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import DnsOutlinedIcon from "@mui/icons-material/DnsOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -628,6 +630,12 @@ const ROLE_EMAILS = {
     "yashwardhan.s@demandmediabpm.com",
   ],
 
+  // Dedicated allow-list for SMTP Testing feature under Admin
+  smtpTestingAdmins: [
+    "saurabh.s@demandmediabpm.com",
+    "yashwardhan.s@demandmediabpm.com",
+  ],
+
   quality: [
     "nadeem.m@demandmediabpm.com",
     "shashank.k@demandmediabpm.com",
@@ -658,6 +666,7 @@ const TOOL_KEYS = {
   CLEANER: "cleaner",
   FINDER: "finder",
   TRAINING: "training",
+  SMTP_ADMIN_TESTING: "smtp_admin_testing",
 };
 
 function normEmail(email) {
@@ -706,6 +715,7 @@ function allowedToolKeysForRole(role) {
     TOOL_KEYS.PHONE,
     TOOL_KEYS.DELIVERABILITY,
     TOOL_KEYS.CLEANER,
+    TOOL_KEYS.SMTP_ADMIN_TESTING,
   ];
 }
 
@@ -779,6 +789,15 @@ const NAV_ITEMS = [
   },
   {
     section: "Admin",
+    key: TOOL_KEYS.SMTP_ADMIN_TESTING,
+    label: "Smtp Testing",
+    to: "/smtp-admin-testing",
+    icon: <DnsOutlinedIcon />,
+    type: "tool",
+    allowedEmailsKey: "smtpTestingAdmins",
+  },
+  {
+    section: "Admin",
     key: TOOL_KEYS.TRAINING,
     label: "Training",
     to: "/training",
@@ -842,6 +861,7 @@ const AppShell = ({
   displayName,
   allowedNavItems,
   allowedToolKeys,
+  userEmail,
 }) => {
   // close sidebar when route changes (nice UX)
   const location = useLocation();
@@ -968,6 +988,18 @@ const AppShell = ({
               }
             />
             <Route
+              path="/smtp-admin-testing"
+              element={
+                ROLE_EMAILS.smtpTestingAdmins
+                  .map((e) => normEmail(e))
+                  .includes(userEmail) ? (
+                  <SMTPValidatorLive />
+                ) : (
+                  <Navigate to="/dashboard" replace />
+                )
+              }
+            />
+            <Route
               path="/training"
               element={
                 <RequireTool
@@ -1022,13 +1054,24 @@ const App = () => {
       // Always show non-tool items (like Dashboard)
       if (item.type !== "tool") return true;
 
+      // Per-item explicit email allow-list
+      if (Array.isArray(item.allowedEmails) && item.allowedEmails.length > 0) {
+        return item.allowedEmails.includes(userEmail);
+      }
+
+      if (item.allowedEmailsKey && Array.isArray(ROLE_EMAILS[item.allowedEmailsKey])) {
+        return ROLE_EMAILS[item.allowedEmailsKey]
+          .map((e) => normEmail(e))
+          .includes(userEmail);
+      }
+
       // Admin-only items require admin role
       if (item.adminOnly) return role === "admin";
 
       // Otherwise, tool must be allowed for role
       return allowedToolKeys.includes(item.key);
     });
-  }, [role, allowedToolKeys]);
+  }, [role, allowedToolKeys, userEmail]);
 
   const openMobileSidebar = () => setMobileSidebarOpen(true);
   const closeMobileSidebar = () => setMobileSidebarOpen(false);
@@ -1199,6 +1242,7 @@ const App = () => {
             displayName={displayName}
             allowedNavItems={allowedNavItems}
             allowedToolKeys={allowedToolKeys}
+            userEmail={userEmail}
           />
         </CreditsProvider>
       )}

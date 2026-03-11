@@ -1,0 +1,177 @@
+.smtp-live-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+.smtp-live-card {
+  width: 100%;
+  max-width: 900px;
+  background: #fff;
+  border: 1px solid #eceff3;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.smtp-live-card h1 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.smtp-sub {
+  margin: 0 0 16px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.smtp-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.smtp-row input {
+  flex: 1;
+  border: 1px solid #d8dee9;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.smtp-row button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  background: #ff6a00;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.smtp-row button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.smtp-result {
+  border-top: 1px solid #eceff3;
+  padding-top: 14px;
+}
+
+.smtp-status {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.smtp-status.valid {
+  background: #eafaf0;
+  color: #0f8a4b;
+}
+
+.smtp-status.invalid {
+  background: #fdecec !important;
+  color: #c0392b !important;
+  border: 1px solid #f6c8c2;
+}
+
+.smtp-status.risky {
+  background: #fff7e6;
+  color: #b26a00;
+}
+
+.smtp-status.unknown {
+  background: #eef1f7;
+  color: #4b5563;
+}
+
+.smtp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 14px;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.smtp-text {
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.smtp-logs {
+  margin-top: 18px;
+  border-top: 1px solid #eceff3;
+  padding-top: 12px;
+}
+
+.smtp-logs-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.smtp-logs-head h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.smtp-logs-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.smtp-logs-actions select,
+.smtp-logs-actions button {
+  border: 1px solid #d8dee9;
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.smtp-logs-body {
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid #eceff3;
+  border-radius: 10px;
+  background: #fbfcfe;
+}
+
+.smtp-log-empty {
+  padding: 12px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.smtp-log-line {
+  display: grid;
+  grid-template-columns: 92px 64px 120px 1fr;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #eef1f6;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.smtp-log-line .ts {
+  color: #6b7280;
+}
+
+.smtp-log-line .lv {
+  font-weight: 700;
+}
+
+.smtp-log-line.info .lv {
+  color: #0f8a4b;
+}
+.smtp-log-line.warn .lv {
+  color: #b26a00;
+}
+.smtp-log-line.error .lv {
+  color: #c0392b;
+}

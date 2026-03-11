@@ -662,11 +662,13 @@ import singleLogo from "../assets/illustrator/single.png";
 
 /** ───────────────── Config ───────────────── */
 const DEFAULT_API_PORT = 5000;
-const STABILIZE_WINDOW_MS = 25000;
+const STABILIZE_WINDOW_MS = 50000; // increased from 25s → 50s to match longer backend webhook wait
 const STABILIZE_EVERY_MS = 2000;
 const RECONNECT_WS_MS = 2000;
 const HINT_1_MS = 6000;
 const HINT_2_MS = 14000;
+const HINT_3_MS = 25000; // "almost there" hint for tricky addresses
+const HINT_4_MS = 40000; // "taking longer" hint for very slow mail servers
 
 // Set to true to re-enable logs, badges, etc.
 const SHOW_DEBUG = false;
@@ -783,12 +785,31 @@ const SingleValidator = () => {
     hintTimersRef.current = [
       setTimeout(
         () =>
-          setWaitingHint("Still verifying — some mail servers respond slowly."),
+          setWaitingHint(
+            "Some addresses are trickier and take more time — please wait.",
+          ),
         HINT_1_MS,
       ),
       setTimeout(
-        () => setWaitingHint("Running extra checks to be sure."),
+        () =>
+          setWaitingHint(
+            "Still verifying — running deeper checks on this address.",
+          ),
         HINT_2_MS,
+      ),
+      setTimeout(
+        () =>
+          setWaitingHint(
+            "Almost there — waiting for final confirmation from the mail server.",
+          ),
+        HINT_3_MS,
+      ),
+      setTimeout(
+        () =>
+          setWaitingHint(
+            "This is taking a bit longer than usual — we're being thorough to ensure accuracy.",
+          ),
+        HINT_4_MS,
       ),
     ];
   };
