@@ -18,7 +18,9 @@ import logoGmx from "../assets/provider-logos/GMX.png";
 import logoAol from "../assets/provider-logos/Aol.png";
 import logoZoho from "../assets/provider-logos/Zoho-logo.png";
 import logoMicrosoftBusiness from "../assets/provider-logos/microsoft-business.png";
-import logoHotmail from "../assets/provider-logos/hotmail.png"; 
+import logoHotmail from "../assets/provider-logos/hotmail.png";
+// import logoOutlook from "../assets/provider-logos/outlook.png";
+import logoOutlook from "../assets/provider-logos/hotmail.png";
 import { useCredits } from "../credits/CreditsContext";
 import deliverabilityLogo from "../assets/illustrator/deliverability.png";
 
@@ -27,6 +29,7 @@ const PROVIDER_LOGOS = {
   google_business: logoGoogleBiz,
   microsoft_business: logoMicrosoftBusiness,
   hotmail: logoHotmail, // ✅ add this
+  // outlook: logoOutlook,
   yandex: logoYandex,
   seznam: logoSeznam,
   zoho: logoZoho,
@@ -99,7 +102,8 @@ const PROVIDER_OPTIONS = [
   { key: "gmail", label: "Gmail" },
   { key: "google_business", label: "Google Business" },
   { key: "microsoft_business", label: "Microsoft Business" },
-  { key: "hotmail", label: "Hotmail" }, // ✅ add this
+  { key: "hotmail", label: "Hotmail" },
+  // { key: "outlook", label: "Outlook" },
   { key: "yandex", label: "Yandex" },
   { key: "seznam", label: "Seznam" },
   { key: "zoho", label: "Zoho" },
@@ -112,7 +116,8 @@ const DEFAULT_SELECTED_PROVIDERS = [
   "gmail",
   "google_business",
   "microsoft_business",
-  "hotmail", 
+  "hotmail",
+  // "outlook",
   "yandex",
   "seznam",
   "zoho",
@@ -120,7 +125,6 @@ const DEFAULT_SELECTED_PROVIDERS = [
   "aol",
   "gmx",
 ];
-
 /** ---------- small inline icons ---------- */
 function IconCopy({ size = 14 }) {
   return (
@@ -471,40 +475,51 @@ export default function Deliverability() {
 
           const testId = data?.testId || data?._id;
 
-          // Fast path: mailbox_update patch
           if (data?.event === "mailbox_update" && testId && data?.mailbox) {
             const mb = data.mailbox;
 
-            setTests((prev) =>
-              (prev || []).map((t) => {
-                if (String(t._id) !== String(testId)) return t;
+            const applyMailboxPatch = (t) => {
+              if (!t || String(t._id) !== String(testId)) return t;
 
-                const mailboxes = Array.isArray(t.mailboxes)
-                  ? [...t.mailboxes]
-                  : [];
-                const idx = mailboxes.findIndex((x) => x.email === mb.email);
-                if (idx >= 0) mailboxes[idx] = { ...mailboxes[idx], ...mb };
-                else mailboxes.push(mb);
+              const mailboxes = Array.isArray(t.mailboxes)
+                ? [...t.mailboxes]
+                : [];
+              const idx = mailboxes.findIndex(
+                (x) => x.email === mb.email && x.provider === mb.provider,
+              );
 
-                // recompute counts quickly on frontend
-                const counts = { ...(t.counts || {}) };
-                let inbox = 0,
-                  spam = 0;
-                mailboxes.forEach((m) => {
-                  const st = normalizeMailboxStatus(m.status);
-                  if (st === "inbox") inbox++;
-                  if (st === "spam") spam++;
-                });
+              if (idx >= 0) {
+                mailboxes[idx] = { ...mailboxes[idx], ...mb };
+              } else {
+                mailboxes.push(mb);
+              }
 
-                return {
-                  ...t,
-                  mailboxes,
-                  updatedAt: data.updatedAt || new Date().toISOString(),
-                  status: data.status || t.status,
-                  counts: { ...counts, inbox, spam },
-                };
-              }),
-            );
+              let inbox = 0;
+              let spam = 0;
+              let not_received = 0;
+              let error = 0;
+              let waiting = 0;
+
+              mailboxes.forEach((m) => {
+                const st = normalizeMailboxStatus(m.status);
+                if (st === "inbox") inbox++;
+                else if (st === "spam") spam++;
+                else if (st === "not_received") not_received++;
+                else if (st === "error") error++;
+                else waiting++;
+              });
+
+              return {
+                ...t,
+                mailboxes,
+                updatedAt: data.updatedAt || new Date().toISOString(),
+                status: data.status || t.status,
+                counts: { inbox, spam, not_received, error, waiting },
+              };
+            };
+
+            setTests((prev) => (prev || []).map(applyMailboxPatch));
+            setReportTest((prev) => applyMailboxPatch(prev));
 
             return;
           }

@@ -108,14 +108,25 @@ export default function DeliverabilityHistory({
     const mailboxes = Array.isArray(modalTest?.mailboxes)
       ? modalTest.mailboxes
       : [];
-    let inbox = 0,
-      spam = 0;
+
+    let inbox = 0;
+    let spam = 0;
+    let notReceived = 0;
+
     mailboxes.forEach((m) => {
       const st = normalizeMailboxStatus(m.status);
+
       if (st === "inbox") inbox++;
-      if (st === "spam") spam++;
+      else if (st === "spam") spam++;
+      else if (st === "not_received" || st === "pending") notReceived++;
     });
-    return { inbox, spam, providers: mailboxes.length };
+
+    return {
+      inbox,
+      spam,
+      notReceived,
+      providers: mailboxes.length,
+    };
   }, [modalTest, normalizeMailboxStatus]);
 
   const handleDownloadReport = async (t) => {
@@ -426,6 +437,14 @@ export default function DeliverabilityHistory({
                   <span className="delivPillLabel">Spam</span>
                   <span className="delivPillCount">
                     {currentCountsForModal.spam}
+                  </span>
+                </div>
+
+                <div className="delivLegendRow">
+                  <span className="delivPillDot dot-not-received" />
+                  <span className="delivPillLabel">Not Received</span>
+                  <span className="delivPillCount">
+                    {currentCountsForModal.notReceived}
                   </span>
                 </div>
 

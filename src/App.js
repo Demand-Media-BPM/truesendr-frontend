@@ -566,14 +566,14 @@ const App = () => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  useEffect(() => {
-    const onBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    window.addEventListener("beforeunload", onBeforeUnload);
-    return () => window.removeEventListener("beforeunload", onBeforeUnload);
-  }, []);
+  // useEffect(() => {
+  //   const onBeforeUnload = (e) => {
+  //     e.preventDefault();
+  //     e.returnValue = "";
+  //   };
+  //   window.addEventListener("beforeunload", onBeforeUnload);
+  //   return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  // }, []);
 
   useEffect(() => {
     const onStorage = (e) => {

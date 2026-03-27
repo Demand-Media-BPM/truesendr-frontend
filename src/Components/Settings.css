@@ -281,12 +281,160 @@
   margin-top: -0.35rem;
 }
 
+.ts-password-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.ts-input--password {
+  padding-right: 3rem;
+}
+
+.ts-eye-btn {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.ts-eye-btn:hover {
+  color: var(--ts-orange);
+}
+
+.ts-eye-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ts-reqs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
+.ts-req {
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.ts-req.ok {
+  color: #16a34a;
+  border-color: #16a34a;
+  background: #ecfdf5;
+}
+
+.ts-req.bad {
+  color: #dc2626;
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.ts-inline-error--box {
+  margin-top: 0;
+  padding: 0.8rem 0.9rem;
+  border-radius: 0.65rem;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.ts-inline-success {
+  padding: 0.8rem 0.9rem;
+  border-radius: 0.65rem;
+  border: 1px solid #86efac;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
 /* Placeholder cards */
 .ts-card--placeholder .ts-placeholder__text {
   margin: 0;
   color: #64748b;
   font-size: 0.95rem;
   line-height: 1.6;
+}
+
+/* Delete account modal */
+.ts-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.ts-modal {
+  width: 100%;
+  max-width: 32rem;
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 1.25rem 3rem rgba(15, 23, 42, 0.18);
+  padding: 1.5rem 1.5rem 1.25rem;
+}
+
+.ts-modal__title {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.ts-modal__text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.ts-modal__actions {
+  margin-top: 1.8rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.ts-modal__btn {
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ts-modal__btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.ts-modal__btn--cancel {
+  color: #111827;
+}
+
+.ts-modal__btn--danger {
+  color: #ff7b00;
+  font-weight: 500;
 }
 
 /* ========= Responsive Breakpoints ========= */
