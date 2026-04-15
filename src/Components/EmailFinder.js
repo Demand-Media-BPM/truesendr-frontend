@@ -446,6 +446,7 @@ export default function EmailFinder() {
 
   // Right panel (latest 5, newest first)
   const [cards, setCards] = useState([]);
+  const cardsRef = useRef([]);
 
   // polling control for running jobs (parallel)
   const pollTimerRef = useRef(null);
@@ -465,6 +466,10 @@ export default function EmailFinder() {
   }
 
   /** Load last 5 for Validate tab (like PhoneValidator) */
+  useEffect(() => {
+    cardsRef.current = cards;
+  }, [cards]);
+
   useEffect(() => {
     async function fetchRecent() {
       if (!username) return;
@@ -529,7 +534,7 @@ export default function EmailFinder() {
 
         const j = resp.data || {};
         const nextState = j.state || "done"; // backend should return state
-        const prevState = cards.find(
+        const prevState = cardsRef.current.find(
           (c) => String(c._id) === String(jobId),
         )?.state;
         const justFinished = prevState === "running" && nextState !== "running";
@@ -565,7 +570,7 @@ export default function EmailFinder() {
 
     if (!pollTimerRef.current) {
       pollTimerRef.current = setInterval(() => {
-        const runningIds = cards
+        const runningIds = cardsRef.current
           .filter((c) => c.state === "running")
           .map((c) => c._id);
 
@@ -664,6 +669,40 @@ export default function EmailFinder() {
         ];
         return next.slice(0, 5);
       });
+
+      // fetch once immediately so instant cache hits render without waiting
+      try {
+        const firstResp = await axios.get(
+          apiUrl(`/api/finder/job/${encodeURIComponent(jobId)}?_ts=${Date.now()}`),
+          { headers: buildHeaders() },
+        );
+        const j = firstResp.data || {};
+        const nextState = j.state || stateFromStart || "done";
+        const justFinished =
+          String(stateFromStart || "running") === "running" &&
+          nextState !== "running";
+
+        if (justFinished && !refreshedJobIdsRef.current.has(String(jobId))) {
+          refreshedJobIdsRef.current.add(String(jobId));
+          scheduleCreditsRefresh();
+        }
+
+        setCards((prev) =>
+          prev.map((c) => {
+            if (String(c._id) !== String(jobId)) return c;
+            return {
+              ...c,
+              state: nextState,
+              fullName: j.fullName || c.fullName,
+              domain: j.domain || c.domain,
+              email: j.email || "",
+              error: j.error || "",
+              updatedAt: j.updatedAt || c.updatedAt,
+              createdAt: j.createdAt || c.createdAt,
+            };
+          }),
+        );
+      } catch {}
 
       // clear inputs so user can submit again (parallel)
       setFullName("");

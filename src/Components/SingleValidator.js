@@ -297,27 +297,31 @@ const SingleValidator = () => {
     // Avoid double-processing exactly the same snapshot
     const dedupeKey =
       final.email.toLowerCase() + "|" + new Date(final.timestamp).getTime();
-    if (lastFinalKeyRef.current === dedupeKey) return;
-    lastFinalKeyRef.current = dedupeKey;
-
-    setStatusUpdate(enriched);
-    setStatusColor(color);
 
     // remove this email from pending list
     setPendingEmails((prev) =>
       prev.filter((p) => p.email.toLowerCase() !== key),
     );
 
+    const isDuplicateSnapshot = lastFinalKeyRef.current === dedupeKey;
+    if (!isDuplicateSnapshot) {
+      lastFinalKeyRef.current = dedupeKey;
+      setStatusUpdate(enriched);
+      setStatusColor(color);
+    }
+
     // add/update in results (one card per email)
-    setResults((prev) => {
-      const idx = prev.findIndex((r) => r.email.toLowerCase() === key);
-      if (idx !== -1) {
-        const next = [...prev];
-        next[idx] = { ...next[idx], ...enriched };
-        return next;
-      }
-      return [enriched, ...prev];
-    });
+    if (!isDuplicateSnapshot) {
+      setResults((prev) => {
+        const idx = prev.findIndex((r) => r.email.toLowerCase() === key);
+        if (idx !== -1) {
+          const next = [...prev];
+          next[idx] = { ...next[idx], ...enriched };
+          return next;
+        }
+        return [enriched, ...prev];
+      });
+    }
 
     // stop hints only when nothing is pending anymore
     setTimeout(() => {
