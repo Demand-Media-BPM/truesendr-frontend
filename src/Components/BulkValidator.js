@@ -1276,8 +1276,6 @@
 
 // export default BulkValidator;
 
-
-
 // BulkValidator.jsx (MULTI-CARD FLOW UI — matches screenshots + persistence fixes)
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
@@ -1335,6 +1333,16 @@ const normTotals = (t = {}) => ({
   errorsFound: t.errorsFound ?? 0,
   cleanupSaves: t.cleanupSaves ?? 0,
 });
+
+const getApiErrorMessage = (e, fallback = "Something went wrong") => {
+  const data = e?.response?.data;
+
+  if (typeof data === "string") return data;
+  if (data?.error) return String(data.error);
+  if (data?.message) return String(data.message);
+
+  return e?.message || fallback;
+};
 
 const stageFromStatePhase = (state = "", phase = "") => {
   const s = String(state || "");
@@ -2113,11 +2121,14 @@ const BulkValidator = () => {
       setCpOpen(false);
       toastSuccess(`${cpCount} emails detected`);
     } catch (e) {
+      const msg = getApiErrorMessage(e, "Proceed failed");
+
       updateJob(uiId, {
         stage: "failed",
-        error: e?.response?.data || e?.message || "Proceed failed",
+        error: msg,
       });
-      toastError(e?.response?.data || e?.message || "Proceed failed");
+
+      toastError(msg);
     }
   };
 
@@ -2187,11 +2198,14 @@ const BulkValidator = () => {
 
       clearFileInput();
     } catch (e) {
+      const msg = getApiErrorMessage(e, "Verify failed");
+
       updateJob(uiId, {
         stage: "failed",
-        error: e?.response?.data || e?.message || "Verify failed",
+        error: msg,
       });
-      toastError(e?.response?.data || e?.message || "Verify failed");
+
+      toastError(msg);
     } finally {
       setUploading(false);
     }
@@ -2227,10 +2241,10 @@ const BulkValidator = () => {
         stage: invalidRemaining > 0 ? "needs_fix" : "ready",
       });
 
-     toastSuccess("File cleaned successfully!");
+      toastSuccess("File cleaned successfully!");
     } catch (e) {
       updateJob(job.uiId, { stage: "report" });
-      toastError(`Cleanup failed: ${e?.response?.data || e.message}`);
+      toastError(`Cleanup failed: ${getApiErrorMessage(e, "Cleanup failed")}`);
     }
   };
 
@@ -2458,7 +2472,9 @@ const BulkValidator = () => {
 
                       URL.revokeObjectURL(url);
                     } catch (e) {
-                      toastError(`Template download failed: ${e?.message || "Error"}`);
+                      toastError(
+                        `Template download failed: ${e?.message || "Error"}`,
+                      );
                     }
                   }}
                 >
