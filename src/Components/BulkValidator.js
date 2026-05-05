@@ -2631,6 +2631,12 @@ function JobCard({
     (counts.invalid || 0) +
     (counts.risky || 0) +
     (counts.unknown || 0);
+  const completedEmailTotal =
+    totalValidated ||
+    totals.uniqueValid ||
+    totals.emails ||
+    job.creditsRequired ||
+    0;
 
   const showCompleted = job.stage === "completed";
   const showValidating =
@@ -2790,9 +2796,7 @@ function JobCard({
           <div className="bv-statsRow">
             <div className="bv-stat">
               <div className="bv-statLabel">Emails</div>
-              <div className="bv-statValue">
-                {totals.uniqueValid ?? totals.emails ?? totalValidated ?? 0}
-              </div>
+              <div className="bv-statValue">{completedEmailTotal}</div>
             </div>
 
             <div className="bv-stat">
