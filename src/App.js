@@ -33,6 +33,7 @@ import Privacy from "./Components/Privacy";
 import BuyCredits from "./Components/BuyCredits";
 import Training from "./Components/Training";
 import SMTPValidatorLive from "./Components/SMTPValidatorLive";
+import DBDelete from "./Components/DBDelete";
 
 import logo from "./assets/TrueSendr Temp logo-02.png";
 
@@ -50,6 +51,7 @@ import PhoneIphoneOutlinedIcon from "@mui/icons-material/PhoneIphoneOutlined";
 import CleaningServicesOutlinedIcon from "@mui/icons-material/CleaningServicesOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import DnsOutlinedIcon from "@mui/icons-material/DnsOutlined";
+import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -112,6 +114,11 @@ const ROLE_EMAILS = {
     "yashwardhan.s@demandmediabpm.com",
   ],
 
+  dbDeleteAdmins: [
+    "saurabh.s@demandmediabpm.com",
+    "yashwardhan.s@demandmediabpm.com",
+  ],
+
   quality: [
     "nadeem.m@demandmediabpm.com",
     "shashank.k@demandmediabpm.com",
@@ -141,6 +148,7 @@ const TOOL_KEYS = {
   FINDER: "finder",
   TRAINING: "training",
   SMTP_ADMIN_TESTING: "smtp_admin_testing",
+  DB_DELETE_ADMIN: "db_delete_admin",
 };
 
 function normEmail(email) {
@@ -269,6 +277,15 @@ const NAV_ITEMS = [
     icon: <DnsOutlinedIcon />,
     type: "tool",
     allowedEmailsKey: "smtpTestingAdmins",
+  },
+  {
+    section: "Admin",
+    key: TOOL_KEYS.DB_DELETE_ADMIN,
+    label: "DB Delete",
+    to: "/db-delete-admin",
+    icon: <StorageOutlinedIcon />,
+    type: "tool",
+    allowedEmailsKey: "dbDeleteAdmins",
   },
   {
     section: "Admin",
@@ -468,6 +485,18 @@ const AppShell = ({
                   .map((e) => normEmail(e))
                   .includes(userEmail) ? (
                   <SMTPValidatorLive />
+                ) : (
+                  <Navigate to="/dashboard" replace />
+                )
+              }
+            />
+            <Route
+              path="/db-delete-admin"
+              element={
+                ROLE_EMAILS.dbDeleteAdmins
+                  .map((e) => normEmail(e))
+                  .includes(userEmail) ? (
+                  <DBDelete />
                 ) : (
                   <Navigate to="/dashboard" replace />
                 )
