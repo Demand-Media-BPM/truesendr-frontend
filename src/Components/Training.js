@@ -67,38 +67,92 @@ export default function Training({ userName }) {
     }
   }
 
+  const domainTotalRecords = domainStats.reduce(
+    (sum, item) => sum + (Number(item.total) || 0),
+    0
+  );
+  const providerTotalRecords = providerStats.reduce(
+    (sum, item) => sum + (Number(item.total) || 0),
+    0
+  );
+
   return (
     <div className="dt-container">
-      <h1 className="dt-title">🧠 Data Training Console</h1>
+      <div className="dt-hero">
+        <h1 className="dt-title">🧠 Data Training Console</h1>
+        <p className="dt-hero-subtitle">
+          Upload validated datasets and monitor domain/provider behavior trends
+          to continuously improve TrueSendr intelligence.
+        </p>
+      </div>
 
       {/* UPLOAD BLOCK */}
       <div className="dt-card upload-card">
-        <h2>Upload Training Dataset</h2>
-        <p className="dt-subtext">
-          Upload a labelled CSV / Excel file from Bouncer, ZeroBounce, or your
-          manually verified list. This trains TrueSendr&apos;s domain
-          heuristics.
-        </p>
+        <div className="dt-card-header">
+          <h2>Upload Training Dataset</h2>
+          <span className="dt-pill">CSV / XLSX</span>
+        </div>
 
-        <form onSubmit={handleUpload} className="dt-upload-form">
-          <input
-            type="file"
-            accept=".csv, .xlsx, .xls"
-            onChange={(e) => setFile(e.target.files[0])}
-            className="dt-file-input"
-          />
-          <button type="submit" disabled={uploading} className="dt-upload-btn">
-            {uploading ? "Uploading…" : "Upload & Train"}
-          </button>
-        </form>
+        <div className="dt-upload-grid">
+          <div className="dt-upload-copy">
+            <p className="dt-subtext">
+              Upload a labelled CSV / Excel file from Bouncer, ZeroBounce, or
+              your manually verified list. This trains TrueSendr&apos;s domain
+              heuristics and provider confidence model.
+            </p>
+            <ul className="dt-helper-list">
+              <li>Include email + verdict columns for best results</li>
+              <li>Supported formats: .csv, .xlsx, .xls</li>
+              <li>Large files may take a few moments to process</li>
+            </ul>
+          </div>
+
+          <form onSubmit={handleUpload} className="dt-upload-form">
+            <label className="dt-upload-dropzone">
+              <input
+                type="file"
+                accept=".csv, .xlsx, .xls"
+                onChange={(e) => setFile(e.target.files[0])}
+                className="dt-file-input"
+              />
+              <span className="dt-dropzone-title">
+                {file ? "File selected" : "Choose a training file"}
+              </span>
+              <span className="dt-dropzone-subtitle">
+                {file ? file.name : "Drag and drop not required — click to browse"}
+              </span>
+            </label>
+
+            <button
+              type="submit"
+              disabled={uploading}
+              className="dt-upload-btn"
+            >
+              {uploading ? "Uploading…" : "Upload & Train"}
+            </button>
+          </form>
+        </div>
 
         {msg && <div className="dt-message">{msg}</div>}
       </div>
 
       {/* DOMAIN STATS */}
       <div className="dt-card stats-card">
-        <h2>Domain Behavior Snapshot</h2>
-        <p className="dt-subtext">Aggregated training stats per domain.</p>
+        <div className="dt-card-header">
+          <h2>Domain Behavior Snapshot</h2>
+          <p className="dt-subtext">Aggregated training stats per domain.</p>
+        </div>
+
+        <div className="dt-chip-row">
+          <div className="dt-chip">
+            <span className="dt-chip-label">Tracked Domains</span>
+            <strong>{domainStats.length}</strong>
+          </div>
+          <div className="dt-chip">
+            <span className="dt-chip-label">Total Records</span>
+            <strong>{domainTotalRecords}</strong>
+          </div>
+        </div>
 
         <div className="dt-table-wrapper">
           <table className="dt-table">
@@ -143,10 +197,23 @@ export default function Training({ userName }) {
 
       {/* PROVIDER STATS */}
       <div className="dt-card stats-card">
-        <h2>Provider Behavior Snapshot</h2>
-        <p className="dt-subtext">
-          Aggregated training stats per mail provider / gateway.
-        </p>
+        <div className="dt-card-header">
+          <h2>Provider Behavior Snapshot</h2>
+          <p className="dt-subtext">
+            Aggregated training stats per mail provider / gateway.
+          </p>
+        </div>
+
+        <div className="dt-chip-row">
+          <div className="dt-chip">
+            <span className="dt-chip-label">Tracked Providers</span>
+            <strong>{providerStats.length}</strong>
+          </div>
+          <div className="dt-chip">
+            <span className="dt-chip-label">Total Records</span>
+            <strong>{providerTotalRecords}</strong>
+          </div>
+        </div>
 
         <div className="dt-table-wrapper">
           <table className="dt-table">
