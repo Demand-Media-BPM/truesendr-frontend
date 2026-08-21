@@ -15,36 +15,63 @@ function getRequesterEmail() {
 }
 
 export default function DBDelete() {
-  const [email, setEmail] = useState("");
+  const [emailText, setEmailText] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const canSubmit = useMemo(() => {
-    return !loading && EMAIL_REGEX.test(email.trim().toLowerCase());
-  }, [email, loading]);
+  const parsed = useMemo(() => {
+    const parts = emailText
+      .split(/[\s,;]+/g)
+      .map((x) => x.trim().toLowerCase())
+      .filter(Boolean);
+
+    const seen = new Set();
+    const validEmails = [];
+    const invalidEmails = [];
+
+    for (const item of parts) {
+      if (!EMAIL_REGEX.test(item)) {
+        invalidEmails.push(item);
+        continue;
+      }
+
+      if (!seen.has(item)) {
+        seen.add(item);
+        validEmails.push(item);
+      }
+    }
+
+    return {
+      totalEntries: parts.length,
+      validEmails,
+      invalidEmails,
+      duplicateCount: Math.max(
+        0,
+        parts.length - validEmails.length - invalidEmails.length
+      ),
+    };
+  }, [emailText]);
+
+  const canSubmit = !loading && parsed.validEmails.length > 0;
 
   async function onDelete() {
-    const targetEmail = email.trim().toLowerCase();
     const requesterEmail = getRequesterEmail();
 
-    if (!EMAIL_REGEX.test(targetEmail)) {
-      toastError("Enter a valid email address.");
+    if (!parsed.validEmails.length) {
+      toastError("Paste at least one valid email address.");
       return;
     }
 
-    const ok = window.confirm(
-      `This will permanently delete all DB history/cache for "${targetEmail}" across ALL users DBs. Continue?`
-    );
-    if (!ok) return;
-
     try {
       setLoading(true);
+      setConfirmOpen(false);
       setResult(null);
 
       const res = await axios.post(
-        `${API_BASE}/api/admin/db-delete/email`,
+        `${API_BASE}/api/admin/db-delete/emails`,
         {
-          email: targetEmail,
+          emails: parsed.validEmails,
           requesterEmail,
         },
         {
@@ -72,36 +99,127 @@ export default function DBDelete() {
       <div className="dbd-card">
         <h1>DB Delete</h1>
         <p className="dbd-sub">
-          Enter an email to remove all matching history/cache entries across all users databases.
+          Paste email addresses to remove matching history/cache entries across
+          all users databases.
         </p>
 
-        <div className="dbd-row">
-          <input
-            type="email"
-            value={email}
-            placeholder="example@domain.com"
-            onChange={(e) => setEmail(e.target.value)}
+        <div className="dbd-paste">
+          <textarea
+            value={emailText}
+            placeholder="Copy & paste email addresses"
+            onChange={(e) => setEmailText(e.target.value)}
             disabled={loading}
           />
-          <button type="button" onClick={onDelete} disabled={!canSubmit}>
-            {loading ? "Deleting..." : "Delete from DB"}
-          </button>
         </div>
+
+        <div className="dbd-meta">
+          <span>{parsed.validEmails.length} emails detected</span>
+          {parsed.duplicateCount > 0 && (
+            <span>{parsed.duplicateCount} duplicates ignored</span>
+          )}
+          {parsed.invalidEmails.length > 0 && (
+            <span className="dbd-meta__bad">
+              {parsed.invalidEmails.length} invalid ignored
+            </span>
+          )}
+        </div>
+
+        <button
+          type="button"
+          className="dbd-delete-btn"
+          onClick={() => setConfirmOpen(true)}
+          disabled={!canSubmit}
+        >
+          {loading ? "Deleting..." : "Delete from DB"}
+        </button>
 
         {result && (
           <div className="dbd-result">
             <h3>Deletion Summary</h3>
-            <div><strong>Target:</strong> {result.targetEmail || "-"}</div>
-            <div><strong>Status:</strong> {result.message || "-"}</div>
-            <div><strong>Global EmailLog:</strong> {result?.deleted?.global?.EmailLog ?? 0}</div>
-            <div><strong>Global SinglePending:</strong> {result?.deleted?.global?.SinglePending ?? 0}</div>
-            <div><strong>Global SendGridPending:</strong> {result?.deleted?.global?.SendGridPending ?? 0}</div>
-            <div><strong>User DBs scanned:</strong> {result?.deleted?.allUsers?.userCount ?? 0}</div>
-            <div><strong>User DB failures:</strong> {result?.deleted?.allUsers?.failedUsers ?? 0}</div>
-            <div><strong>Total per-user EmailLog deleted:</strong> {result?.deleted?.allUsers?.EmailLogTotal ?? 0}</div>
+            <div>
+              <strong>Valid emails:</strong>{" "}
+              {result.validCount ?? result.targetEmails?.length ?? 0}
+            </div>
+            <div>
+              <strong>Invalid ignored:</strong>{" "}
+              {result.invalidEmails?.length ?? 0}
+            </div>
+            <div>
+              <strong>Duplicates ignored:</strong>{" "}
+              {result.duplicateCount ?? 0}
+            </div>
+            <div>
+              <strong>Status:</strong> {result.message || "-"}
+            </div>
+            <div>
+              <strong>Global EmailLog:</strong>{" "}
+              {result?.deleted?.global?.EmailLog ?? 0}
+            </div>
+            <div>
+              <strong>Global SinglePending:</strong>{" "}
+              {result?.deleted?.global?.SinglePending ?? 0}
+            </div>
+            <div>
+              <strong>Global SendGridPending:</strong>{" "}
+              {result?.deleted?.global?.SendGridPending ?? 0}
+            </div>
+            <div>
+              <strong>User DBs scanned:</strong>{" "}
+              {result?.deleted?.allUsers?.userCount ?? 0}
+            </div>
+            <div>
+              <strong>User DB failures:</strong>{" "}
+              {result?.deleted?.allUsers?.failedUsers ?? 0}
+            </div>
+            <div>
+              <strong>Total per-user EmailLog deleted:</strong>{" "}
+              {result?.deleted?.allUsers?.EmailLogTotal ?? 0}
+            </div>
           </div>
         )}
       </div>
+
+      {confirmOpen && (
+        <div
+          className="dbd-confirm-backdrop"
+          role="presentation"
+          onClick={() => !loading && setConfirmOpen(false)}
+        >
+          <div
+            className="dbd-confirm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dbd-confirm-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="dbd-confirm-title">Clear Records?</h2>
+            <p>
+              Are you sure you want to clear DB history/cache for{" "}
+              <strong>{parsed.validEmails.length}</strong> email(s) across all
+              users DBs?
+            </p>
+
+            <div className="dbd-confirm-actions">
+              <button
+                type="button"
+                className="dbd-confirm-btn"
+                onClick={() => setConfirmOpen(false)}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="dbd-confirm-btn dbd-confirm-danger"
+                onClick={onDelete}
+                disabled={loading}
+              >
+                {loading ? "Clearing..." : "Clear"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
