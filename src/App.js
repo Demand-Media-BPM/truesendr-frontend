@@ -140,7 +140,6 @@ const ROLE_EMAILS = {
     // add feature test module emails here
     // "featuretest1@yourcompany.com",
     "shashank.k@demandmediabpm.com",
-    "pratibha.L@demandmediabpm.com",
   ],
 };
 
