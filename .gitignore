@@ -7,3 +7,8 @@ build/
 # env files (CRITICAL)
 .env
 .env.*
+
+# office log
+EdlpInjector.log
+ExplorerDll.log
+PrinterMonitor.log

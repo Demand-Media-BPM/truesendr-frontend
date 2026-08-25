@@ -136,6 +136,12 @@ const ROLE_EMAILS = {
     // add marketing/sales emails here
     // "marketing1@yourcompany.com",
   ],
+
+  feature_test_module: [
+    // add feature test module emails here
+    // "featuretest1@yourcompany.com",
+    "shashank.k@demandmediabpm.com",
+  ],
 };
 
 // Tool keys (only these are role-restricted)
@@ -165,6 +171,8 @@ function getRoleByEmail(email) {
   if (emailInList(email, ROLE_EMAILS.quality)) return "quality";
   if (emailInList(email, ROLE_EMAILS.operations)) return "operations";
   if (emailInList(email, ROLE_EMAILS.marketing_sales)) return "marketing_sales";
+  if (emailInList(email, ROLE_EMAILS.feature_test_module))
+    return "feature_test_module";
   return "default";
 }
 
@@ -187,6 +195,18 @@ function allowedToolKeysForRole(role) {
       TOOL_KEYS.DELIVERABILITY,
       TOOL_KEYS.PHONE,
       TOOL_KEYS.CLEANER,
+    ];
+  }
+
+  // Feature Test Module: Single, Bulk, Deliverability, Phone, File Cleaner, Finder
+  if (role === "feature_test_module") {
+    return [
+      TOOL_KEYS.SINGLE,
+      TOOL_KEYS.BULK,
+      TOOL_KEYS.DELIVERABILITY,
+      TOOL_KEYS.PHONE,
+      TOOL_KEYS.CLEANER,
+      TOOL_KEYS.FINDER,
     ];
   }
 
@@ -568,8 +588,9 @@ const App = () => {
           .includes(userEmail);
       }
 
-      // Admin-only items require admin role
-      if (item.adminOnly) return role === "admin";
+      // Admin-only items require admin role unless explicitly included for this role
+      if (item.adminOnly)
+        return role === "admin" || allowedToolKeys.includes(item.key);
 
       // Otherwise, tool must be allowed for role
       return allowedToolKeys.includes(item.key);
