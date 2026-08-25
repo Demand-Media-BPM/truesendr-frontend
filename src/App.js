@@ -121,7 +121,6 @@ const ROLE_EMAILS = {
 
   quality: [
     "nadeem.m@demandmediabpm.com",
-    "shashank.k@demandmediabpm.com",
     "rachana.b@demandmediabpm.com",
     "dipika.k@demandmediabpm.com",
     "somning.k@demandmediabpm.com",
@@ -141,7 +140,7 @@ const ROLE_EMAILS = {
     // add feature test module emails here
     // "featuretest1@yourcompany.com",
     "shashank.k@demandmediabpm.com",
-    "Pratibha.L@demandmediabpm.com",
+    "pratibha.L@demandmediabpm.com",
   ],
 };
 
