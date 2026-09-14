@@ -369,6 +369,10 @@ function trimName(n) {
     .trim();
 }
 
+function buildFullName(firstName, middleName, lastName) {
+  return [firstName, middleName, lastName].map(trimName).filter(Boolean).join(" ");
+}
+
 function normDomain(d) {
   return String(d || "")
     .trim()
@@ -378,17 +382,6 @@ function normDomain(d) {
     .split("/")[0]
     .split("?")[0]
     .split("#")[0];
-}
-
-function splitFullName(name) {
-  const parts = String(name || "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-  if (!parts.length) return { firstName: "", lastName: "" };
-  const firstName = parts[0];
-  const lastName = parts.length > 1 ? parts[parts.length - 1] : "";
-  return { firstName, lastName };
 }
 
 function fmtValidatedOn(d) {
@@ -437,7 +430,9 @@ export default function EmailFinder() {
   const [activeTab, setActiveTab] = useState("validate"); // validate | history
 
   // Left form
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [domain, setDomain] = useState("");
 
   // request start state
@@ -604,17 +599,14 @@ export default function EmailFinder() {
     e.preventDefault();
     setErrMsg("");
 
-    const n = trimName(fullName);
+    const fn = trimName(firstName);
+    const mn = trimName(middleName);
+    const ln = trimName(lastName);
+    const n = buildFullName(fn, mn, ln);
     const d = normDomain(domain);
 
-    if (!n || !d) {
-      setErrMsg("Please enter full name and a valid domain.");
-      return;
-    }
-
-    const { firstName, lastName } = splitFullName(n);
-    if (!firstName || !lastName) {
-      setErrMsg("Please enter both first and last name.");
+    if (!fn || !d) {
+      setErrMsg("Please enter first name and a valid domain.");
       return;
     }
 
@@ -628,7 +620,7 @@ export default function EmailFinder() {
     try {
       const resp = await axios.post(
         apiUrl("/api/finder/start"),
-        { fullName: n, domain: d },
+        { firstName: fn, middleName: mn, lastName: ln, domain: d },
         { headers: buildHeaders() },
       );
 
@@ -705,7 +697,9 @@ export default function EmailFinder() {
       } catch {}
 
       // clear inputs so user can submit again (parallel)
-      setFullName("");
+      setFirstName("");
+      setMiddleName("");
+      setLastName("");
       setDomain("");
       toastInfo("Email finding started.");
     } catch (err) {
@@ -801,14 +795,36 @@ export default function EmailFinder() {
         <div className="ef-leftTitle">Find an email address</div>
 
         <form className="ef-form" onSubmit={handleFind} autoComplete="off">
-          <div className="ef-field">
-            <label className="ef-label">Full Name</label>
-            <input
-              className="ef-input"
-              placeholder="John Doe"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-            />
+          <div className="ef-nameGrid">
+            <div className="ef-field">
+              <label className="ef-label">First Name</label>
+              <input
+                className="ef-input"
+                placeholder="John"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+            </div>
+
+            <div className="ef-field">
+              <label className="ef-label">Middle Name</label>
+              <input
+                className="ef-input"
+                placeholder="Michael"
+                value={middleName}
+                onChange={(e) => setMiddleName(e.target.value)}
+              />
+            </div>
+
+            <div className="ef-field">
+              <label className="ef-label">Last Name</label>
+              <input
+                className="ef-input"
+                placeholder="Doe"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="ef-field">

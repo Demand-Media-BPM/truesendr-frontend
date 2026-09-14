@@ -88,10 +88,17 @@
   gap: 0.9rem;
 }
 
+.ef-nameGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
 .ef-field {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  min-width: 0;
 }
 
 .ef-label {
@@ -101,6 +108,7 @@
 
 .ef-input {
   width: 100%;
+  box-sizing: border-box;
   background: #ffffff;
   border: 0.0625rem solid var(--border);
   border-radius: 0.35rem;
@@ -395,6 +403,19 @@
 
   .ef-title {
     font-size: 1rem;
+  }
+
+  .ef-nameGrid {
+    gap: 0.45rem;
+  }
+
+  .ef-label {
+    font-size: 0.72rem;
+  }
+
+  .ef-input {
+    padding: 0.5rem 0.55rem;
+    font-size: 0.8rem;
   }
 
   .ef-verifyBtn {
