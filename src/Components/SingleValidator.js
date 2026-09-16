@@ -232,6 +232,7 @@ const SingleValidator = () => {
             sessionId: sessionIdRef.current,
             username: getUser(),
             idempotencyKey: idKey,
+            forceLive: true,
           }),
         });
 
@@ -603,6 +604,7 @@ const SingleValidator = () => {
           sessionId: sessionIdRef.current,
           username: getUser(),
           idempotencyKey: idKey,
+          forceLive: true,
         }),
       });
 

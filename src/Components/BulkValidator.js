@@ -2313,6 +2313,7 @@ const BulkValidator = () => {
       skipInvalidFormat: !!skipInvalidFormat,
       noDownload: true,
       username: getUser(),
+      forceLive: true,
     };
 
     try {
