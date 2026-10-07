@@ -1290,9 +1290,14 @@ import "./BulkValidator.css";
 import BulkHistory from "./BulkHistory";
 import { useCredits } from "../credits/CreditsContext";
 import bulkLogo from "../assets/illustrator/bulk.png";
+import { createEmailAnalyzer } from "./bulkAnalyzeCore";
 
 const API_BASE = process.env.REACT_APP_API_BASE;
 const WS_URL = process.env.REACT_APP_WS_URL;
+
+// Left-panel live file analysis (runs in a Web Worker)
+const MAX_UPLOAD_BYTES = 20 * 1024 * 1024; // matches "up to 20 MB" label
+const ANALYZE_TIMEOUT_MS = 30000; // give up on preview, Verify still works
 
 console.log(
   "[BulkValidator][HARDCODED] API_BASE =",
@@ -1330,6 +1335,7 @@ const normTotals = (t = {}) => ({
   invalidFormat: t.invalidFormat ?? 0,
   duplicates: t.duplicates ?? 0,
   uniqueValid: t.uniqueValid ?? 0,
+  uniqueDomains: t.uniqueDomains ?? 0,
   errorsFound: t.errorsFound ?? 0,
   cleanupSaves: t.cleanupSaves ?? 0,
 });
@@ -1423,6 +1429,13 @@ const pct = (n, d) => {
   return Math.max(0, Math.min(100, Math.round((n * 100) / dd)));
 };
 
+// share label for the small % pills ("<1%" instead of a misleading "0%")
+const sharePct = (n, d) => {
+  if (!n) return "0%";
+  const p = pct(n, d);
+  return p < 1 ? "<1%" : `${p}%`;
+};
+
 function SpinnerIcon() {
   return (
     <svg
@@ -1483,6 +1496,32 @@ function UploadIcon() {
   );
 }
 
+function FileIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className="bulkui-fileIcon"
+    >
+      <path
+        d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14 3v5h5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function DownloadIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -1532,6 +1571,15 @@ const BulkValidator = () => {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
 
+  // live file analysis (left panel)
+  // status: idle | analyzing | done | skipped (soft) | error (hard)
+  const [analysis, setAnalysis] = useState(null);
+  const [analysisStatus, setAnalysisStatus] = useState("idle");
+  const [analysisError, setAnalysisError] = useState("");
+  const analysisWorkerRef = useRef(null);
+  const analysisIdRef = useRef(0);
+  const analysisTimerRef = useRef(null);
+
   // jobs (multiple cards)
   const [jobs, setJobs] = useState([]);
   const sessionIdRef = useRef(uuidv4());
@@ -1564,6 +1612,22 @@ const BulkValidator = () => {
   }, [cpText]);
 
   const cpCount = cpEmails.length;
+
+  // same analysis rules as the file uploader (invalid / duplicates / domains)
+  const cpStats = useMemo(() => {
+    const analyzer = createEmailAnalyzer();
+    for (const e of cpEmails) analyzer.add(e);
+    return analyzer.result();
+  }, [cpEmails]);
+
+  // stop any running analysis worker when leaving the page
+  useEffect(() => {
+    return () => {
+      analysisIdRef.current += 1;
+      if (analysisTimerRef.current) clearTimeout(analysisTimerRef.current);
+      if (analysisWorkerRef.current) analysisWorkerRef.current.terminate();
+    };
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -2021,24 +2085,173 @@ const BulkValidator = () => {
     } catch {}
   };
 
+  // ── live analysis (Web Worker) ──
+  const killAnalysisWorker = () => {
+    if (analysisWorkerRef.current) {
+      analysisWorkerRef.current.terminate();
+      analysisWorkerRef.current = null;
+    }
+  };
+
+  const stopAnalysis = () => {
+    analysisIdRef.current += 1; // invalidate any in-flight result
+    if (analysisTimerRef.current) {
+      clearTimeout(analysisTimerRef.current);
+      analysisTimerRef.current = null;
+    }
+    killAnalysisWorker();
+  };
+
+  const resetAnalysis = () => {
+    stopAnalysis();
+    setAnalysis(null);
+    setAnalysisStatus("idle");
+    setAnalysisError("");
+  };
+
+  const runLocalAnalysis = (f) => {
+    stopAnalysis();
+
+    const id = analysisIdRef.current;
+    const isCurrent = () => id === analysisIdRef.current;
+
+    setAnalysis(null);
+    setAnalysisError("");
+    setAnalysisStatus("analyzing");
+
+    const showResult = (stats) => {
+      stopAnalysis();
+      setAnalysis(stats);
+      setAnalysisStatus("done");
+    };
+
+    // hard = file unusable (blocks Verify) | soft = preview only
+    const showError = (message, hard) => {
+      stopAnalysis();
+      setAnalysisError(message || "Couldn't preview this file.");
+      setAnalysisStatus(hard ? "error" : "skipped");
+    };
+
+    // The worker is an optimisation, not a requirement: if it can't load or
+    // fails unexpectedly, parse on the main thread instead.
+    const fallbackToMainThread = async (reason) => {
+      if (!isCurrent()) return;
+      console.warn(
+        "[BulkValidator] worker analysis failed, retrying on main thread:",
+        reason,
+      );
+      killAnalysisWorker();
+
+      try {
+        const mod = await import("./bulkAnalyzeFile");
+        try {
+          const stats = await mod.analyzeFile(f);
+          if (isCurrent()) showResult(stats);
+        } catch (err) {
+          const info = mod.describeAnalyzeError(err);
+          console.error(
+            "[BulkValidator] file analysis failed:",
+            info.detail,
+            err,
+          );
+          if (isCurrent()) showError(info.message, info.hard);
+        }
+      } catch (err) {
+        console.error("[BulkValidator] analysis module failed to load:", err);
+        if (isCurrent()) {
+          showError(
+            "Couldn't preview this file. You can still click Verify.",
+            false,
+          );
+        }
+      }
+    };
+
+    try {
+      const worker = new Worker(
+        new URL("./bulkAnalyze.worker.js", import.meta.url),
+      );
+      analysisWorkerRef.current = worker;
+
+      worker.onmessage = (event) => {
+        const msg = event.data || {};
+        if (msg.id !== id || !isCurrent()) return; // stale
+
+        if (msg.type === "result") {
+          showResult(msg.stats);
+          return;
+        }
+
+        if (msg.type === "error") {
+          if (msg.hard || msg.friendly) {
+            if (msg.friendly) {
+              console.error("[BulkValidator] file read failed:", msg.detail);
+            }
+            showError(msg.message, msg.hard);
+          } else {
+            fallbackToMainThread(msg.detail || msg.message);
+          }
+        }
+      };
+
+      worker.onerror = (e) => {
+        if (!isCurrent()) return;
+        fallbackToMainThread(e?.message || "worker error");
+      };
+
+      analysisTimerRef.current = setTimeout(() => {
+        if (!isCurrent()) return;
+        showError(
+          "This file is taking a while to preview. You can still click Verify.",
+          false,
+        );
+      }, ANALYZE_TIMEOUT_MS);
+
+      worker.postMessage({ id, file: f });
+    } catch (err) {
+      fallbackToMainThread(String(err));
+    }
+  };
+
   const clearFileInput = () => {
     setFile(null);
+    resetAnalysis();
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // single entry point for Browse + Drag & Drop
+  const selectFile = (f) => {
+    if (!f) {
+      clearFileInput();
+      return;
+    }
+
+    const name = String(f.name || "").toLowerCase();
+
+    if (!name.endsWith(".csv") && !name.endsWith(".xlsx")) {
+      toastWarning("Only CSV or XLSX files are supported");
+      clearFileInput();
+      return;
+    }
+
+    if (f.size > MAX_UPLOAD_BYTES) {
+      toastWarning("File is too large. Maximum size is 20 MB");
+      clearFileInput();
+      return;
+    }
+
+    setFile(f);
+    runLocalAnalysis(f);
+  };
+
   const handleFileChange = (e) => {
-    setFile(e.target.files?.[0] || null);
+    selectFile(e.target.files?.[0] || null);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    const droppedFile = e.dataTransfer.files?.[0];
-    if (droppedFile && droppedFile.name.toLowerCase().endsWith(".xlsx")) {
-      setFile(droppedFile);
-    } else {
-      toastWarning("Please paste email addresses");
-    }
+    selectFile(e.dataTransfer.files?.[0] || null);
   };
 
   const handleDragOver = (e) => {
@@ -2135,7 +2348,7 @@ const BulkValidator = () => {
   // 1) VERIFY (preflight) → creates a new card
   const handleVerify = async () => {
     if (!file) {
-      toastWarning("Please select an Excel file (.xlsx)");
+      toastWarning("Please select a CSV or XLSX file");
       return;
     }
 
@@ -2487,7 +2700,9 @@ const BulkValidator = () => {
               </div>
 
               <div
-                className={`bulkui-drop ${isDragging ? "dragging" : ""}`}
+                className={`bulkui-drop ${isDragging ? "dragging" : ""} ${
+                  file ? "has-file" : ""
+                }`}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -2525,18 +2740,106 @@ const BulkValidator = () => {
 
                   {file ? (
                     <div className="bulkui-filePill" title={file.name}>
-                      {file.name}
+                      <FileIcon />
+                      <span className="bulkui-fileName">{file.name}</span>
                     </div>
                   ) : null}
                 </div>
 
+                {file && analysisStatus !== "idle" && (
+                <div
+                  className={`bulkui-analysis ${
+                    analysisStatus === "error" ? "is-error" : ""
+                  }`}
+                  aria-live="polite"
+                >
+                  {analysisStatus === "analyzing" && (
+                    <>
+                      <div className="bulkui-analysisHead">
+                        <span className="bulkui-analysisTitle">
+                          <span className="bulkui-analysisSpin">
+                            <SpinnerIcon />
+                          </span>
+                          Analyzing file…
+                        </span>
+                      </div>
+                      <div className="bulkui-analysisTrack">
+                        <div className="bulkui-analysisBar" />
+                      </div>
+                    </>
+                  )}
+
+                  {analysisStatus === "done" && analysis && (
+                    <div className="bulkui-analysisGrid">
+                      <div className="bv-stat">
+                        <div className="bv-statLabel">Total emails</div>
+                        <div className="bv-statValue">
+                          {analysis.totalEmails}
+                        </div>
+                      </div>
+
+                      <div className="bv-stat">
+                        <div className="bv-statLabel">Invalid format</div>
+                        <div className="bv-statValue">
+                          {analysis.invalidFormat}{" "}
+                          <span
+                            className={`bv-pill ${
+                              analysis.invalidFormat > 0 ? "red" : "gray"
+                            }`}
+                          >
+                            {sharePct(
+                              analysis.invalidFormat,
+                              analysis.totalEmails,
+                            )}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="bv-stat">
+                        <div className="bv-statLabel">Duplicate emails</div>
+                        <div className="bv-statValue">
+                          {analysis.duplicates}{" "}
+                          <span
+                            className={`bv-pill ${
+                              analysis.duplicates > 0 ? "orange" : "gray"
+                            }`}
+                          >
+                            {sharePct(
+                              analysis.duplicates,
+                              analysis.totalEmails,
+                            )}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="bv-stat">
+                        <div className="bv-statLabel">Unique domains</div>
+                        <div className="bv-statValue">
+                          {analysis.uniqueDomains}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {analysisStatus === "skipped" && (
+                    <div className="bulkui-analysisNote">{analysisError}</div>
+                  )}
+
+                  {analysisStatus === "error" && (
+                    <div className="bulkui-analysisNote is-bad">
+                      {analysisError}
+                    </div>
+                  )}
+                </div>
+                )}
+
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".xlsx"
+                  accept=".csv,.xlsx"
                   onChange={handleFileChange}
                   className="bulkui-hiddenInput"
-                  aria-label="Upload Excel file"
+                  aria-label="Upload CSV or Excel file"
                 />
               </div>
 
@@ -2547,7 +2850,12 @@ const BulkValidator = () => {
               <button
                 className="bulkui-verify"
                 onClick={handleVerify}
-                disabled={!file || uploading}
+                disabled={
+                  !file ||
+                  uploading ||
+                  analysisStatus === "analyzing" ||
+                  analysisStatus === "error"
+                }
               >
                 {uploading ? "Verifying..." : "Verify"}
               </button>
@@ -2585,7 +2893,9 @@ const BulkValidator = () => {
 
               <div className="cp-footerRow">
                 <div className="cp-count">
-                  {cpCount > 0 ? `${cpCount} emails detected` : ""}
+                  {cpCount > 0
+                    ? `${cpCount} emails detected · ${cpStats.invalidFormat} invalid · ${cpStats.duplicates} duplicates · ${cpStats.uniqueDomains} unique domains`
+                    : ""}
                 </div>
 
                 <div className="cp-actions">
