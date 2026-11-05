@@ -102,7 +102,7 @@ const PROVIDER_OPTIONS = [
   { key: "gmail", label: "Gmail" },
   { key: "google_business", label: "Google Business" },
   { key: "microsoft_business", label: "Microsoft Business" },
-  { key: "hotmail", label: "Hotmail" },
+  // { key: "hotmail", label: "Hotmail" },
   // { key: "outlook", label: "Outlook" },
   { key: "yandex", label: "Yandex" },
   { key: "seznam", label: "Seznam" },
